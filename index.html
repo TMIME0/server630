@@ -64,7 +64,7 @@
             <div>
                 <h1 id="member-welcome-title" class="text-xl font-black gold-text">ملك من ملوك 630</h1>
                 <p class="text-xs text-gray-400 flex items-center gap-1 mt-1">
-                    <span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block animate-pulse"></i></span> متصل الآن
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block animate-pulse"></span> متصل الآن
                 </p>
             </div>
             <button type="button" onclick="logout()" class="px-4 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-xl text-xs font-bold transition cursor-pointer">
@@ -91,6 +91,7 @@
                 </div>
             </div>
 
+            <!-- إعداد الجيش بمربعات مرتبة -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2 border-t border-gray-800" id="m-inputs-container">
                 <!-- حقول الجيوش -->
             </div>
@@ -125,7 +126,7 @@
             </div>
         </header>
 
-        <!-- أزرار الإدارة الشاملة وزر التحديث الداخلي والإصلاح -->
+        <!-- أزرار الإدارة الشاملة -->
         <div class="flex flex-wrap gap-3">
             <button type="button" onclick="refreshAdminData()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition shadow cursor-pointer flex items-center gap-2">
                 🔄 تحديث البيانات سحابياً (Refresh)
@@ -248,6 +249,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // تم تحديث اسم مفتاح السيرفر إلى الإصدار الخامس v5 لضمان جلب وتحديث البيانات فوراً
+        const SERVER_DOC_KEY = "data_server_630_v5";
+
         let systemData = {
             members: [],
             admins: [
@@ -270,7 +274,7 @@
 
         async function loadDataFromServer() {
             try {
-                const docRef = doc(db, "server", "data_server_630_v4");
+                const docRef = doc(db, "server", SERVER_DOC_KEY);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
@@ -293,7 +297,7 @@
                 }
             } catch (e) {
                 console.error("خطأ بالاتصال بالسيرفر", e);
-                let local = JSON.parse(localStorage.getItem('fallback_server_630'));
+                let local = JSON.parse(localStorage.getItem('fallback_server_630_v5'));
                 if(local) {
                     systemData = local;
                 } else {
@@ -316,9 +320,9 @@
                     id: i,
                     code: i.toString(),
                     pass: "m" + i + "630",
-                    gameEmail: '',
+                    gameEmail: 'castle' + i + '@gmail.com',
                     gamePass: '',
-                    castleName: '',
+                    castleName: 'قلعة ' + i,
                     castleType: 'dual',
                     infantryArmored: 0,
                     archerArmored: 0,
@@ -357,8 +361,8 @@
                     document.getElementById('admin-repair-btn').style.display = 'flex';
                 } else {
                     document.getElementById('admin-role-badge').innerText = foundAdmin.name;
-                    document.getElementById('admin-manage-btn').style.display = 'none';
-                    document.getElementById('admin-repair-btn').style.display = 'none';
+                    document.getElementById('admin-manage-btn').style.display = 'flex'; // متاح لجميع الأدمنية
+                    document.getElementById('admin-repair-btn').style.display = 'none'; // مخفي لكل الأدمنية عدا العام
                 }
 
                 initAdminTable();
@@ -461,11 +465,11 @@
 
         async function saveSystemDataCloud() {
             try {
-                const docRef = doc(db, "server", "data_server_630_v4");
+                const docRef = doc(db, "server", SERVER_DOC_KEY);
                 await setDoc(docRef, systemData);
             } catch (e) {
                 console.error("فشل الحفظ السحابي", e);
-                localStorage.setItem('fallback_server_630', JSON.stringify(systemData));
+                localStorage.setItem('fallback_server_630_v5', JSON.stringify(systemData));
             }
         }
 
@@ -570,7 +574,7 @@
                             <input type="text" id="set-code-${idx}" value="${m.code || ''}" placeholder="كود الدخول" class="w-full px-3 py-1.5 rounded-xl bg-[#1a1a20] border border-gray-700 text-xs text-white">
                         </div>
                         <div>
-                            <label class="block text-[10px] text-gray-400 mb-1">كلمة المرور (للنظام)</label>
+                            <label class="block text-[10px] text-gray-400 mb-1">رمز الدخول / كلمة المرور</label>
                             <input type="text" id="set-pass-${idx}" value="${m.pass || ''}" placeholder="كلمة المرور" class="w-full px-3 py-1.5 rounded-xl bg-[#1a1a20] border border-gray-700 text-xs text-white">
                         </div>
                         <div>
