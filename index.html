@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إمداد تحالف 630 - السحابي الحقيقي</title>
+    <title>نظام إمداد تحالف 630 - السحابي الشامل</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
@@ -30,8 +30,8 @@
 
     <!-- شاشة التحميل الأولية -->
     <div id="loading-screen" class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border">
-        <h2 class="text-xl font-black gold-text mb-2">جاري الاتصال بالسحابة... ☁️</h2>
-        <p class="text-xs text-gray-400">يرجى الانتظار لحين مزامنة بيانات التحالف</p>
+        <h2 class="text-xl font-black gold-text mb-2">جاري الاتصال بالسحابة وسيرفر قوقل... ☁️</h2>
+        <p class="text-xs text-gray-400">يرجى الانتظار لحين تحميل بيانات تحالف 630</p>
     </div>
 
     <!-- شاشة تسجيل الدخول -->
@@ -41,7 +41,7 @@
         
         <div class="space-y-4">
             <div>
-                <input type="text" id="login-code" placeholder="أدخل كود العضو (1 إلى 75) أو الأدمن" 
+                <input type="text" id="login-code" placeholder="كود العضو (1 إلى 75) أو كود الأدمن" 
                     class="w-full px-4 py-3 rounded-2xl bg-[#121212] border border-[#3f3f46] text-white text-center focus:outline-none focus:border-[#d4af37]">
             </div>
             <div>
@@ -98,7 +98,7 @@
             </div>
 
             <div class="pt-4 border-t border-gray-800 flex justify-between items-center">
-                <span id="save-status" class="text-xs text-green-400 font-bold">🟢 متصل بقاعدة بيانات فايربيس</span>
+                <span class="text-xs text-green-400 font-bold">🟢 متصل بقاعدة بيانات فايربيس السحابية</span>
                 <button type="button" onclick="saveMemberDataCloud()" class="px-6 py-2.5 gold-bg text-black font-bold rounded-xl text-xs cursor-pointer shadow">
                     حفظ وتحديث بالسيرفر السحابي ☁️
                 </button>
@@ -106,20 +106,30 @@
         </div>
     </div>
 
-    <!-- لوحة تحكم الأدمن -->
+    <!-- لوحة تحكم الأدمن العام -->
     <div id="admin-dashboard" class="hidden w-full max-w-7xl mx-auto space-y-6">
         <header class="slate-card p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center border gold-border gap-4">
             <div>
                 <h1 class="text-2xl font-black gold-text">لوحة تحكم الأدمن العام (تحالف 630)</h1>
-                <p class="text-sm text-gray-400">متابعة إمداد وقلاع جميع الأعضاء لحظياً من سيرفر قوقل</p>
+                <p class="text-sm text-gray-400">إدارة القلاع والإيميلات والجيوش والنيزك سحابياً</p>
             </div>
             <div class="flex items-center gap-4">
-                <span class="bg-[#121212] px-4 py-2 rounded-xl border border-gray-800 text-xs gold-text font-bold">أدمن عام</span>
+                <span class="bg-[#121212] px-4 py-2 rounded-xl border border-gray-800 text-xs gold-text font-bold">أدمن عام (المدير)</span>
                 <button type="button" onclick="logout()" class="px-4 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-xl text-xs font-bold transition cursor-pointer">
                     تسجيل خروج 🚪
                 </button>
             </div>
         </header>
+
+        <!-- أزرار الإدارة الشاملة -->
+        <div class="flex flex-wrap gap-3">
+            <button type="button" onclick="toggleSettingsModal()" class="px-5 py-2.5 gold-bg text-black font-bold rounded-xl text-xs hover:opacity-90 transition shadow cursor-pointer flex items-center gap-2">
+                ⚙️ إدارة وتعديل حسابات وإيميلات اللعبة للأعضاء
+            </button>
+            <button type="button" onclick="toggleAdminsModal()" class="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl text-xs transition shadow cursor-pointer border border-gray-700 flex items-center gap-2">
+                🛡️ إدارة الأدمنية والصلاحيات
+            </button>
+        </div>
 
         <!-- الإحصائيات الكلية -->
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -148,7 +158,7 @@
         <!-- جدول المتابعة للأدمن -->
         <section class="slate-card p-6 rounded-3xl border gold-border space-y-4">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <h3 class="text-xl font-bold gold-text">سجل قلاع الأعضاء السحابي</h3>
+                <h3 class="text-xl font-bold gold-text">سجل قلاع الأعضاء بالكامل</h3>
                 <div class="w-full md:w-72">
                     <input type="text" id="search-input" onkeyup="filterAdminTable()" placeholder="ابحث باسم القلعة أو رقم العضو..." 
                         class="w-full px-4 py-2 rounded-xl bg-[#121212] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
@@ -175,10 +185,45 @@
         </section>
     </div>
 
-    <!-- سكربت فايربيس والتطبيق -->
+    <!-- نافذة إعدادات الإيميلات والرموز -->
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-4xl max-h-[85vh] overflow-y-auto space-y-4">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <h3 class="text-lg font-bold gold-text">إدارة إيميلات ورموز اللعبة للأعضاء</h3>
+                <button type="button" onclick="toggleSettingsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
+            </div>
+            <div id="settings-members-list" class="space-y-3"></div>
+            <div class="text-left pt-4">
+                <button type="button" onclick="saveAllMembersSettings()" class="px-6 py-2 gold-bg text-black font-bold rounded-xl text-xs cursor-pointer">
+                    حفظ التعديلات سحابياً ☁️
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إدارة الأدمنية -->
+    <div id="admins-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-3xl max-h-[85vh] overflow-y-auto space-y-4">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <h3 class="text-lg font-bold gold-text">إدارة الأدمنية والصلاحيات</h3>
+                <button type="button" onclick="toggleAdminsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
+            </div>
+            <div class="p-3 bg-[#121212] rounded-xl border border-gray-800 space-y-3">
+                <p class="text-xs gold-text font-bold">أنت الأدمن العام الرئيسي وتمتلك الصلاحيات المطلقة.</p>
+                <p class="text-xs text-gray-400">رمز الدخول العام: <span class="text-white font-bold">1G630</span> | كلمة المرور: <span class="text-white font-bold">Tmime9090</span></p>
+            </div>
+            <div class="text-left pt-4">
+                <button type="button" onclick="toggleAdminsModal()" class="px-6 py-2 gold-bg text-black font-bold rounded-xl text-xs cursor-pointer">
+                    إغلاق
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- السكربت البرمجي الكامل والربط السحابي -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBABOIMP9NeREFZH63JMdxruMp8-GvfsgY",
@@ -199,7 +244,7 @@
 
         window.onload = async function() {
             try {
-                const docRef = doc(db, "alliance", "data_630");
+                const docRef = doc(db, "alliance", "data_630_v2");
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
@@ -210,6 +255,8 @@
                         membersData.push({
                             id: i,
                             pass: "m" + i + "630",
+                            gameEmail: '',
+                            gamePass: '',
                             castleName: '',
                             castleType: 'dual',
                             infantryArmored: 0,
@@ -222,11 +269,11 @@
                     await setDoc(docRef, { members: membersData });
                 }
             } catch (e) {
-                console.error("خطأ في الاتصال بقاعدة البيانات، جاري استخدام الذاكرة المؤقتة", e);
-                membersData = JSON.parse(localStorage.getItem('fallback_630')) || [];
+                console.error("خطأ في الاتصال، جاري استخدام الذاكرة المحلية", e);
+                membersData = JSON.parse(localStorage.getItem('fallback_630_v2')) || [];
                 if(membersData.length === 0) {
                     for (let i = 1; i <= 75; i++) {
-                        membersData.push({ id: i, pass: "m" + i + "630", castleName: '', castleType: 'dual', infantryArmored: 0, archerArmored: 0, infantrySuper: 0, archerSuper: 0, meteor: 0 });
+                        membersData.push({ id: i, pass: "m" + i + "630", gameEmail: '', gamePass: '', castleName: '', castleType: 'dual', infantryArmored: 0, archerArmored: 0, infantrySuper: 0, archerSuper: 0, meteor: 0 });
                     }
                 }
             }
@@ -337,13 +384,68 @@
             m.archerSuper = arcSup ? (Number(arcSup.value) || 0) : 0;
 
             try {
-                const docRef = doc(db, "alliance", "data_630");
+                const docRef = doc(db, "alliance", "data_630_v2");
                 await setDoc(docRef, { members: membersData });
                 alert('تم حفظ وتحديث بياناتك بنجاح في السيرفر السحابي 🚀');
             } catch (e) {
                 console.error(e);
-                localStorage.setItem('fallback_630', JSON.stringify(membersData));
-                alert('تم الحفظ محلياً لتعذر الاتصال اللحظي بالسيرفر');
+                localStorage.setItem('fallback_630_v2', JSON.stringify(membersData));
+                alert('تم الحفظ محلياً لتعذر الاتصال بالسيرفر');
+            }
+        };
+
+        window.toggleSettingsModal = function() {
+            const modal = document.getElementById('settings-modal');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) {
+                renderSettingsList();
+            }
+        };
+
+        window.toggleAdminsModal = function() {
+            const modal = document.getElementById('admins-modal');
+            modal.classList.toggle('hidden');
+        };
+
+        function renderSettingsList() {
+            const container = document.getElementById('settings-members-list');
+            container.innerHTML = '';
+
+            membersData.forEach((m, index) => {
+                container.innerHTML += `
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-2 p-3 bg-[#121212] rounded-xl border border-gray-800 items-center">
+                        <span class="text-xs font-bold text-white">عضو رقم ${m.id}</span>
+                        <input type="text" id="set-pass-${index}" value="${m.pass || ''}" placeholder="رمز الدخول" 
+                            class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs gold-text font-bold focus:outline-none focus:border-[#d4af37]">
+                        <input type="text" id="set-email-${index}" value="${m.gameEmail || ''}" placeholder="إيميل اللعبة" 
+                            class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#d4af37]">
+                        <input type="text" id="set-gamepass-${index}" value="${m.gamePass || ''}" placeholder="باسورد اللعبة" 
+                            class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#d4af37]">
+                    </div>
+                `;
+            });
+        }
+
+        window.saveAllMembersSettings = async function() {
+            membersData.forEach((m, index) => {
+                const newPass = document.getElementById(`set-pass-${index}`).value.trim();
+                const newEmail = document.getElementById(`set-email-${index}`).value.trim();
+                const newGamePass = document.getElementById(`set-gamepass-${index}`).value.trim();
+                
+                if(newPass) m.pass = newPass;
+                m.gameEmail = newEmail;
+                m.gamePass = newGamePass;
+            });
+
+            try {
+                const docRef = doc(db, "alliance", "data_630_v2");
+                await setDoc(docRef, { members: membersData });
+                alert('تم حفظ إعدادات ورموز الإيميلات للأعضاء بنجاح في السحابة! ☁️');
+                toggleSettingsModal();
+                initAdminTable();
+            } catch(e) {
+                console.error(e);
+                alert('حدث خطأ في الحفظ السحابي، تأكد من الاتصال.');
             }
         };
 
@@ -371,8 +473,9 @@
 
                 tr.innerHTML = `
                     <td class="p-3">
-                        <div class="font-bold text-white text-sm">عضو رقم ${m.id}</div>
+                        <div class="font-bold text-white text-sm">عضو رقم ${m.id} (الرمز: ${m.pass})</div>
                         <div class="text-xs gold-text">${m.castleName || 'بدون اسم قلعة'}</div>
+                        <div class="text-[10px] text-gray-400">إيميل: ${m.gameEmail || 'غير محدد'}</div>
                     </td>
                     <td class="p-3 text-center text-xs text-gray-300 font-bold">${typeLabel}</td>
                     <td class="p-3 text-xs text-gray-300">مشاة: ${m.infantryArmored || 0} | رماة: ${m.archerArmored || 0}</td>
@@ -382,7 +485,7 @@
                         <span class="text-[10px] bg-green-900/65 text-green-300 px-2.5 py-1 rounded-md font-bold">محدث سحابياً</span>
                     </td>
                 `;
-                tbody.endswith ? tbody.appendChild(tr) : tbody.appendChild(tr);
+                tbody.appendChild(tr);
             });
             calculateAdminTotals();
         }
