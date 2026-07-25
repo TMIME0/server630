@@ -28,14 +28,8 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <!-- شاشة التحميل -->
-    <div id="loading-screen" class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border">
-        <h2 class="text-xl font-black gold-text mb-2">جاري الاتصال بسيرفر قوقل السحابي... ☁️</h2>
-        <p class="text-xs text-gray-400">يرجى الانتظار لحين مزامنة بيانات SERVER 630</p>
-    </div>
-
-    <!-- شاشة تسجيل الدخول -->
-    <div id="login-screen" class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border hidden">
+    <!-- شاشة تسجيل الدخول (تفتح فوراً بدون أي تأخير) -->
+    <div id="login-screen" class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border">
         <h2 class="text-3xl font-black gold-text mb-2 tracking-wider">SERVER 630</h2>
         <p class="text-xs text-gray-400 mb-6">النظام السحابي المؤمن - ملوك السيرفر والأدمنية</p>
         
@@ -249,7 +243,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // تم تحديث اسم مفتاح السيرفر إلى الإصدار الخامس v5 لضمان جلب وتحديث البيانات فوراً
         const SERVER_DOC_KEY = "data_server_630_v5";
 
         let systemData = {
@@ -266,13 +259,12 @@
         let currentActiveMemberId = null;
         let currentLoggedInAdmin = null;
 
-        window.onload = async function() {
-            await loadDataFromServer();
-            document.getElementById('loading-screen').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('hidden');
+        // فتح الصفحة فوراً بالخلفية وجلب البيانات بدون شاشة انتظار
+        window.onload = function() {
+            loadDataFromServerSilently();
         };
 
-        async function loadDataFromServer() {
+        async function loadDataFromServerSilently() {
             try {
                 const docRef = doc(db, "server", SERVER_DOC_KEY);
                 const docSnap = await getDoc(docRef);
@@ -307,7 +299,7 @@
         }
 
         window.refreshAdminData = async function() {
-            await loadDataFromServer();
+            await loadDataFromServerSilently();
             initAdminTable();
             calculateAdminTotals();
             alert("تم تحديث البيانات وجلبها من السيرفر بنجاح! 🔄☁️");
@@ -361,8 +353,8 @@
                     document.getElementById('admin-repair-btn').style.display = 'flex';
                 } else {
                     document.getElementById('admin-role-badge').innerText = foundAdmin.name;
-                    document.getElementById('admin-manage-btn').style.display = 'flex'; // متاح لجميع الأدمنية
-                    document.getElementById('admin-repair-btn').style.display = 'none'; // مخفي لكل الأدمنية عدا العام
+                    document.getElementById('admin-manage-btn').style.display = 'flex';
+                    document.getElementById('admin-repair-btn').style.display = 'none';
                 }
 
                 initAdminTable();
