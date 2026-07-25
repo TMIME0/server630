@@ -71,7 +71,6 @@
         </header>
 
         <div class="slate-card p-6 rounded-3xl border gold-border space-y-6">
-            <!-- خانات ثابتة مقفولة يحددها الأدمن + خانة رمز القلعة المتاحة للتعديل من العضو -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-[#121212] rounded-2xl border border-gray-800">
                 <div>
                     <label class="block text-[11px] text-gray-400 mb-1">اسم القلعة (يحددها الأدمن)</label>
@@ -129,13 +128,16 @@
             </div>
         </header>
 
-        <!-- أزرار الإدارة الشاملة -->
+        <!-- أزرار الإدارة الشاملة وزر الإصلاح التلقائي -->
         <div class="flex flex-wrap gap-3">
             <button type="button" onclick="toggleSettingsModal()" class="px-5 py-2.5 gold-bg text-black font-bold rounded-xl text-xs hover:opacity-90 transition shadow cursor-pointer flex items-center gap-2">
                 ⚙️ إدارة حسابات، إيميلات وأنواع قلاع الأعضاء
             </button>
             <button id="admin-manage-btn" type="button" onclick="toggleAdminsModal()" class="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl text-xs transition shadow cursor-pointer border border-gray-700 flex items-center gap-2">
                 🛡️ إدارة صلاحيات الأدمنية (5 أدمنية)
+            </button>
+            <button type="button" onclick="runAutoRepair()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition shadow cursor-pointer flex items-center gap-2">
+                🛠️ إصلاح تلقائي للمشاكل (Repair)
             </button>
         </div>
 
@@ -194,7 +196,7 @@
         </section>
     </div>
 
-    <!-- نافذة إعدادات الأعضاء الشاملة (للأدمن) -->
+    <!-- نافذة إعدادات الأعضاء الشاملة -->
     <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
         <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-5xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
@@ -210,7 +212,7 @@
         </div>
     </div>
 
-    <!-- نافذة إدارة الأدمنية (5 أدمنية) -->
+    <!-- نافذة إدارة الأدمنية (الـ 5 أدمنية) -->
     <div id="admins-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
         <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-3xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
@@ -218,7 +220,7 @@
                 <button type="button" onclick="toggleAdminsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
             </div>
             <div class="space-y-4" id="admin-accounts-container">
-                <!-- تعبئة حسابات الأدمنية -->
+                <!-- تعبئة حسابات الأدمنية الـ 5 -->
             </div>
             <div class="text-left pt-4">
                 <button type="button" onclick="saveAdminAccounts()" class="px-6 py-2 gold-bg text-black font-bold rounded-xl text-xs cursor-pointer">
@@ -261,13 +263,18 @@
         let currentLoggedInAdmin = null;
 
         window.onload = async function() {
+            await loadDataFromServer();
+            document.getElementById('loading-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+        };
+
+        async function loadDataFromServer() {
             try {
                 const docRef = doc(db, "server", "data_server_630_v3");
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
                     systemData = docSnap.data();
-                    // تأكد من وجود الـ 5 أدمنية في حال البيانات القديمة مخزنة بـ 2 فقط
                     if(!systemData.admins || systemData.admins.length < 5) {
                         systemData.admins = [
                             { id: 1, code: "1G630", pass: "Tmime9090", name: "الأدمن العام (المدير)", role: "master", active: true, lastSeen: "لم يسجل دخول بعد" },
@@ -277,45 +284,45 @@
                             { id: 5, code: "5G630", pass: "admin5630", name: "الأدمن الخامس", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" }
                         ];
                     }
-                } else {
-                    systemData.members = [];
-                    for (let i = 1; i <= 75; i++) {
-                        systemData.members.push({
-                            id: i,
-                            code: i.toString(),
-                            pass: "m" + i + "630",
-                            gameEmail: '',
-                            gamePass: '',
-                            castleName: '',
-                            castleType: 'dual',
-                            infantryArmored: 0,
-                            archerArmored: 0,
-                            infantrySuper: 0,
-                            archerSuper: 0,
-                            meteor: 0,
-                            active: true,
-                            lastSeen: 'لم يتم التحديث'
-                        });
+                    if(!systemData.members || systemData.members.length === 0) {
+                        generateDefaultMembers();
                     }
+                } else {
+                    generateDefaultMembers();
                     await setDoc(docRef, systemData);
                 }
             } catch (e) {
                 console.error("خطأ بالاتصال، استخدام الذاكرة المحلية", e);
                 let local = JSON.parse(localStorage.getItem('fallback_server_630'));
-                if(local) systemData = local;
-                else {
-                    for (let i = 1; i <= 75; i++) {
-                        systemData.members.push({
-                            id: i, code: i.toString(), pass: "m" + i + "630", gameEmail: '', gamePass: '', castleName: '', castleType: 'dual',
-                            infantryArmored: 0, archerArmored: 0, infantrySuper: 0, archerSuper: 0, meteor: 0, active: true, lastSeen: 'لم يتم التحديث'
-                        });
-                    }
+                if(local) {
+                    systemData = local;
+                } else {
+                    generateDefaultMembers();
                 }
             }
+        }
 
-            document.getElementById('loading-screen').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('hidden');
-        };
+        function generateDefaultMembers() {
+            systemData.members = [];
+            for (let i = 1; i <= 75; i++) {
+                systemData.members.push({
+                    id: i,
+                    code: i.toString(),
+                    pass: "m" + i + "630",
+                    gameEmail: '',
+                    gamePass: '',
+                    castleName: '',
+                    castleType: 'dual',
+                    infantryArmored: 0,
+                    archerArmored: 0,
+                    infantrySuper: 0,
+                    archerSuper: 0,
+                    meteor: 0,
+                    active: true,
+                    lastSeen: 'لم يتم التحديث'
+                });
+            }
+        }
 
         window.handleLogin = function() {
             const codeInput = document.getElementById('login-code').value.trim();
@@ -323,7 +330,7 @@
             const errBox = document.getElementById('login-error');
             const nowTime = new Date().toLocaleString('ar-IQ');
 
-            // فحص حسابات الأدمنية
+            // فحص الأدمنية
             let foundAdmin = systemData.admins.find(a => a.code === codeInput && a.pass === passInput);
             if (foundAdmin) {
                 if (!foundAdmin.active) {
@@ -342,7 +349,7 @@
                     document.getElementById('admin-manage-btn').style.display = 'flex';
                 } else {
                     document.getElementById('admin-role-badge').innerText = foundAdmin.name;
-                    document.getElementById('admin-manage-btn').style.display = 'none'; // المساعدين لا يديرون صلاحيات الأدمنية
+                    document.getElementById('admin-manage-btn').style.display = 'none';
                 }
 
                 initAdminTable();
@@ -350,7 +357,7 @@
                 return;
             }
 
-            // فحص حسابات الأعضاء
+            // فحص الأعضاء
             let member = systemData.members.find(m => m.code === codeInput && m.pass === passInput);
             if (member) {
                 if (!member.active) {
@@ -369,7 +376,7 @@
                 document.getElementById('m-game-email').value = member.gameEmail || 'غير محدد من الأدمن';
                 document.getElementById('m-game-pass').value = member.gamePass || '';
                 
-                let typeTxt = '⚔️ 🏹 نوعين (مشاة ورماة)';
+                let typeTxt = '⚔️ 🏹 خطين (مشاة ورماة)';
                 if (member.castleType === 'infantry_only') typeTxt = '⚔️ مشاة فقط';
                 if (member.castleType === 'archer_only') typeTxt = '🏹 رماة فقط';
                 document.getElementById('m-castle-type-text').value = typeTxt;
@@ -447,17 +454,24 @@
             m.archerSuper = arcSup ? (Number(arcSup.value) || 0) : 0;
             m.lastSeen = new Date().toLocaleString('ar-IQ');
 
-            await saveSystemDataCloud();
-            alert('تم حفظ وتحديث بياناتك بنجاح في السيرفر السحابي 🚀');
+            let success = await saveSystemDataCloud();
+            if(success) {
+                alert('تم حفظ وتحديث بياناتك بنجاح في السيرفر السحابي 🚀');
+            } else {
+                alert('حدث خطأ بالاتصال، لكن تم الحفظ محلياً بنجاح!');
+            }
         };
 
         async function saveSystemDataCloud() {
             try {
                 const docRef = doc(db, "server", "data_server_630_v3");
                 await setDoc(docRef, systemData);
-            } catch (e) {
-                console.error(e);
                 localStorage.setItem('fallback_server_630', JSON.stringify(systemData));
+                return true;
+            } catch (e) {
+                console.error("خطأ بالحفظ السحابي:", e);
+                localStorage.setItem('fallback_server_630', JSON.stringify(systemData));
+                return false;
             }
         }
 
@@ -494,7 +508,7 @@
                         <input type="text" id="set-email-${index}" value="${m.gameEmail || ''}" placeholder="إيميل اللعبة" 
                             class="px-2 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white">
                         <select id="set-type-${index}" class="px-2 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs gold-text font-bold">
-                            <option value="dual" ${m.castleType==='dual'?'selected':''}>⚔️ 🏹 نوعين</option>
+                            <option value="dual" ${m.castleType==='dual'?'selected':''}>⚔️ 🏹 خطين</option>
                             <option value="infantry_only" ${m.castleType==='infantry_only'?'selected':''}>⚔️ مشاة فقط</option>
                             <option value="archer_only" ${m.castleType==='archer_only'?'selected':''}>🏹 رماة فقط</option>
                         </select>
@@ -576,6 +590,27 @@
             toggleAdminsModal();
         };
 
+        // زر الإصلاح التلقائي للمشاكل
+        window.runAutoRepair = async function() {
+            if(confirm('هل تريد تشغيل أداة الإصلاح التلقائي؟ سيتم تنشيط وإصلاح أي قاعدة بيانات تالفة أو مفقودة.')) {
+                if(!systemData.members || systemData.members.length < 75) {
+                    generateDefaultMembers();
+                }
+                if(!systemData.admins || systemData.admins.length < 5) {
+                    systemData.admins = [
+                        { id: 1, code: "1G630", pass: "Tmime9090", name: "الأدمن العام (المدير)", role: "master", active: true, lastSeen: "لم يسجل دخول بعد" },
+                        { id: 2, code: "2G630", pass: "admin630", name: "الأدمن الثاني", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" },
+                        { id: 3, code: "3G630", pass: "admin3630", name: "الأدمن الثالث", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" },
+                        { id: 4, code: "4G630", pass: "admin4630", name: "الأدمن الرابع", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" },
+                        { id: 5, code: "5G630", pass: "admin5630", name: "الأدمن الخامس", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" }
+                    ];
+                }
+                await saveSystemDataCloud();
+                initAdminTable();
+                alert('تمت عملية الإصلاح التلقائي بنجاح تام وتم استعادة النظام واستقرار السيرفر 🛠️✨');
+            }
+        };
+
         window.logout = function() {
             currentActiveMemberId = null;
             currentLoggedInAdmin = null;
@@ -595,7 +630,7 @@
                 const tr = document.createElement('tr');
                 tr.className = 'border-b border-gray-800/40 hover:bg-white/5 transition';
 
-                let typeLabel = '⚔️ 🏹 نوعين';
+                let typeLabel = '⚔️ 🏹 خطين';
                 if (m.castleType === 'infantry_only') typeLabel = '⚔️ مشاة فقط';
                 if (m.castleType === 'archer_only') typeLabel = '🏹 رماة فقط';
 
