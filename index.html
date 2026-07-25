@@ -41,7 +41,7 @@
         
         <div class="space-y-4">
             <div>
-                <input type="text" id="login-code" placeholder="كود العضو أو كود الأدمن" 
+                <input type="text" id="login-code" placeholder="كود الدخول (للعضو أو للأدمن)" 
                     class="w-full px-4 py-3 rounded-2xl bg-[#121212] border border-[#3f3f46] text-white text-center focus:outline-none focus:border-[#d4af37]">
             </div>
             <div>
@@ -63,7 +63,9 @@
         <header class="slate-card p-6 rounded-3xl flex justify-between items-center border gold-border">
             <div>
                 <h1 id="member-welcome-title" class="text-xl font-black gold-text">ملك من ملوك 630</h1>
-                <p class="text-xs text-gray-400">تحديث أعداد الجيوش والنيزك والرمز (محفوظ سحابياً)</p>
+                <p class="text-xs text-gray-400 flex items-center gap-1 mt-1">
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block animate-pulse"></i></span> متصل الآن
+                </p>
             </div>
             <button type="button" onclick="logout()" class="px-4 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-xl text-xs font-bold transition cursor-pointer">
                 تسجيل خروج 🚪
@@ -71,31 +73,26 @@
         </header>
 
         <div class="slate-card p-6 rounded-3xl border gold-border space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-[#121212] rounded-2xl border border-gray-800">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-[#121212] rounded-2xl border border-gray-800">
                 <div>
-                    <label class="block text-[11px] text-gray-400 mb-1">اسم القلعة (يحددها الأدمن)</label>
+                    <label class="block text-[11px] text-gray-400 mb-1">اسم القلعة</label>
                     <input type="text" id="m-castle-name" disabled 
                         class="w-full px-3 py-2 rounded-xl bg-[#1a1a20] border border-gray-800 text-sm text-gray-300 cursor-not-allowed">
                 </div>
                 <div>
-                    <label class="block text-[11px] text-gray-400 mb-1">إيميل القلعة (يحددها الأدمن)</label>
+                    <label class="block text-[11px] text-gray-400 mb-1">إيميل القلعة (للاطلاع فقط)</label>
                     <input type="text" id="m-game-email" disabled 
                         class="w-full px-3 py-2 rounded-xl bg-[#1a1a20] border border-gray-800 text-sm text-gray-300 cursor-not-allowed">
                 </div>
                 <div>
-                    <label class="block text-[11px] text-gray-400 mb-1">رمز القلعة (يمكنك تعديله)</label>
+                    <label class="block text-[11px] text-gray-400 mb-1">رمز القلعة (قابل للتعديل)</label>
                     <input type="text" id="m-game-pass" placeholder="رمز القلعة" 
                         class="w-full px-3 py-2 rounded-xl bg-[#1a1a20] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
                 </div>
-                <div>
-                    <label class="block text-[11px] text-gray-400 mb-1">نوع القلعة (يحدده الأدمن)</label>
-                    <input type="text" id="m-castle-type-text" disabled 
-                        class="w-full px-3 py-2 rounded-xl bg-[#1a1a20] border border-gray-800 text-sm gold-text font-bold cursor-not-allowed">
-                </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2 border-t border-gray-800" id="m-inputs-container">
-                <!-- حقول الجيوش القابلة للتحديث -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2 border-t border-gray-800" id="m-inputs-container">
+                <!-- حقول الجيوش -->
             </div>
 
             <div>
@@ -105,7 +102,7 @@
             </div>
 
             <div class="pt-4 border-t border-gray-800 flex justify-between items-center">
-                <span class="text-xs text-green-400 font-bold">🟢 متصل بقاعدة بيانات سيرفر قوقل السحابي</span>
+                <span class="text-xs text-green-400 font-bold">🟢 تم الاتصال بقاعدة البيانات بنجاح</span>
                 <button type="button" onclick="saveMemberDataCloud()" class="px-6 py-2.5 gold-bg text-black font-bold rounded-xl text-xs cursor-pointer shadow">
                     حفظ وتحديث بالسيرفر السحابي ☁️
                 </button>
@@ -139,7 +136,7 @@
             <button id="admin-manage-btn" type="button" onclick="toggleAdminsModal()" class="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl text-xs transition shadow cursor-pointer border border-gray-700 flex items-center gap-2">
                 🛡️ إدارة صلاحيات الأدمنية (5 أدمنية)
             </button>
-            <button type="button" onclick="runAutoRepair()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition shadow cursor-pointer flex items-center gap-2">
+            <button id="admin-repair-btn" type="button" onclick="runAutoRepair()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition shadow cursor-pointer flex items-center gap-2 hidden">
                 🛠️ إصلاح تلقائي للمشاكل (Repair)
             </button>
         </div>
@@ -187,7 +184,7 @@
                             <th class="p-3 text-center">المدرع (مشاة / رماة)</th>
                             <th class="p-3 text-center">الخارق (مشاة / رماة)</th>
                             <th class="p-3 text-center">✨ النيزك</th>
-                            <th class="p-3">آخر ظهور (التحديث)</th>
+                            <th class="p-3">آخر ظهور</th>
                             <th class="p-3 text-center">الحالة</th>
                         </tr>
                     </thead>
@@ -201,14 +198,14 @@
 
     <!-- نافذة إعدادات الأعضاء الشاملة -->
     <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-        <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-5xl max-h-[85vh] overflow-y-auto space-y-4">
+        <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-6xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="text-lg font-bold gold-text">إدارة حسابات، إيميلات وأسماء قلاع الـ 75</h3>
+                <h3 class="text-lg font-bold gold-text">إدارة حسابات، إيميلات وقلاع الأعضاء الـ 75</h3>
                 <button type="button" onclick="toggleSettingsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
             </div>
             <div id="settings-members-list" class="space-y-3"></div>
             <div class="text-left pt-4">
-                <button type="button" onclick="saveAllMembersSettings()" class="px-6 py-2.5 gold-bg text-black font-bold rounded-xl text-xs font-bold cursor-pointer shadow">
+                <button type="button" onclick="saveAllMembersSettings()" class="px-6 py-2.5 gold-bg text-black font-bold rounded-xl text-xs cursor-pointer shadow">
                     حفظ كل التعديلات سحابياً ☁️
                 </button>
             </div>
@@ -226,7 +223,7 @@
                 <!-- تعبئة حسابات الأدمنية الـ 5 -->
             </div>
             <div class="text-left pt-4">
-                <button type="button" onclick="saveAdminAccounts()" class="px-6 py-2.5 gold-bg text-black font-bold rounded-xl text-xs font-bold cursor-pointer shadow">
+                <button type="button" onclick="saveAdminAccounts()" class="px-6 py-2.5 gold-bg text-black font-bold rounded-xl text-xs cursor-pointer shadow">
                     حفظ إعدادات الأدمنية ☁️
                 </button>
             </div>
@@ -273,7 +270,7 @@
 
         async function loadDataFromServer() {
             try {
-                const docRef = doc(db, "server", "data_server_630_v3");
+                const docRef = doc(db, "server", "data_server_630_v4");
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
@@ -295,7 +292,7 @@
                     await setDoc(docRef, systemData);
                 }
             } catch (e) {
-                console.error("خطأ بالاتصال، استخدام الذاكرة المحلية", e);
+                console.error("خطأ بالاتصال بالسيرفر", e);
                 let local = JSON.parse(localStorage.getItem('fallback_server_630'));
                 if(local) {
                     systemData = local;
@@ -305,7 +302,6 @@
             }
         }
 
-        // دالة التحديث الداخلي الخاصة بالأدمن لجلب أحدث البيانات من السيرفر مباشرة
         window.refreshAdminData = async function() {
             await loadDataFromServer();
             initAdminTable();
@@ -358,9 +354,11 @@
                 if (foundAdmin.role === 'master') {
                     document.getElementById('admin-role-badge').innerText = "الأدمن العام (المدير الرئيسي)";
                     document.getElementById('admin-manage-btn').style.display = 'flex';
+                    document.getElementById('admin-repair-btn').style.display = 'flex';
                 } else {
                     document.getElementById('admin-role-badge').innerText = foundAdmin.name;
                     document.getElementById('admin-manage-btn').style.display = 'none';
+                    document.getElementById('admin-repair-btn').style.display = 'none';
                 }
 
                 initAdminTable();
@@ -381,17 +379,11 @@
 
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('member-dashboard').classList.remove('hidden');
-                document.getElementById('member-welcome-title').innerText = `ملك من ملوك 630 - العضو رقم ${member.id}`;
+                document.getElementById('member-welcome-title').innerText = `ملك من ملوك 630 - العضو رقم ${member.id} (${member.castleName || 'بدون اسم'})`;
                 
-                document.getElementById('m-castle-name').value = member.castleName || 'غير محدد من الأدمن';
-                document.getElementById('m-game-email').value = member.gameEmail || 'غير محدد من الأدمن';
+                document.getElementById('m-castle-name').value = member.castleName || 'غير محدد';
+                document.getElementById('m-game-email').value = member.gameEmail || 'غير محدد';
                 document.getElementById('m-game-pass').value = member.gamePass || '';
-                
-                let typeTxt = '⚔️ 🏹 خطين (مشاة ورماة)';
-                if (member.castleType === 'infantry_only') typeTxt = '⚔️ مشاة فقط';
-                if (member.castleType === 'archer_only') typeTxt = '🏹 رماة فقط';
-                document.getElementById('m-castle-type-text').value = typeTxt;
-
                 document.getElementById('m-meteor').value = member.meteor || 0;
                 
                 renderMemberInputs(member);
@@ -407,43 +399,43 @@
 
             if (m.castleType === 'infantry_only') {
                 container.innerHTML = `
-                    <div>
+                    <div class="p-3 bg-[#121212] rounded-2xl border border-gray-800">
                         <label class="block text-xs text-gray-400 mb-1">مشاة مدرع</label>
-                        <input type="number" id="m-inf-arm" value="${m.infantryArmored || 0}" class="w-full px-4 py-2.5 rounded-xl bg-[#121212] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
+                        <input type="number" id="m-inf-arm" value="${m.infantryArmored || 0}" class="w-full px-3 py-2 rounded-xl bg-[#1a1a20] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
                     </div>
-                    <div>
+                    <div class="p-3 bg-[#121212] rounded-2xl border border-gray-800">
                         <label class="block text-xs text-gray-400 mb-1">مشاة خارق</label>
-                        <input type="number" id="m-inf-sup" value="${m.infantrySuper || 0}" class="w-full px-4 py-2.5 rounded-xl bg-[#121212] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
+                        <input type="number" id="m-inf-sup" value="${m.infantrySuper || 0}" class="w-full px-3 py-2 rounded-xl bg-[#1a1a20] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
                     </div>
                 `;
             } else if (m.castleType === 'archer_only') {
                 container.innerHTML = `
-                    <div>
+                    <div class="p-3 bg-[#121212] rounded-2xl border border-gray-800">
                         <label class="block text-xs text-gray-400 mb-1">رماة مدرع</label>
-                        <input type="number" id="m-arc-arm" value="${m.archerArmored || 0}" class="w-full px-4 py-2.5 rounded-xl bg-[#121212] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
+                        <input type="number" id="m-arc-arm" value="${m.archerArmored || 0}" class="w-full px-3 py-2 rounded-xl bg-[#1a1a20] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
                     </div>
-                    <div>
+                    <div class="p-3 bg-[#121212] rounded-2xl border border-gray-800">
                         <label class="block text-xs text-gray-400 mb-1">رماة خارق</label>
-                        <input type="number" id="m-arc-sup" value="${m.archerSuper || 0}" class="w-full px-4 py-2.5 rounded-xl bg-[#121212] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
+                        <input type="number" id="m-arc-sup" value="${m.archerSuper || 0}" class="w-full px-3 py-2 rounded-xl bg-[#1a1a20] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
                     </div>
                 `;
             } else {
                 container.innerHTML = `
-                    <div>
+                    <div class="p-3 bg-[#121212] rounded-2xl border border-gray-800">
                         <label class="block text-xs text-gray-400 mb-1">مشاة مدرع</label>
-                        <input type="number" id="m-inf-arm" value="${m.infantryArmored || 0}" class="w-full px-4 py-2.5 rounded-xl bg-[#121212] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
+                        <input type="number" id="m-inf-arm" value="${m.infantryArmored || 0}" class="w-full px-3 py-2 rounded-xl bg-[#1a1a20] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
                     </div>
-                    <div>
+                    <div class="p-3 bg-[#121212] rounded-2xl border border-gray-800">
                         <label class="block text-xs text-gray-400 mb-1">رماة مدرع</label>
-                        <input type="number" id="m-arc-arm" value="${m.archerArmored || 0}" class="w-full px-4 py-2.5 rounded-xl bg-[#121212] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
+                        <input type="number" id="m-arc-arm" value="${m.archerArmored || 0}" class="w-full px-3 py-2 rounded-xl bg-[#1a1a20] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
                     </div>
-                    <div>
+                    <div class="p-3 bg-[#121212] rounded-2xl border border-gray-800">
                         <label class="block text-xs text-gray-400 mb-1">مشاة خارق</label>
-                        <input type="number" id="m-inf-sup" value="${m.infantrySuper || 0}" class="w-full px-4 py-2.5 rounded-xl bg-[#121212] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
+                        <input type="number" id="m-inf-sup" value="${m.infantrySuper || 0}" class="w-full px-3 py-2 rounded-xl bg-[#1a1a20] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
                     </div>
-                    <div>
+                    <div class="p-3 bg-[#121212] rounded-2xl border border-gray-800">
                         <label class="block text-xs text-gray-400 mb-1">رماة خارق</label>
-                        <input type="number" id="m-arc-sup" value="${m.archerSuper || 0}" class="w-full px-4 py-2.5 rounded-xl bg-[#121212] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
+                        <input type="number" id="m-arc-sup" value="${m.archerSuper || 0}" class="w-full px-3 py-2 rounded-xl bg-[#1a1a20] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
                     </div>
                 `;
             }
@@ -469,10 +461,10 @@
 
         async function saveSystemDataCloud() {
             try {
-                const docRef = doc(db, "server", "data_server_630_v3");
+                const docRef = doc(db, "server", "data_server_630_v4");
                 await setDoc(docRef, systemData);
             } catch (e) {
-                console.error("فشل الحفظ السحابي، تم الحفظ محلياً", e);
+                console.error("فشل الحفظ السحابي", e);
                 localStorage.setItem('fallback_server_630', JSON.stringify(systemData));
             }
         }
@@ -508,7 +500,10 @@
                     <td class="p-3 text-center text-xs">${m.infantryArmored || 0} / ${m.archerArmored || 0}</td>
                     <td class="p-3 text-center text-xs">${m.infantrySuper || 0} / ${m.archerSuper || 0}</td>
                     <td class="p-3 text-center gold-text font-bold text-xs">${m.meteor || 0}</td>
-                    <td class="p-3 text-xs text-gray-400">${m.lastSeen}</td>
+                    <td class="p-3 text-xs text-gray-400 flex items-center gap-1.5 pt-4">
+                        <span class="w-2 h-2 rounded-full ${m.active ? 'bg-green-500' : 'bg-red-500'} inline-block"></span>
+                        ${m.lastSeen}
+                    </td>
                     <td class="p-3 text-center">
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${m.active ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}">
                             ${m.active ? 'نشط' : 'موقوف'}
@@ -560,10 +555,10 @@
 
                 systemData.members.forEach((m, idx) => {
                     let div = document.createElement('div');
-                    div.className = "p-4 bg-[#121212] rounded-2xl border border-gray-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-center";
+                    div.className = "p-4 bg-[#121212] rounded-2xl border border-gray-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-center";
                     div.innerHTML = `
                         <div>
-                            <label class="block text-[10px] text-gray-400 mb-1">عضو #${m.id} (الكود: ${m.code})</label>
+                            <label class="block text-[10px] text-gray-400 mb-1">عضو #${m.id} (اسم القلعة)</label>
                             <input type="text" id="set-name-${idx}" value="${m.castleName || ''}" placeholder="اسم القلعة" class="w-full px-3 py-1.5 rounded-xl bg-[#1a1a20] border border-gray-700 text-xs text-white">
                         </div>
                         <div>
@@ -571,7 +566,11 @@
                             <input type="text" id="set-email-${idx}" value="${m.gameEmail || ''}" placeholder="الإيميل" class="w-full px-3 py-1.5 rounded-xl bg-[#1a1a20] border border-gray-700 text-xs text-white">
                         </div>
                         <div>
-                            <label class="block text-[10px] text-gray-400 mb-1">كلمة مرور العضو</label>
+                            <label class="block text-[10px] text-gray-400 mb-1">كود الدخول (للنظام)</label>
+                            <input type="text" id="set-code-${idx}" value="${m.code || ''}" placeholder="كود الدخول" class="w-full px-3 py-1.5 rounded-xl bg-[#1a1a20] border border-gray-700 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-1">كلمة المرور (للنظام)</label>
                             <input type="text" id="set-pass-${idx}" value="${m.pass || ''}" placeholder="كلمة المرور" class="w-full px-3 py-1.5 rounded-xl bg-[#1a1a20] border border-gray-700 text-xs text-white">
                         </div>
                         <div>
@@ -589,12 +588,6 @@
                                 <option value="false" ${!m.active ? 'selected' : ''}>موقوف</option>
                             </select>
                         </div>
-                        <div class="text-center">
-                            <span class="text-[10px] text-gray-500 block">إعادة تعيين</span>
-                            <button type="button" onclick="resetMemberDefault(${m.id})" class="mt-1 px-3 py-1 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white rounded-lg text-[10px] font-bold transition cursor-pointer">
-                                تصفير الجيوش
-                            </button>
-                        </div>
                     `;
                     container.appendChild(div);
                 });
@@ -605,12 +598,14 @@
             systemData.members.forEach((m, idx) => {
                 const nameInput = document.getElementById(`set-name-${idx}`);
                 const emailInput = document.getElementById(`set-email-${idx}`);
+                const codeInput = document.getElementById(`set-code-${idx}`);
                 const passInput = document.getElementById(`set-pass-${idx}`);
                 const typeInput = document.getElementById(`set-type-${idx}`);
                 const activeInput = document.getElementById(`set-active-${idx}`);
 
                 if(nameInput) m.castleName = nameInput.value.trim();
                 if(emailInput) m.gameEmail = emailInput.value.trim();
+                if(codeInput) m.code = codeInput.value.trim();
                 if(passInput) m.pass = passInput.value.trim();
                 if(typeInput) m.castleType = typeInput.value;
                 if(activeInput) m.active = (activeInput.value === 'true');
@@ -621,22 +616,6 @@
             initAdminTable();
             calculateAdminTotals();
             alert("تم حفظ إعدادات وقلاع الأعضاء بنجاح في السيرفر السحابي! ☁️");
-        };
-
-        window.resetMemberDefault = async function(memberId) {
-            if(!confirm(`هل أنت متأكد من تصفير جيوش ونيزك العضو رقم ${memberId}؟`)) return;
-            let m = systemData.members.find(x => x.id === memberId);
-            if(m) {
-                m.infantryArmored = 0;
-                m.archerArmored = 0;
-                m.infantrySuper = 0;
-                m.archerSuper = 0;
-                m.meteor = 0;
-                await saveSystemDataCloud();
-                initAdminTable();
-                calculateAdminTotals();
-                alert(`تم تصفير بيانات العضو ${memberId} بنجاح.`);
-            }
         };
 
         window.toggleAdminsModal = function() {
@@ -699,7 +678,7 @@
         };
 
         window.runAutoRepair = async function() {
-            if(!confirm("هل تريد تشغيل نظام الإصلاح التلقائي لقاعدة البيانات وتحديث الروابط والمصفوفات؟")) return;
+            if(!confirm("هل تريد تشغيل نظام الإصلاح التلقائي لقاعدة البيانات؟")) return;
             
             if(!systemData.members || systemData.members.length === 0) {
                 generateDefaultMembers();
@@ -713,16 +692,6 @@
                     if (m.active === undefined) m.active = true;
                     if (!m.castleType) m.castleType = 'dual';
                 });
-            }
-
-            if(!systemData.admins || systemData.admins.length < 5) {
-                systemData.admins = [
-                    { id: 1, code: "1G630", pass: "Tmime9090", name: "الأدمن العام (المدير)", role: "master", active: true, lastSeen: "لم يسجل دخول بعد" },
-                    { id: 2, code: "2G630", pass: "admin630", name: "الأدمن الثاني", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" },
-                    { id: 3, code: "3G630", pass: "admin3630", name: "الأدمن الثالث", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" },
-                    { id: 4, code: "4G630", pass: "admin4630", name: "الأدمن الرابع", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" },
-                    { id: 5, code: "5G630", pass: "admin5630", name: "الأدمن الخامس", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" }
-                ];
             }
 
             await saveSystemDataCloud();
