@@ -63,7 +63,7 @@
         <header class="slate-card p-6 rounded-3xl flex justify-between items-center border gold-border">
             <div>
                 <h1 id="member-welcome-title" class="text-xl font-black gold-text">ملك من ملوك 630</h1>
-                <p class="text-xs text-gray-400">تحديث أعداد الجيوش والنيزك (محفوظ سحابياً)</p>
+                <p class="text-xs text-gray-400">تحديث أعداد الجيوش والنيزك والرمز (محفوظ سحابياً)</p>
             </div>
             <button type="button" onclick="logout()" class="px-4 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-xl text-xs font-bold transition cursor-pointer">
                 تسجيل خروج 🚪
@@ -71,8 +71,8 @@
         </header>
 
         <div class="slate-card p-6 rounded-3xl border gold-border space-y-6">
-            <!-- خانات ثابتة للعضو مقفولة يحددها الأدمن -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-[#121212] rounded-2xl border border-gray-800">
+            <!-- خانات ثابتة مقفولة يحددها الأدمن + خانة رمز القلعة المتاحة للتعديل من العضو -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-[#121212] rounded-2xl border border-gray-800">
                 <div>
                     <label class="block text-[11px] text-gray-400 mb-1">اسم القلعة (يحددها الأدمن)</label>
                     <input type="text" id="m-castle-name" disabled 
@@ -84,6 +84,11 @@
                         class="w-full px-3 py-2 rounded-xl bg-[#1a1a20] border border-gray-800 text-sm text-gray-300 cursor-not-allowed">
                 </div>
                 <div>
+                    <label class="block text-[11px] text-gray-400 mb-1">رمز القلعة (يمكنك تعديله)</label>
+                    <input type="text" id="m-game-pass" placeholder="رمز القلعة" 
+                        class="w-full px-3 py-2 rounded-xl bg-[#1a1a20] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
+                </div>
+                <div>
                     <label class="block text-[11px] text-gray-400 mb-1">نوع القلعة (يحدده الأدمن)</label>
                     <input type="text" id="m-castle-type-text" disabled 
                         class="w-full px-3 py-2 rounded-xl bg-[#1a1a20] border border-gray-800 text-sm gold-text font-bold cursor-not-allowed">
@@ -91,7 +96,7 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2 border-t border-gray-800" id="m-inputs-container">
-                <!-- حقول الجيوش القابلة للتحديث من قبل العضو -->
+                <!-- حقول الجيوش القابلة للتحديث -->
             </div>
 
             <div>
@@ -130,7 +135,7 @@
                 ⚙️ إدارة حسابات، إيميلات وأنواع قلاع الأعضاء
             </button>
             <button id="admin-manage-btn" type="button" onclick="toggleAdminsModal()" class="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl text-xs transition shadow cursor-pointer border border-gray-700 flex items-center gap-2">
-                🛡️ إدارة صلاحيات الأدمنية
+                🛡️ إدارة صلاحيات الأدمنية (5 أدمنية)
             </button>
         </div>
 
@@ -205,11 +210,11 @@
         </div>
     </div>
 
-    <!-- نافذة إدارة الأدمنية (مخصوص للأدمن العام) -->
+    <!-- نافذة إدارة الأدمنية (5 أدمنية) -->
     <div id="admins-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
         <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-3xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="text-lg font-bold gold-text">إدارة صلاحيات وتعديل حسابات الأدمنية</h3>
+                <h3 class="text-lg font-bold gold-text">إدارة صلاحيات وتعديل حسابات الأدمنية الـ 5</h3>
                 <button type="button" onclick="toggleAdminsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
             </div>
             <div class="space-y-4" id="admin-accounts-container">
@@ -245,7 +250,10 @@
             members: [],
             admins: [
                 { id: 1, code: "1G630", pass: "Tmime9090", name: "الأدمن العام (المدير)", role: "master", active: true, lastSeen: "لم يسجل دخول بعد" },
-                { id: 2, code: "2G630", pass: "admin630", name: "الأدمن الثاني", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" }
+                { id: 2, code: "2G630", pass: "admin630", name: "الأدمن الثاني", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" },
+                { id: 3, code: "3G630", pass: "admin3630", name: "الأدمن الثالث", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" },
+                { id: 4, code: "4G630", pass: "admin4630", name: "الأدمن الرابع", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" },
+                { id: 5, code: "5G630", pass: "admin5630", name: "الأدمن الخامس", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" }
             ]
         };
 
@@ -259,6 +267,16 @@
 
                 if (docSnap.exists()) {
                     systemData = docSnap.data();
+                    // تأكد من وجود الـ 5 أدمنية في حال البيانات القديمة مخزنة بـ 2 فقط
+                    if(!systemData.admins || systemData.admins.length < 5) {
+                        systemData.admins = [
+                            { id: 1, code: "1G630", pass: "Tmime9090", name: "الأدمن العام (المدير)", role: "master", active: true, lastSeen: "لم يسجل دخول بعد" },
+                            { id: 2, code: "2G630", pass: "admin630", name: "الأدمن الثاني", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" },
+                            { id: 3, code: "3G630", pass: "admin3630", name: "الأدمن الثالث", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" },
+                            { id: 4, code: "4G630", pass: "admin4630", name: "الأدمن الرابع", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" },
+                            { id: 5, code: "5G630", pass: "admin5630", name: "الأدمن الخامس", role: "sub", active: true, lastSeen: "لم يسجل دخول بعد" }
+                        ];
+                    }
                 } else {
                     systemData.members = [];
                     for (let i = 1; i <= 75; i++) {
@@ -269,7 +287,7 @@
                             gameEmail: '',
                             gamePass: '',
                             castleName: '',
-                            castleType: 'dual', // dual, infantry_only, archer_only
+                            castleType: 'dual',
                             infantryArmored: 0,
                             archerArmored: 0,
                             infantrySuper: 0,
@@ -323,8 +341,8 @@
                     document.getElementById('admin-role-badge').innerText = "الأدمن العام (المدير الرئيسي)";
                     document.getElementById('admin-manage-btn').style.display = 'flex';
                 } else {
-                    document.getElementById('admin-role-badge').innerText = "الأدمن الثاني";
-                    document.getElementById('admin-manage-btn').style.display = 'none'; // الأدمن الثاني لا يدير حسابات الأدمنية
+                    document.getElementById('admin-role-badge').innerText = foundAdmin.name;
+                    document.getElementById('admin-manage-btn').style.display = 'none'; // المساعدين لا يديرون صلاحيات الأدمنية
                 }
 
                 initAdminTable();
@@ -349,6 +367,7 @@
                 
                 document.getElementById('m-castle-name').value = member.castleName || 'غير محدد من الأدمن';
                 document.getElementById('m-game-email').value = member.gameEmail || 'غير محدد من الأدمن';
+                document.getElementById('m-game-pass').value = member.gamePass || '';
                 
                 let typeTxt = '⚔️ 🏹 نوعين (مشاة ورماة)';
                 if (member.castleType === 'infantry_only') typeTxt = '⚔️ مشاة فقط';
@@ -415,6 +434,7 @@
             if (!m) return;
 
             m.meteor = Number(document.getElementById('m-meteor').value) || 0;
+            m.gamePass = document.getElementById('m-game-pass').value.trim();
 
             let infArm = document.getElementById('m-inf-arm');
             let arcArm = document.getElementById('m-arc-arm');
@@ -479,7 +499,7 @@
                             <option value="archer_only" ${m.castleType==='archer_only'?'selected':''}>🏹 رماة فقط</option>
                         </select>
                         <div class="flex items-center justify-center gap-2">
-                            <span class="text-[10px] text-gray-400">حالة الحساب:</span>
+                            <span class="text-[10px] text-gray-400">حالة:</span>
                             <input type="checkbox" id="set-active-${index}" ${m.active !== false ? 'checked' : ''} class="w-4 h-4 accent-yellow-500 cursor-pointer">
                         </div>
                     </div>
@@ -587,7 +607,7 @@
                     <td class="p-3">
                         <div class="font-bold text-white text-sm">عضو رقم ${m.id} (كود: ${m.code})</div>
                         <div class="text-xs gold-text font-bold">${m.castleName || 'بدون اسم قلعة'}</div>
-                        <div class="text-[10px] text-gray-400">إيميل: ${m.gameEmail || 'غير محدد'}</div>
+                        <div class="text-[10px] text-gray-400">إيميل: ${m.gameEmail || 'غير محدد'} | رمز: ${m.gamePass || 'غير محدد'}</div>
                     </td>
                     <td class="p-3 text-center text-xs text-gray-300 font-bold">${typeLabel}</td>
                     <td class="p-3 text-xs text-gray-300">مشاة: ${m.infantryArmored || 0} | رماة: ${m.archerArmored || 0}</td>
