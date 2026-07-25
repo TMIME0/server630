@@ -55,7 +55,7 @@
         <!-- نموذج دخول العضو المنفصل -->
         <div id="member-login-box" class="hidden mt-4 space-y-3 p-4 bg-[#121212] rounded-2xl border border-gray-800 text-right">
             <h3 class="text-sm font-bold text-white mb-2">دخول قلعة العضو</h3>
-            <input type="text" id="member-email-input" placeholder="ايميل موقع الدخول" 
+            <input type="text" id="member-email-input" placeholder="يوزر موقع العضو (مثال: member1)" 
                 class="w-full px-3 py-2 rounded-xl bg-[#1e1e24] border border-gray-700 text-xs text-white focus:outline-none focus:border-[#d4af37]">
             <input type="password" id="member-pass-input" placeholder="رمز موقع الدخول الخاص" 
                 class="w-full px-3 py-2 rounded-xl bg-[#1e1e24] border border-gray-700 text-xs text-white focus:outline-none focus:border-[#d4af37]">
@@ -195,25 +195,28 @@
         let currentAdmin = null;
         let loggedInMemberId = null;
 
-        // تنظيف وحذف أي بيانات قديمة مخزنة مسبقاً وجعل كل الخانات فارغة ونظيفة تماماً
-        let membersData = [];
-        for (let i = 1; i <= 75; i++) {
-            membersData.push({
-                id: i,
-                castleName: '',
-                castleType: 'dual',
-                email: '',
-                pass: '',
-                gameEmail: '',
-                gamePass: '',
-                infantryArmored: 0,
-                archerArmored: 0,
-                infantrySuper: 0,
-                archerSuper: 0,
-                meteor: 0
-            });
+        // تهيئة البيانات لأول مرة فقط إذا كانت فارغة تماماً، حتى لا تحذف تعديلاتك أبداً عند التحديث
+        let membersData = JSON.parse(localStorage.getItem('alliance_members'));
+        if (!membersData || membersData.length === 0) {
+            membersData = [];
+            for (let i = 1; i <= 75; i++) {
+                membersData.push({
+                    id: i,
+                    castleName: '',
+                    castleType: 'dual',
+                    email: '',
+                    pass: '',
+                    gameEmail: '',
+                    gamePass: '',
+                    infantryArmored: 0,
+                    archerArmored: 0,
+                    infantrySuper: 0,
+                    archerSuper: 0,
+                    meteor: 0
+                });
+            }
+            localStorage.setItem('alliance_members', JSON.stringify(membersData));
         }
-        localStorage.setItem('alliance_members', JSON.stringify(membersData));
 
         function handleLogin() {
             const code = document.getElementById('login-code').value.trim();
@@ -265,11 +268,11 @@
             const welcomeMsg = document.getElementById('welcome-msg');
 
             if (!mEmail || !mPass) {
-                alert('يرجى إدخال الإيميل والرمز أولاً!');
+                alert('يرجى إدخال يوزر الموقع والرمز أولاً!');
                 return;
             }
 
-            const member = membersData.find(m => m.email.trim().toLowerCase() === mEmail.toLowerCase() && m.pass.trim() === mPass);
+            const member = membersData.find(m => m.email && m.email.trim().toLowerCase() === mEmail.toLowerCase() && m.pass.trim() === mPass);
 
             if (member) {
                 currentAdmin = null;
@@ -289,7 +292,7 @@
                     initMembersTable();
                 }, 1000);
             } else {
-                alert('الايميل أو رمز الموقع غير صحيح! تأكد من إدخال البيانات المسجلة من قبل الأدمن العام.');
+                alert('يوزر الموقع أو الرمز غير صحيح! تأكد من البيانات المسجلة من قبل الأدمن العام.');
             }
         }
 
@@ -317,9 +320,9 @@
                 container.innerHTML += `
                     <div class="grid grid-cols-1 md:grid-cols-5 gap-2 p-3 bg-[#121212] rounded-xl border border-gray-800 items-center">
                         <span class="text-xs font-bold text-white">عضو رقم ${m.id}</span>
-                        <input type="text" id="set-email-${index}" value="${m.email || ''}" placeholder="يوزر الموقع (فارغ)" 
+                        <input type="text" id="set-email-${index}" value="${m.email || ''}" placeholder="يوزر الموقع (مثال: member1)" 
                             class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#d4af37]">
-                        <input type="text" id="set-pass-${index}" value="${m.pass || ''}" placeholder="رمز الموقع (فارغ)" 
+                        <input type="text" id="set-pass-${index}" value="${m.pass || ''}" placeholder="رمز الموقع" 
                             class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#d4af37]">
                         <input type="text" id="set-gameemail-${index}" value="${m.gameEmail || ''}" placeholder="ايميل اللعبة" 
                             class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#d4af37]">
