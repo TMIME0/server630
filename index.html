@@ -55,7 +55,7 @@
         <!-- نموذج دخول العضو المنفصل -->
         <div id="member-login-box" class="hidden mt-4 space-y-3 p-4 bg-[#121212] rounded-2xl border border-gray-800 text-right">
             <h3 class="text-sm font-bold text-white mb-2">دخول قلعة العضو</h3>
-            <input type="text" id="member-email-input" placeholder="ايميل موقع الدخول (مثال: member1@alliance.com)" 
+            <input type="text" id="member-email-input" placeholder="ايميل موقع الدخول" 
                 class="w-full px-3 py-2 rounded-xl bg-[#1e1e24] border border-gray-700 text-xs text-white focus:outline-none focus:border-[#d4af37]">
             <input type="password" id="member-pass-input" placeholder="رمز موقع الدخول الخاص" 
                 class="w-full px-3 py-2 rounded-xl bg-[#1e1e24] border border-gray-700 text-xs text-white focus:outline-none focus:border-[#d4af37]">
@@ -87,13 +87,13 @@
             </div>
         </header>
 
-        <!-- زر إعدادات الأعضاء والأدمنية الأربعة (يظهر للأدمن العام فقط) -->
+        <!-- زر إعدادات الأعضاء والأدمنية الأربعة -->
         <div id="master-admin-settings-container" class="hidden flex flex-wrap gap-3">
             <button type="button" onclick="toggleSettingsModal()" class="px-5 py-2.5 gold-bg text-black font-bold rounded-xl text-xs hover:opacity-90 transition shadow cursor-pointer flex items-center gap-2">
-                ⚙️ إدارة وتعديل يوزرات ورموز وحسابات اللعبة للأعضاء (للأدمن العام فقط)
+                ⚙️ إدارة وتعديل يوزرات ورموز وحسابات اللعبة للأعضاء
             </button>
             <button type="button" onclick="toggleAdminsModal()" class="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl text-xs transition shadow cursor-pointer border border-gray-700 flex items-center gap-2">
-                🛡️ إدارة وتشغيل وإيقاف وإخفاء بيانات الأدمنية الأربعة
+                🛡️ إدارة وتشغيل وإيقاف وإخفاء بيانات الأدمنية
             </button>
         </div>
 
@@ -136,7 +136,7 @@
                     <thead>
                         <tr class="border-b border-gray-800 text-gray-400 text-sm">
                             <th class="p-3">العضو / القلعة والبيانات</th>
-                            <th class="p-3 text-center">نوع القلعة (محدد: مشاة أو رماة)</th>
+                            <th class="p-3 text-center">نوع القلعة</th>
                             <th class="p-3">مدرع (مشاة / رماة)</th>
                             <th class="p-3">خارق (مشاة / رماة)</th>
                             <th class="p-3">✨ بلور النيزك</th>
@@ -144,24 +144,21 @@
                         </tr>
                     </thead>
                     <tbody id="members-table-body">
-                        <!-- يتم تعبئتها ديناميكياً -->
+                        <!-- تعبئة ديناميكية -->
                     </tbody>
                 </table>
             </div>
         </section>
     </div>
 
-    <!-- نافذة إعدادات قلاع الأعضاء (للأدمن العام فقط) -->
+    <!-- نافذة إعدادات الأعضاء -->
     <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
         <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-4xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
                 <h3 class="text-lg font-bold gold-text">إدارة وتعديل يوزرات ورموز وحسابات اللعبة للأعضاء</h3>
                 <button type="button" onclick="toggleSettingsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
             </div>
-            <p class="text-xs text-gray-400">تعديل بيانات الدخول وإيميلات/رموز حسابات اللعبة لكل عضو:</p>
-            
             <div id="settings-members-list" class="space-y-3"></div>
-            
             <div class="text-left pt-4">
                 <button type="button" onclick="saveAllMembersChanges()" class="px-6 py-2 gold-bg text-black font-bold rounded-xl text-xs cursor-pointer">
                     حفظ التعديلات العامة
@@ -170,17 +167,14 @@
         </div>
     </div>
 
-    <!-- نافذة إدارة الأدمنية الأربعة وتفعيلهم وإخفاء البيانات (للأدمن العام فقط) -->
+    <!-- نافذة إدارة الأدمنية -->
     <div id="admins-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
         <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-3xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="text-lg font-bold gold-text">إدارة تشغيل وإيقاف وإخفاء بيانات الأدمنية الأربعة</h3>
+                <h3 class="text-lg font-bold gold-text">إدارة الأدمنية</h3>
                 <button type="button" onclick="toggleAdminsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
             </div>
-            <p class="text-xs text-gray-400">تفعيل/إيقاف الحساب أو إخفاء بيانات معينة عن كل أدمن فرعي:</p>
-            
             <div id="admins-settings-list" class="space-y-4"></div>
-            
             <div class="text-left pt-4">
                 <button type="button" onclick="saveAdminsChanges()" class="px-6 py-2 gold-bg text-black font-bold rounded-xl text-xs cursor-pointer">
                     حفظ إعدادات الأدمنية
@@ -201,26 +195,25 @@
         let currentAdmin = null;
         let loggedInMemberId = null;
 
-        let membersData = JSON.parse(localStorage.getItem('alliance_members')) || [];
-        if (membersData.length === 0) {
-            for (let i = 1; i <= 75; i++) {
-                membersData.push({
-                    id: i,
-                    castleName: i === 1 ? 'قلعة سفاح' : '',
-                    castleType: 'infantry_only', // خيارات منفصلة: 'infantry_only' (مشاة فقط) أو 'archer_only' (رماة فقط) أو 'dual' (نوعين)
-                    email: `member${i}@alliance.com`,
-                    pass: `pass${i}`,
-                    gameEmail: `game${i}@game.com`,
-                    gamePass: `gpass${i}`,
-                    infantryArmored: 0,
-                    archerArmored: 0,
-                    infantrySuper: 0,
-                    archerSuper: 0,
-                    meteor: 0
-                });
-            }
-            localStorage.setItem('alliance_members', JSON.stringify(membersData));
+        // تنظيف وحذف أي بيانات قديمة مخزنة مسبقاً وجعل كل الخانات فارغة ونظيفة تماماً
+        let membersData = [];
+        for (let i = 1; i <= 75; i++) {
+            membersData.push({
+                id: i,
+                castleName: '',
+                castleType: 'dual',
+                email: '',
+                pass: '',
+                gameEmail: '',
+                gamePass: '',
+                infantryArmored: 0,
+                archerArmored: 0,
+                infantrySuper: 0,
+                archerSuper: 0,
+                meteor: 0
+            });
         }
+        localStorage.setItem('alliance_members', JSON.stringify(membersData));
 
         function handleLogin() {
             const code = document.getElementById('login-code').value.trim();
@@ -254,6 +247,7 @@
                     }
 
                     initMembersTable();
+                    calculateTotals();
                 }, 1000);
             } else {
                 alert('كود أو رمز الموقع للأدمن غير صحيح!');
@@ -266,11 +260,16 @@
         }
 
         function handleMemberLogin() {
-            const mEmail = document.getElementById('member-email-input').value.trim().toLowerCase();
+            const mEmail = document.getElementById('member-email-input').value.trim();
             const mPass = document.getElementById('member-pass-input').value.trim();
             const welcomeMsg = document.getElementById('welcome-msg');
 
-            const member = membersData.find(m => m.email.toLowerCase() === mEmail && m.pass === mPass);
+            if (!mEmail || !mPass) {
+                alert('يرجى إدخال الإيميل والرمز أولاً!');
+                return;
+            }
+
+            const member = membersData.find(m => m.email.trim().toLowerCase() === mEmail.toLowerCase() && m.pass.trim() === mPass);
 
             if (member) {
                 currentAdmin = null;
@@ -290,7 +289,7 @@
                     initMembersTable();
                 }, 1000);
             } else {
-                alert('الايميل أو رمز الموقع غير صحيح!');
+                alert('الايميل أو رمز الموقع غير صحيح! تأكد من إدخال البيانات المسجلة من قبل الأدمن العام.');
             }
         }
 
@@ -318,9 +317,9 @@
                 container.innerHTML += `
                     <div class="grid grid-cols-1 md:grid-cols-5 gap-2 p-3 bg-[#121212] rounded-xl border border-gray-800 items-center">
                         <span class="text-xs font-bold text-white">عضو رقم ${m.id}</span>
-                        <input type="text" id="set-email-${index}" value="${m.email}" placeholder="يوزر الموقع" 
+                        <input type="text" id="set-email-${index}" value="${m.email || ''}" placeholder="يوزر الموقع (فارغ)" 
                             class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#d4af37]">
-                        <input type="text" id="set-pass-${index}" value="${m.pass}" placeholder="رمز الموقع" 
+                        <input type="text" id="set-pass-${index}" value="${m.pass || ''}" placeholder="رمز الموقع (فارغ)" 
                             class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#d4af37]">
                         <input type="text" id="set-gameemail-${index}" value="${m.gameEmail || ''}" placeholder="ايميل اللعبة" 
                             class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#d4af37]">
@@ -354,15 +353,15 @@
                             <div class="flex flex-wrap items-center gap-6 pt-2 border-t border-gray-800 text-xs">
                                 <label class="flex items-center gap-2 cursor-pointer">
                                     <input type="checkbox" id="adm-active-${code}" ${isCheckedActive} class="w-4 h-4 accent-yellow-500">
-                                    <span class="text-white font-bold">تفعيل الحساب (تشغيل)</span>
+                                    <span class="text-white font-bold">تفعيل الحساب</span>
                                 </label>
                                 <label class="flex items-center gap-2 cursor-pointer">
                                     <input type="checkbox" id="hide-gamedata-${code}" ${hideGameDataChecked} class="w-4 h-4 accent-yellow-500">
-                                    <span class="text-gray-400">إخفاء معلومات ايميل/رمز اللعبة عنه</span>
+                                    <span class="text-gray-400">إخفاء معلومات اللعبة عنه</span>
                                 </label>
                                 <label class="flex items-center gap-2 cursor-pointer">
                                     <input type="checkbox" id="hide-meteor-${code}" ${hideMeteorChecked} class="w-4 h-4 accent-yellow-500">
-                                    <span class="text-gray-400">إخفاء حقل بلور النيزك عنه</span>
+                                    <span class="text-gray-400">إخفاء بلور النيزك عنه</span>
                                 </label>
                             </div>
                         </div>
@@ -378,10 +377,10 @@
                 const newGameEmail = document.getElementById(`set-gameemail-${index}`).value.trim();
                 const newGamePass = document.getElementById(`set-gamepass-${index}`).value.trim();
                 
-                if (newEmail) m.email = newEmail;
-                if (newPass) m.pass = newPass;
-                if (newGameEmail) m.gameEmail = newGameEmail;
-                if (newGamePass) m.gamePass = newGamePass;
+                m.email = newEmail;
+                m.pass = newPass;
+                m.gameEmail = newGameEmail;
+                m.gamePass = newGamePass;
             });
 
             localStorage.setItem('alliance_members', JSON.stringify(membersData));
@@ -447,7 +446,7 @@
                 let columnContent = '';
                 if (loggedInMemberId !== null) {
                     columnContent = `
-                        <div class="font-bold text-white text-sm mb-1">قلعتك الخاصة</div>
+                        <div class="font-bold text-white text-sm mb-1">قلعتك الخاصة (عضو ${m.id})</div>
                         <div class="bg-[#121212] p-2.5 rounded-xl border border-gray-800 space-y-2">
                             <div>
                                 <span class="text-[10px] text-gray-400 block mb-1">ايميل حساب اللعبة</span>
@@ -475,21 +474,20 @@
 
                     columnContent = `
                         <div class="font-bold text-white text-sm">عضو رقم ${m.id}</div>
-                        <input type="text" placeholder="اسم القلعة (مثل: سفاح)" value="${m.castleName}" 
+                        <input type="text" placeholder="اسم القلعة" value="${m.castleName || ''}" 
                             class="castle-name-input px-3 py-1.5 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-[#d4af37] w-full"
                             oninput="updateCastleName(${m.id}, this.value)">
                         ${gameDataSection}
                     `;
                 }
 
-                // اختيار نوع القلعة (مشاة فقط أو رماة فقط أو نوعين) بشكل منفصل ودقيق
                 let typeSelector = '';
                 if (currentAdmin && currentAdmin.isMaster) {
                     typeSelector = `
                         <select onchange="updateCastleType(${m.id}, this.value)" class="bg-[#121212] border border-gray-700 text-xs gold-text font-bold rounded-xl px-3 py-1.5 focus:outline-none focus:border-[#d4af37]">
                             <option value="infantry_only" ${m.castleType === 'infantry_only' ? 'selected' : ''}>⚔️ مشاة فقط</option>
                             <option value="archer_only" ${m.castleType === 'archer_only' ? 'selected' : ''}>🏹 رماة فقط</option>
-                            <option value="dual" ${m.castleType === 'dual' ? 'selected' : ''}>⚔️ 🏹 نوعين (مشاة ورماة)</option>
+                            <option value="dual" ${m.castleType === 'dual' ? 'selected' : ''}>⚔️ 🏹 نوعين</option>
                         </select>
                     `;
                 } else {
@@ -499,7 +497,6 @@
                     typeSelector = `<span class="text-xs gold-text font-bold">${typeText}</span>`;
                 }
 
-                // الحقول حسب نوع القلعة المنفصل
                 let infantryField = '';
                 let archerField = '';
 
@@ -511,122 +508,91 @@
                     archerField = `<input type="number" placeholder="رماة خارق" value="${m.archerSuper || ''}" class="w-28 bg-[#121212] border border-gray-700 rounded-xl p-2 text-sm text-center text-white focus:outline-none focus:border-[#d4af37]" oninput="updateMemberData(${m.id}, 'archerSuper', this.value)">`;
                 } else {
                     infantryField = `<div class="flex gap-1"><input type="number" placeholder="مدرع مشاة" value="${m.infantryArmored || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white focus:outline-none focus:border-[#d4af37]" oninput="updateMemberData(${m.id}, 'infantryArmored', this.value)">
-                                     <input type="number" placeholder="مدرع رماة" value="${m.archerArmored || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white focus:outline-none focus:border-[#d4af37]" oninput="updateMemberData(${m.id}, 'archerArmored', this.value)"></div>`;
+                                         <input type="number" placeholder="مدرع رماة" value="${m.archerArmored || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white focus:outline-none focus:border-[#d4af37]" oninput="updateMemberData(${m.id}, 'archerArmored', this.value)"></div>`;
                     
                     archerField = `<div class="flex gap-1"><input type="number" placeholder="خارق مشاة" value="${m.infantrySuper || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white focus:outline-none focus:border-[#d4af37]" oninput="updateMemberData(${m.id}, 'infantrySuper', this.value)">
-                                   <input type="number" placeholder="خارق رماة" value="${m.archerSuper || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white focus:outline-none focus:border-[#d4af37]" oninput="updateMemberData(${m.id}, 'archerSuper', this.value)"></div>`;
+                                          <input type="number" placeholder="خارق رماة" value="${m.archerSuper || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white focus:outline-none focus:border-[#d4af37]" oninput="updateMemberData(${m.id}, 'archerSuper', this.value)"></div>`;
                 }
 
-                // حقل النيزك (إذا لم يكن مخفياً عن الأدمن الفرعي)
                 let meteorCell = '';
                 if (!hiddenFields.includes('meteor')) {
-                    meteorCell = `
-                        <td class="p-3">
-                            <input type="number" placeholder="كمية النيزك" value="${m.meteor || ''}" class="w-28 bg-[#121212] border border-gray-700 rounded-xl p-2 text-sm text-center gold-text font-bold focus:outline-none focus:border-[#d4af37]" oninput="updateMemberData(${m.id}, 'meteor', this.value)">
-                        </td>
-                    `;
+                    meteorCell = `<td class="p-3"><input type="number" placeholder="0" value="${m.meteor || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-sm text-center gold-text font-bold focus:outline-none focus:border-[#d4af37]" oninput="updateMemberData(${m.id}, 'meteor', this.value)"></td>`;
                 } else {
-                    meteorCell = `<td class="p-3 text-center text-xs text-gray-500">[مخفي]</td>`;
+                    meteorCell = `<td class="p-3 text-gray-500 text-xs">مخفي</td>`;
                 }
 
                 tr.innerHTML = `
-                    <td class="p-3 space-y-2">
-                        ${columnContent}
-                    </td>
-                    <td class="p-3 text-center select-none">
-                        ${typeSelector}
-                    </td>
-                    <td class="p-3">
-                        ${infantryField}
-                    </td>
-                    <td class="p-3">
-                        ${archerField}
-                    </td>
+                    <td class="p-3 w-72 space-y-2">${columnContent}</td>
+                    <td class="p-3 text-center">${typeSelector}</td>
+                    <td class="p-3">${infantryField}</td>
+                    <td class="p-3">${archerField}</td>
                     ${meteorCell}
                     <td class="p-3 text-center">
-                        <button type="button" onclick="alert('تم حفظ البيانات بنجاح')" class="px-4 py-2 bg-gray-800 hover:bg-[#d4af37] hover:text-black rounded-xl text-xs font-bold transition shadow cursor-pointer">حفظ</button>
+                        <span class="text-xs text-gray-400">تحديث تلقائي</span>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
-
-            if (loggedInMemberId === null) {
-                calculateTotals();
-            }
+            calculateTotals();
         }
 
         function updateCastleName(id, val) {
-            const member = membersData.find(m => m.id === id);
-            if (member) {
-                member.castleName = val;
-                localStorage.setItem('alliance_members', JSON.stringify(membersData));
-                if (loggedInMemberId === null) filterTable();
-            }
+            let m = membersData.find(x => x.id === id);
+            if (m) { m.castleName = val; saveLocal(); }
         }
 
-        function updateCastleType(id, type) {
-            const member = membersData.find(m => m.id === id);
-            if (member) {
-                member.castleType = type;
-                localStorage.setItem('alliance_members', JSON.stringify(membersData));
-                initMembersTable();
-            }
-        }
-
-        function updateMemberGameData(id, field, val) {
-            const member = membersData.find(m => m.id === id);
-            if (member) {
-                member[field] = val;
-                localStorage.setItem('alliance_members', JSON.stringify(membersData));
-            }
+        function updateCastleType(id, val) {
+            let m = membersData.find(x => x.id === id);
+            if (m) { m.castleType = val; saveLocal(); initMembersTable(); }
         }
 
         function updateMemberData(id, field, val) {
-            const member = membersData.find(m => m.id === id);
-            if (member) {
-                member[field] = Number(val) || 0;
-                localStorage.setItem('alliance_members', JSON.stringify(membersData));
-                if (loggedInMemberId === null) calculateTotals();
-            }
+            let m = membersData.find(x => x.id === id);
+            if (m) { m[field] = Number(val) || 0; saveLocal(); calculateTotals(); }
         }
 
-        function filterTable() {
-            const query = document.getElementById('search-input').value.toLowerCase().trim();
-            const rows = document.querySelectorAll('.member-row');
+        function updateMemberGameData(id, field, val) {
+            let m = membersData.find(x => x.id === id);
+            if (m) { m[field] = val; saveLocal(); }
+        }
 
-            rows.forEach(row => {
-                const castleInput = row.querySelector('.castle-name-input');
-                const castleVal = castleInput ? castleInput.value.toLowerCase() : '';
-                const memberText = row.innerText.toLowerCase();
-
-                if (castleVal.includes(query) || memberText.includes(query)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
+        function saveLocal() {
+            localStorage.setItem('alliance_members', JSON.stringify(membersData));
         }
 
         function calculateTotals() {
-            let totalArmoredArchers = 0;
-            let totalArmoredInfantry = 0;
-            let totalSuperArchers = 0;
-            let totalSuperInfantry = 0;
-            let totalMeteor = 0;
-
+            let tArmoredArchers = 0, tArmoredInfantry = 0, tSuperArchers = 0, tSuperInfantry = 0, tMeteor = 0;
             membersData.forEach(m => {
-                totalArmoredArchers += m.archerArmored || 0;
-                totalArmoredInfantry += m.infantryArmored || 0;
-                totalSuperArchers += m.archerSuper || 0;
-                totalSuperInfantry += m.infantrySuper || 0;
-                totalMeteor += m.meteor || 0;
+                tArmoredArchers += Number(m.archerArmored) || 0;
+                tArmoredInfantry += Number(m.infantryArmored) || 0;
+                tSuperArchers += Number(m.archerSuper) || 0;
+                tSuperInfantry += Number(m.infantrySuper) || 0;
+                tMeteor += Number(m.meteor) || 0;
             });
+            
+            const el1 = document.getElementById('total-armored-archers');
+            const el2 = document.getElementById('total-armored-infantry');
+            const el3 = document.getElementById('total-super-archers');
+            const el4 = document.getElementById('total-super-infantry');
+            const el5 = document.getElementById('total-meteor-crystal');
 
-            document.getElementById('total-armored-archers').innerText = totalArmoredArchers.toLocaleString();
-            document.getElementById('total-armored-infantry').innerText = totalArmoredInfantry.toLocaleString();
-            document.getElementById('total-super-archers').innerText = totalSuperArchers.toLocaleString();
-            document.getElementById('total-super-infantry').innerText = totalSuperInfantry.toLocaleString();
-            document.getElementById('total-meteor-crystal').innerText = totalMeteor.toLocaleString();
+            if(el1) el1.innerText = tArmoredArchers.toLocaleString();
+            if(el2) el2.innerText = tArmoredInfantry.toLocaleString();
+            if(el3) el3.innerText = tSuperArchers.toLocaleString();
+            if(el4) el4.innerText = tSuperInfantry.toLocaleString();
+            if(el5) el5.innerText = tMeteor.toLocaleString();
+        }
+
+        function filterTable() {
+            const query = document.getElementById('search-input').value.trim().toLowerCase();
+            const rows = document.querySelectorAll('#members-table-body tr');
+            rows.forEach(row => {
+                const input = row.querySelector('.castle-name-input');
+                if (input) {
+                    const val = input.value.toLowerCase();
+                    row.style.display = val.includes(query) ? '' : 'none';
+                }
+            });
         }
     </script>
 </body>
