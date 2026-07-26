@@ -28,8 +28,14 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
+    <!-- شاشة التحميل ريثما يتم جلب البيانات من GitHub -->
+    <div id="sync-loading" class="fixed inset-0 bg-[#121212] z-50 flex flex-col items-center justify-center space-y-4">
+        <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-sm gold-text font-bold">جاري المزامنة وجلب بيانات السيرفر من GitHub...</p>
+    </div>
+
     <!-- شاشة تسجيل الدخول -->
-    <div id="login-screen" class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border">
+    <div id="login-screen" class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border hidden">
         <h2 class="text-2xl font-black gold-text mb-6">الدخول الى 630</h2>
         <div class="space-y-4">
             <div>
@@ -78,6 +84,9 @@
                 <p id="admin-role-title" class="text-sm text-gray-400">لوحة القيادة والسيطرة</p>
             </div>
             <div class="flex flex-col md:flex-row items-center gap-4">
+                <div id="sync-status" class="text-[10px] text-green-400 font-bold bg-green-950/40 px-2.5 py-1 rounded-lg border border-green-800">
+                    🟢 متصل بـ GitHub
+                </div>
                 <div id="user-info" class="bg-[#121212] px-4 py-2 rounded-xl border border-gray-800 text-xs gold-text font-bold">
                     مرحباً بك
                 </div>
@@ -189,7 +198,16 @@
     </div>
 
     <script>
-        let admins = JSON.parse(localStorage.getItem('alliance_admins')) || {
+        // إعدادات ربط GitHub المحدثة حسب مستودعك
+        const GITHUB_CONFIG = {
+            owner: "TMIME0", 
+            repo: "server630",          
+            branch: "main",                
+            path: "data.json",             
+            token: "خلي_التكن_مالتك_هنا"     
+        };
+
+        let admins = {
             "1G630": { name: "الأدمن الأول (مدير عام)", pass: "Tmime9090", isMaster: true, active: true, hiddenFields: [] },
             "2G630": { name: "الأدمن الثاني", pass: "pass2", isMaster: false, active: true, hiddenFields: [] },
             "3G630": { name: "الأدمن الثالث", pass: "pass3", isMaster: false, active: true, hiddenFields: [] },
@@ -199,9 +217,45 @@
 
         let currentAdmin = null;
         let loggedInMemberId = null;
+        let membersData = [];
+        let fileSha = ""; // ضروري لتحديث الملف على GitHub API
 
-        let membersData = JSON.parse(localStorage.getItem('alliance_members')) || [];
-        if (membersData.length === 0) {
+        // جلب البيانات من GitHub تلقائياً عند فتح الموقع
+        async function fetchGitHubData() {
+            try {
+                const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
+                const response = await fetch(url, {
+                    headers: {
+                        "Authorization": `token ${GITHUB_CONFIG.token}`,
+                        "Accept": "application/vnd.github.v3+json"
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    fileSha = data.sha; // حفظ الـ SHA الخاص بالملف للتحديث اللاحق
+                    const decodedContent = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+                    
+                    if (decodedContent.members && decodedContent.members.length > 0) {
+                        membersData = decodedContent.members;
+                    }
+                    if (decodedContent.admins) {
+                        admins = decodedContent.admins;
+                    }
+                } else {
+                    // إذا كان الملف فارغاً أو جديداً نقوم بإنشاء البيانات الأولية
+                    initDefaultMembers();
+                }
+            } catch (error) {
+                console.error("خطأ في الاتصال بـ GitHub، سيتم الاعتماد على البيانات الافتراضية:", error);
+                initDefaultMembers();
+            } finally {
+                document.getElementById('sync-loading').classList.add('hidden');
+                document.getElementById('login-screen').classList.remove('hidden');
+            }
+        }
+
+        function initDefaultMembers() {
             for (let i = 1; i <= 75; i++) {
                 membersData.push({
                     id: i,
@@ -219,8 +273,49 @@
                     lastUpdated: 'لم يتم التحديث بعد'
                 });
             }
-            localStorage.setItem('alliance_members', JSON.stringify(membersData));
+            syncToGitHub();
         }
+
+        // دالة حفظ البيانات ورفعها إلى GitHub فوراً
+        async function syncToGitHub() {
+            try {
+                const contentObj = {
+                    members: membersData,
+                    admins: admins
+                };
+                const jsonString = JSON.stringify(contentObj, null, 2);
+                const encodedContent = btoa(unescape(encodeURIComponent(jsonString)));
+
+                const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
+                
+                const response = await fetch(url, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${GITHUB_CONFIG.token}`,
+                        "Accept": "application/vnd.github.v3+json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: "Update alliance data via 630 Web App",
+                        content: encodedContent,
+                        sha: fileSha,
+                        branch: GITHUB_CONFIG.branch
+                    })
+                });
+
+                if (response.ok) {
+                    const resData = await response.json();
+                    fileSha = resData.content.sha; // تحديث الـ SHA الجديد للعمليات القادمة
+                    console.log("تم الحفظ بنجاح على GitHub!");
+                }
+            } catch (err) {
+                console.error("فشل المزامنة مع GitHub:", err);
+            }
+        }
+
+        window.onload = function() {
+            fetchGitHubData();
+        };
 
         function getFormattedDateTime() {
             const now = new Date();
@@ -285,9 +380,8 @@
                 loggedInMemberId = member.id;
                 welcomeMsg.classList.remove('hidden');
 
-                // تحديث وقت الدخول كآخر ظهور
                 member.lastUpdated = getFormattedDateTime();
-                localStorage.setItem('alliance_members', JSON.stringify(membersData));
+                syncToGitHub();
 
                 setTimeout(() => {
                     document.getElementById('login-screen').classList.add('hidden');
@@ -396,8 +490,8 @@
                 if (newGamePass) m.gamePass = newGamePass;
             });
 
-            localStorage.setItem('alliance_members', JSON.stringify(membersData));
-            alert('تم حفظ تعديلات الحسابات بنجاح!');
+            syncToGitHub();
+            alert('تم حفظ تعديلات الحسابات ورفعها إلى GitHub بنجاح!');
             toggleSettingsModal();
             initMembersTable();
         }
@@ -424,7 +518,7 @@
                 }
             });
 
-            localStorage.setItem('alliance_admins', JSON.stringify(admins));
+            syncToGitHub();
             alert('تم حفظ إعدادات وحالة الأدمنية بنجاح!');
             toggleAdminsModal();
         }
@@ -560,7 +654,7 @@
             if (member) {
                 member.castleName = val;
                 member.lastUpdated = getFormattedDateTime();
-                localStorage.setItem('alliance_members', JSON.stringify(membersData));
+                syncToGitHub();
             }
         }
 
@@ -576,7 +670,7 @@
                     member.infantrySuper = 0;
                 }
                 member.lastUpdated = getFormattedDateTime();
-                localStorage.setItem('alliance_members', JSON.stringify(membersData));
+                syncToGitHub();
                 initMembersTable();
             }
         }
@@ -586,7 +680,7 @@
             if (member) {
                 member[field] = val === '' ? 0 : Number(val);
                 member.lastUpdated = getFormattedDateTime();
-                localStorage.setItem('alliance_members', JSON.stringify(membersData));
+                syncToGitHub();
                 updateTotals();
             }
         }
@@ -596,7 +690,7 @@
             if (member) {
                 member[field] = val;
                 member.lastUpdated = getFormattedDateTime();
-                localStorage.setItem('alliance_members', JSON.stringify(membersData));
+                syncToGitHub();
             }
         }
 
