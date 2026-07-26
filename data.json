@@ -12,9 +12,9 @@
       "archerArmored": 16000000,
       "infantrySuper": 11000000,
       "archerSuper": 80000000,
-      "meteor": 0,
+      "meteor": 5000000,
       "lastUpdated": "مباشر",
-      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٢:١٣:١٩ ص"
+      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٢:١٣:٢٣ ص"
     },
     {
       "id": 2,
@@ -1091,5 +1091,5 @@
       "lastSeen": "لم يسجل دخول بعد"
     }
   },
-  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٢:١٣:٢٠ ص"
+  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٢:١٣:٢٤ ص"
 }
