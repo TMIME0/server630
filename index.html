@@ -73,6 +73,7 @@
                             <th class="p-3">مدرع مشاة</th>
                             <th class="p-3">خارق مشاة</th>
                             <th class="p-3">✨ بلور النيزك</th>
+                            <th class="p-3 text-center">إجراءات</th>
                         </tr>
                     </thead>
                     <tbody id="members-table-body"></tbody>
@@ -137,7 +138,6 @@
                     const decodedContent = JSON.parse(decodeURIComponent(escape(atob(data.content))));
                     membersData = decodedContent.members || [];
                 } else {
-                    // إذا الملف فارغ أو غير موجود ننشئ مصفوفة أولية
                     membersData = [
                         { id: 1, castleName: "قلعة القائد", castleType: "أساسي", infantryArmored: 0, infantrySuper: 0, meteor: 0 }
                     ];
@@ -213,10 +213,11 @@
                 tr.className = 'border-b border-gray-800/40 hover:bg-white/5';
                 tr.innerHTML = `
                     <td class="p-3"><input type="text" value="${m.castleName || ''}" class="px-3 py-1 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white w-full" oninput="updateData(${m.id}, 'castleName', this.value)"></td>
-                    <td class="p-3 text-center"><span class="text-xs gold-text">${m.castleType || 'عضو'}</span></td>
+                    <td class="p-3 text-center"><input type="text" value="${m.castleType || 'عضو'}" class="px-3 py-1 bg-[#121212] border border-gray-700 rounded-xl text-xs text-center gold-text w-28" oninput="updateData(${m.id}, 'castleType', this.value)"></td>
                     <td class="p-3"><input type="number" value="${m.infantryArmored || 0}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateData(${m.id}, 'infantryArmored', this.value)"></td>
                     <td class="p-3"><input type="number" value="${m.infantrySuper || 0}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateData(${m.id}, 'infantrySuper', this.value)"></td>
                     <td class="p-3"><input type="number" value="${m.meteor || 0}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-sm text-center gold-text font-bold" oninput="updateData(${m.id}, 'meteor', this.value)"></td>
+                    <td class="p-3 text-center"><button type="button" onclick="deleteMember(${m.id})" class="px-2 py-1 bg-red-900/60 text-red-200 rounded-lg text-xs hover:bg-red-700 cursor-pointer">حذف</button></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -232,6 +233,12 @@
                 infantrySuper: 0,
                 meteor: 0
             });
+            initMembersTable();
+            saveToCloud();
+        }
+
+        function deleteMember(id) {
+            membersData = membersData.filter(x => x.id !== id);
             initMembersTable();
             saveToCloud();
         }
