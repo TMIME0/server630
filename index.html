@@ -31,7 +31,7 @@
     <!-- شاشة التحميل السحابي -->
     <div id="sync-loading" class="fixed inset-0 bg-[#121212] z-50 flex flex-col items-center justify-center space-y-4">
         <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-sm gold-text font-bold">جاري الاتصال بالسحابة وجلب تفاصيل السيرفر الكاملة...</p>
+        <p class="text-sm gold-text font-bold">جاري الاتصال بالسحابة وجلب تفاصيل السيرفر الكاملة لـ 75 قلعة...</p>
     </div>
 
     <!-- شاشة إدخال التوكن لمرة واحدة -->
@@ -145,7 +145,7 @@
         <!-- جدول القلاع والجيوش -->
         <section class="slate-card p-6 rounded-3xl border gold-border space-y-4">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <h3 id="table-section-title" class="text-xl font-bold gold-text">سجل الإمداد وقلاع الأعضاء</h3>
+                <h3 id="table-section-title" class="text-xl font-bold gold-text">سجل الإمداد وقلاع الأعضاء (75 قلعة)</h3>
                 <div id="search-box-container" class="w-full md:w-72">
                     <input type="text" id="search-input" onkeyup="filterTable()" placeholder="ابحث عن اسم القلعة..." 
                         class="w-full px-4 py-2 rounded-xl bg-[#121212] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
@@ -175,7 +175,7 @@
     <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
         <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-4xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="text-lg font-bold gold-text">إدارة وتعديل يوزرات ورموز وحسابات اللعبة للأعضاء</h3>
+                <h3 class="text-lg font-bold gold-text">إدارة وتعديل يوزرات ورموز وحسابات اللعبة لـ 75 عضواً</h3>
                 <button type="button" onclick="toggleSettingsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
             </div>
             <p class="text-xs text-gray-400">تعديل بيانات الدخول وإيميلات/رموز حسابات اللعبة لكل عضو:</p>
@@ -268,7 +268,10 @@
                     const data = await res.json();
                     fileSha = data.sha;
                     const decodedContent = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-                    membersData = decodedContent.members || [];
+                    
+                    let loadedMembers = decodedContent.members || [];
+                    mergeWithFullMembers(loadedMembers);
+
                     if (decodedContent.admins) {
                         admins = decodedContent.admins;
                     }
@@ -283,12 +286,33 @@
                 initDefaultMembers();
             }
 
-            if (membersData.length === 0) {
-                initDefaultMembers();
-            }
-
             document.getElementById('sync-loading').classList.add('hidden');
             document.getElementById('login-screen').classList.remove('hidden');
+        }
+
+        function mergeWithFullMembers(loadedMembers) {
+            membersData = [];
+            for (let i = 1; i <= 75; i++) {
+                const existing = loadedMembers.find(m => m.id === i);
+                if (existing) {
+                    membersData.push(existing);
+                } else {
+                    membersData.push({
+                        id: i,
+                        castleName: i === 1 ? 'قلعة سفاح' : '',
+                        castleType: 'dual',
+                        email: `member${i}@alliance.com`,
+                        pass: `pass${i}`,
+                        gameEmail: `game${i}@game.com`,
+                        gamePass: `gpass${i}`,
+                        infantryArmored: 0,
+                        archerArmored: 0,
+                        infantrySuper: 0,
+                        archerSuper: 0,
+                        meteor: 0
+                    });
+                }
+            }
         }
 
         function initDefaultMembers() {
@@ -309,6 +333,7 @@
                     meteor: 0
                 });
             }
+            saveToCloud();
         }
 
         async function saveToCloud() {
@@ -333,7 +358,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        message: "Update alliance data and admins from portal",
+                        message: "Update alliance data and 75 members from portal",
                         content: encodedContent,
                         sha: fileSha
                     })
@@ -385,7 +410,7 @@
                     
                     document.getElementById('totals-section').classList.remove('hidden');
                     document.getElementById('search-box-container').classList.remove('hidden');
-                    document.getElementById('table-section-title').innerText = 'سجل الإمداد وقلاع الأعضاء';
+                    document.getElementById('table-section-title').innerText = 'سجل الإمداد وقلاع الأعضاء (75 قلعة)';
 
                     if (currentAdmin.isMaster) {
                         document.getElementById('master-admin-settings-container').classList.remove('hidden');
@@ -616,7 +641,7 @@
 
                     columnContent = `
                         <div class="font-bold text-white text-sm">عضو رقم ${m.id}</div>
-                        <input type="text" placeholder="اسم القلعة (مثل: سفاح)" value="${m.castleName}" 
+                        <input type="text" placeholder="اسم القلعة (مثل: سفاح)" value="${m.castleName || ''}" 
                             class="castle-name-input px-3 py-1.5 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-[#d4af37] w-full"
                             oninput="updateCastleName(${m.id}, this.value)">
                         ${gameDataSection}
@@ -709,9 +734,9 @@
         }
 
         function updateCastleName(id, val) {
-            const member = membersData.find(m => m.id === id);
-            if (member) {
-                member.castleName = val;
+            const methodMember = membersData.find(m => m.id === id);
+            if (methodMember) {
+                methodMember.castleName = val;
                 clearTimeout(updateTimer);
                 updateTimer = setTimeout(() => {
                     saveToCloud();
@@ -720,9 +745,9 @@
         }
 
         function updateCastleType(id, val) {
-            const member = membersData.find(m => m.id === id);
-            if (member) {
-                member.castleType = val;
+            const methodMember = membersData.find(m => m.id === id);
+            if (methodMember) {
+                methodMember.castleType = val;
                 saveToCloud();
                 initMembersTable();
                 updateTotals();
