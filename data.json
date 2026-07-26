@@ -1059,8 +1059,8 @@
       "lastSeen": "٢٧‏/٧‏/٢٠٢٦ - ٢:١٤:٢٣ ص"
     },
     "2G630": {
-      "name": "الأدمن الثاني",
-      "pass": "pass2",
+      "name": "Falcon",
+      "pass": "630F",
       "isMaster": false,
       "active": true,
       "hiddenFields": [],
@@ -1091,5 +1091,5 @@
       "lastSeen": "لم يسجل دخول بعد"
     }
   },
-  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٢:١٤:٢٣ ص"
+  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٢:١٦:٣٦ ص"
 }
