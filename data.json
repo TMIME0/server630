@@ -1054,36 +1054,41 @@
       "pass": "Tmime9090",
       "isMaster": true,
       "active": true,
-      "hiddenFields": []
+      "hiddenFields": [],
+      "lastSeen": "٢٧‏/٧‏/٢٠٢٦ - ٢:١٠:٤٣ ص"
     },
     "2G630": {
       "name": "الأدمن الثاني",
       "pass": "pass2",
       "isMaster": false,
       "active": true,
-      "hiddenFields": []
+      "hiddenFields": [],
+      "lastSeen": "لم يسجل دخول بعد"
     },
     "3G630": {
       "name": "الأدمن الثالث",
       "pass": "pass3",
       "isMaster": false,
       "active": true,
-      "hiddenFields": []
+      "hiddenFields": [],
+      "lastSeen": "لم يسجل دخول بعد"
     },
     "4G630": {
       "name": "الأدمن الرابع",
       "pass": "pass4",
       "isMaster": false,
       "active": true,
-      "hiddenFields": []
+      "hiddenFields": [],
+      "lastSeen": "لم يسجل دخول بعد"
     },
     "5G630": {
       "name": "الأدمن الخامس",
       "pass": "pass5",
       "isMaster": false,
       "active": true,
-      "hiddenFields": []
+      "hiddenFields": [],
+      "lastSeen": "لم يسجل دخول بعد"
     }
   },
-  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٢:٠٤:٤٩ ص"
+  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٢:١٠:٤٣ ص"
 }
