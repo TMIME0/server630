@@ -30,15 +30,16 @@
       "id": 3,
       "castleName": "",
       "castleType": "dual",
-      "email": "member3@alliance.com",
-      "pass": "pass3",
+      "email": "awatif",
+      "pass": "630aa",
       "gameEmail": "game3@game.com",
       "gamePass": "gpass3",
       "infantryArmored": 0,
       "archerArmored": 0,
       "infantrySuper": 0,
       "archerSuper": 0,
-      "meteor": 0
+      "meteor": 0,
+      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٢:٢٤:٣٨ ص"
     },
     {
       "id": 4,
@@ -1091,5 +1092,5 @@
       "lastSeen": "لم يسجل دخول بعد"
     }
   },
-  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٢:٢٣:٣٣ ص"
+  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٢:٢٤:٣٨ ص"
 }
