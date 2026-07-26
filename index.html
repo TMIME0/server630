@@ -93,7 +93,7 @@
             <div>
                 <h1 class="text-2xl font-black gold-text">لوحة إمداد وتحالف الجيوش (630)</h1>
                 <p id="admin-role-title" class="text-sm text-gray-400">لوحة القيادة والسيطرة</p>
-                <p id="last-update-time" class="text-xs text-gray-400 mt-1">آخر تحديث سحابي: --</p>
+                <p id="last-update-time" class="text-xs text-gray-400 mt-1">آخر تحديث سحابي عام: --</p>
             </div>
             <div class="flex flex-col md:flex-row items-center gap-4">
                 <div id="cloud-status" class="text-xs text-yellow-400 bg-yellow-950/40 px-3 py-1.5 rounded-xl border border-yellow-800 font-bold">
@@ -114,7 +114,7 @@
                 ⚙️ إدارة وتعديل يوزرات ورموز وحسابات اللعبة للأعضاء (للأدمن العام فقط)
             </button>
             <button type="button" onclick="toggleAdminsModal()" class="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl text-xs transition shadow cursor-pointer border border-gray-700 flex items-center gap-2">
-                🛡️ إدارة وتشغيل وإيقاف وإخفاء بيانات الأدمنية الأربعة
+                🛡️ سجل آخر ظهور للأدمنية وإدارة صلاحياتهم
             </button>
         </div>
 
@@ -190,14 +190,14 @@
         </div>
     </div>
 
-    <!-- نافذة إدارة الأدمنية الأربعة وتفعيلهم وإخفاء البيانات (للأدمن العام فقط) -->
+    <!-- نافذة سجل آخر ظهور للأدمنية وإدارة الصلاحيات (للأدمن العام فقط) -->
     <div id="admins-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
         <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-3xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="text-lg font-bold gold-text">إدارة تشغيل وإيقاف وإخفاء بيانات الأدمنية الأربعة</h3>
+                <h3 class="text-lg font-bold gold-text">سجل آخر ظهور للأدمنية وإدارة صلاحياتهم</h3>
                 <button type="button" onclick="toggleAdminsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
             </div>
-            <p class="text-xs text-gray-400">تفعيل/إيقاف الحساب أو إخفاء بيانات معينة عن كل أدمن فرعي:</p>
+            <p class="text-xs text-gray-400">عرض وقت آخر دخول لكل أدمن، مع إمكانية تعديل بياناتهم أو إيقاف حساباتهم:</p>
             
             <div id="admins-settings-list" class="space-y-4"></div>
             
@@ -218,11 +218,11 @@
         let fileSha = "";
 
         let admins = {
-            "1G630": { name: "الأدمن الأول (مدير عام)", pass: "Tmime9090", isMaster: true, active: true, hiddenFields: [] },
-            "2G630": { name: "الأدمن الثاني", pass: "pass2", isMaster: false, active: true, hiddenFields: [] },
-            "3G630": { name: "الأدمن الثالث", pass: "pass3", isMaster: false, active: true, hiddenFields: [] },
-            "4G630": { name: "الأدمن الرابع", pass: "pass4", isMaster: false, active: true, hiddenFields: [] },
-            "5G630": { name: "الأدمن الخامس", pass: "pass5", isMaster: false, active: true, hiddenFields: [] }
+            "1G630": { name: "الأدمن الأول (مدير عام)", pass: "Tmime9090", isMaster: true, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
+            "2G630": { name: "الأدمن الثاني", pass: "pass2", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
+            "3G630": { name: "الأدمن الثالث", pass: "pass3", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
+            "4G630": { name: "الأدمن الرابع", pass: "pass4", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
+            "5G630": { name: "الأدمن الخامس", pass: "pass5", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" }
         };
 
         let currentAdmin = null;
@@ -273,10 +273,15 @@
                     mergeWithFullMembers(loadedMembers);
 
                     if (decodedContent.admins) {
-                        admins = decodedContent.admins;
+                        // دمج بيانات الأدمن مع الاحتفاظ بسجل آخر ظهور القديم إذا وجد
+                        Object.keys(decodedContent.admins).forEach(code => {
+                            if (admins[code]) {
+                                admins[code] = { ...admins[code], ...decodedContent.admins[code] };
+                            }
+                        });
                     }
                     if (decodedContent.lastUpdated) {
-                        document.getElementById('last-update-time').innerText = `آخر تحديث سحابي: ${decodedContent.lastUpdated}`;
+                        document.getElementById('last-update-time').innerText = `آخر تحديث سحابي عام: ${decodedContent.lastUpdated}`;
                     }
                 } else {
                     initDefaultMembers();
@@ -309,7 +314,8 @@
                         archerArmored: 0,
                         infantrySuper: 0,
                         archerSuper: 0,
-                        meteor: 0
+                        meteor: 0,
+                        lastMemberUpdate: 'لم يتم التعديل بعد'
                     });
                 }
             }
@@ -330,7 +336,8 @@
                     archerArmored: 0,
                     infantrySuper: 0,
                     archerSuper: 0,
-                    meteor: 0
+                    meteor: 0,
+                    lastMemberUpdate: 'لم يتم التعديل بعد'
                 });
             }
             saveToCloud();
@@ -358,7 +365,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        message: "Update alliance data and 75 members from portal",
+                        message: "Update alliance data, member edits, and admin last seen",
                         content: encodedContent,
                         sha: fileSha
                     })
@@ -371,7 +378,7 @@
                         statusDiv.innerText = "☁️ تم التحديث سحابياً بنجاح الفوري";
                         statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
                     }
-                    document.getElementById('last-update-time').innerText = `آخر تحديث سحابي: ${timeString}`;
+                    document.getElementById('last-update-time').innerText = `آخر تحديث سحابي عام: ${timeString}`;
                 } else {
                     if (statusDiv) {
                         statusDiv.innerText = "❌ فشل الرفع (تحقق من الصلاحيات)";
@@ -397,6 +404,11 @@
                     alert('عذراً، هذا الحساب تم إيقافه من قبل الأدمن العام!');
                     return;
                 }
+
+                // تسجيل وقت آخر ظهور للأدمن
+                const now = new Date();
+                admins[code].lastSeen = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
+                saveToCloud(); // حفظ وقت آخر ظهور سحابياً فوراً
 
                 currentAdmin = admins[code];
                 loggedInMemberId = null;
@@ -483,7 +495,10 @@
             membersData.forEach((m, index) => {
                 container.innerHTML += `
                     <div class="grid grid-cols-1 md:grid-cols-5 gap-2 p-3 bg-[#121212] rounded-xl border border-gray-800 items-center">
-                        <span class="text-xs font-bold text-white">عضو رقم ${m.id}</span>
+                        <div>
+                            <span class="text-xs font-bold text-white block">عضو رقم ${m.id}</span>
+                            <span class="text-[10px] text-gray-500 block">آخر تحديث: ${m.lastMemberUpdate || 'لم يتم التعديل'}</span>
+                        </div>
                         <input type="text" id="set-email-${index}" value="${m.email}" placeholder="يوزر الموقع" 
                             class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#d4af37]">
                         <input type="text" id="set-pass-${index}" value="${m.pass}" placeholder="رمز الموقع" 
@@ -510,8 +525,13 @@
 
                     container.innerHTML += `
                         <div class="p-4 bg-[#121212] rounded-2xl border border-gray-800 space-y-3">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-center">
-                                <span class="text-xs font-bold gold-text">الكود: ${code}</span>
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-800 pb-2">
+                                <span class="text-xs font-bold gold-text">كود الأدمن: ${code}</span>
+                                <span class="text-xs text-green-400 bg-green-950/40 px-3 py-1 rounded-lg border border-green-800 font-bold">
+                                    🕒 آخر ظهور: ${adm.lastSeen || 'لم يسجل دخول بعد'}
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 items-center">
                                 <input type="text" id="adm-name-${code}" value="${adm.name}" placeholder="اسم الأدمن" 
                                     class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white focus:outline-none focus:border-[#d4af37]">
                                 <input type="text" id="adm-pass-${code}" value="${adm.pass}" placeholder="رمز الأدمن" 
@@ -538,16 +558,24 @@
         }
 
         function saveAllMembersChanges() {
+            const now = new Date();
+            const timeString = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
+
             membersData.forEach((m, index) => {
                 const newEmail = document.getElementById(`set-email-${index}`).value.trim();
                 const newPass = document.getElementById(`set-pass-${index}`).value.trim();
                 const newGameEmail = document.getElementById(`set-gameemail-${index}`).value.trim();
                 const newGamePass = document.getElementById(`set-gamepass-${index}`).value.trim();
                 
-                if (newEmail) m.email = newEmail;
-                if (newPass) m.pass = newPass;
-                if (newGameEmail) m.gameEmail = newGameEmail;
-                if (newGamePass) m.gamePass = newGamePass;
+                let changed = false;
+                if (newEmail && newEmail !== m.email) { m.email = newEmail; changed = true; }
+                if (newPass && newPass !== m.pass) { m.pass = newPass; changed = true; }
+                if (newGameEmail && newGameEmail !== m.gameEmail) { m.gameEmail = newGameEmail; changed = true; }
+                if (newGamePass && newGamePass !== m.gamePass) { m.gamePass = newGamePass; changed = true; }
+
+                if (changed) {
+                    m.lastMemberUpdate = timeString;
+                }
             });
 
             saveToCloud();
@@ -626,6 +654,7 @@
                                     class="w-full px-2 py-1 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs gold-text font-bold focus:outline-none focus:border-[#d4af37]"
                                     oninput="updateMemberGameData(${m.id}, 'gamePass', this.value)">
                             </div>
+                            <div class="text-[10px] text-gray-500 pt-1">آخر تحديث لبياناتك: ${m.lastMemberUpdate || 'لم يتم التعديل'}</div>
                         </div>
                     `;
                 } else {
@@ -640,7 +669,10 @@
                     }
 
                     columnContent = `
-                        <div class="font-bold text-white text-sm">عضو رقم ${m.id}</div>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-white text-sm">عضو رقم ${m.id}</span>
+                            <span class="text-[10px] text-gray-500">آخر تحديث: ${m.lastMemberUpdate || 'بلا تعديل'}</span>
+                        </div>
                         <input type="text" placeholder="اسم القلعة (مثل: سفاح)" value="${m.castleName || ''}" 
                             class="castle-name-input px-3 py-1.5 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-[#d4af37] w-full"
                             oninput="updateCastleName(${m.id}, this.value)">
@@ -713,6 +745,10 @@
             const member = membersData.find(m => m.id === id);
             if (member) {
                 member[field] = val === '' ? 0 : Number(val);
+                
+                const now = new Date();
+                member.lastMemberUpdate = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
+
                 updateTotals();
                 
                 clearTimeout(updateTimer);
@@ -726,6 +762,10 @@
             const member = membersData.find(m => m.id === id);
             if (member) {
                 member[field] = val;
+                
+                const now = new Date();
+                member.lastMemberUpdate = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
+
                 clearTimeout(updateTimer);
                 updateTimer = setTimeout(() => {
                     saveToCloud();
@@ -737,6 +777,10 @@
             const methodMember = membersData.find(m => m.id === id);
             if (methodMember) {
                 methodMember.castleName = val;
+                
+                const now = new Date();
+                methodMember.lastMemberUpdate = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
+
                 clearTimeout(updateTimer);
                 updateTimer = setTimeout(() => {
                     saveToCloud();
@@ -748,6 +792,10 @@
             const methodMember = membersData.find(m => m.id === id);
             if (methodMember) {
                 methodMember.castleType = val;
+                
+                const now = new Date();
+                methodMember.lastMemberUpdate = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
+
                 saveToCloud();
                 initMembersTable();
                 updateTotals();
