@@ -28,13 +28,11 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <!-- شاشة التحميل ريثما يتم جلب البيانات من GitHub -->
     <div id="sync-loading" class="fixed inset-0 bg-[#121212] z-50 flex flex-col items-center justify-center space-y-4">
         <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
         <p class="text-sm gold-text font-bold">جاري المزامنة وجلب بيانات السيرفر من GitHub...</p>
     </div>
 
-    <!-- شاشة تسجيل الدخول -->
     <div id="login-screen" class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border hidden">
         <h2 class="text-2xl font-black gold-text mb-6">الدخول الى 630</h2>
         <div class="space-y-4">
@@ -51,14 +49,12 @@
             </button>
         </div>
 
-        <!-- زر الانتقال لتسجيل دخول الأعضاء (المنفصل) -->
         <div class="mt-4 pt-4 border-t border-gray-800 text-center">
             <button type="button" onclick="toggleMemberLogin()" class="text-xs gold-text underline hover:opacity-80 cursor-pointer">
                 هل أنت عضو؟ اضغط هنا لدخول قلعتك الخاصة
             </button>
         </div>
 
-        <!-- نموذج دخول العضو المنفصل -->
         <div id="member-login-box" class="hidden mt-4 space-y-3 p-4 bg-[#121212] rounded-2xl border border-gray-800 text-right">
             <h3 class="text-sm font-bold text-white mb-2">دخول قلعة العضو</h3>
             <input type="text" id="member-email-input" placeholder="ايميل موقع الدخول (مثال: member1@alliance.com)" 
@@ -75,9 +71,7 @@
         </div>
     </div>
 
-    <!-- لوحة التحكم الرئيسية -->
     <div id="dashboard" class="hidden w-full max-w-7xl mx-auto space-y-6">
-        <!-- هيدر الموقع -->
         <header class="slate-card p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center border gold-border gap-4">
             <div>
                 <h1 class="text-2xl font-black gold-text">لوحة إمداد وتحالف الجيوش (630)</h1>
@@ -96,7 +90,6 @@
             </div>
         </header>
 
-        <!-- زر إعدادات الأعضاء والأدمنية الأربعة -->
         <div id="master-admin-settings-container" class="hidden flex flex-wrap gap-3">
             <button type="button" onclick="toggleSettingsModal()" class="px-5 py-2.5 gold-bg text-black font-bold rounded-xl text-xs hover:opacity-90 transition shadow cursor-pointer flex items-center gap-2">
                 ⚙️ إدارة وتعديل يوزرات ورموز وحسابات اللعبة للأعضاء (للأدمن العام فقط)
@@ -106,7 +99,6 @@
             </button>
         </div>
 
-        <!-- قسم الإحصائيات الكلية -->
         <section id="totals-section" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div class="slate-card p-4 rounded-2xl border border-gray-800 text-center shadow-md">
                 <span class="text-gray-400 text-xs block mb-1">مدرع رماة</span>
@@ -130,7 +122,6 @@
             </div>
         </section>
 
-        <!-- جدول القلاع والجيوش -->
         <section class="slate-card p-6 rounded-3xl border gold-border space-y-4">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <h3 id="table-section-title" class="text-xl font-bold gold-text">سجل الإمداد وقلاع الأعضاء</h3>
@@ -152,14 +143,12 @@
                         </tr>
                     </thead>
                     <tbody id="members-table-body">
-                        <!-- يتم تعبئتها ديناميكياً -->
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </section>
     </div>
 
-    <!-- نافذة إعدادات قلاع الأعضاء -->
     <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
         <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-4xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
@@ -178,7 +167,6 @@
         </div>
     </div>
 
-    <!-- نافذة إدارة الأدمنية الأربعة -->
     <div id="admins-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
         <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-3xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
@@ -284,12 +272,11 @@
             syncToGitHub();
         }
 
-        // دالة المزامنة المحدثة التي تجلب الـ SHA الأحدث لتفادي أي تضارب أو رجوع للافتراضي
+        // دالة المزامنة المحدثة للترميز الآمن للغة العربية ومنع تفريغ الملف
         async function syncToGitHub() {
             try {
                 const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
                 
-                // جلب أحدث SHA للملف دائماً قبل الرفع
                 const getRes = await fetch(url, {
                     headers: {
                         "Authorization": `token ${GITHUB_CONFIG.token}`,
@@ -309,7 +296,9 @@
                     admins: admins
                 };
                 const jsonString = JSON.stringify(contentObj, null, 2);
-                const encodedContent = btoa(unescape(encodeURIComponent(jsonString)));
+                
+                // الترميز الآمن 100% للغة العربية
+                const encodedContent = btoa(String.fromCharCode(...new TextEncoder().encode(jsonString)));
 
                 const response = await fetch(url, {
                     method: "PUT",
