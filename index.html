@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الدخول الى 630 - السحابي الفوري</title>
+    <title>إدارة تحالف 630 - النسخة الشاملة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
@@ -17,11 +17,13 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
+    <!-- شاشة التحميل السحابي -->
     <div id="sync-loading" class="fixed inset-0 bg-[#121212] z-50 flex flex-col items-center justify-center space-y-4">
         <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-sm gold-text font-bold">جاري الاتصال بالسحابة وجلب بيانات السيرفر...</p>
+        <p class="text-sm gold-text font-bold">جاري الاتصال بالسحابة وجلب تفاصيل السيرفر الكاملة...</p>
     </div>
 
+    <!-- شاشة إدخال التوكن لمرة واحدة -->
     <div id="token-screen" class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border hidden space-y-4">
         <h2 class="text-xl font-black gold-text">إعداد مفتاح الربط السحابي (Token)</h2>
         <p class="text-xs text-gray-400">هذه الخطوة تظهر لمرة واحدة فقط لربط متصفحك بالسحابة بأمان تام.</p>
@@ -29,8 +31,9 @@
         <button type="button" onclick="saveTokenAndStart()" class="w-full py-3 rounded-2xl gold-bg text-black font-bold hover:opacity-95 transition shadow-lg cursor-pointer text-sm">حفظ والبدء</button>
     </div>
 
+    <!-- شاشة تسجيل الدخول -->
     <div id="login-screen" class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border hidden">
-        <h2 class="text-2xl font-black gold-text mb-6">الدخول السحابي 630</h2>
+        <h2 class="text-2xl font-black gold-text mb-6">الدخول الشامل 630</h2>
         <div class="space-y-4">
             <input type="text" id="login-code" placeholder="كود الأدمن (مثال: 1G630)" class="w-full px-4 py-3 rounded-2xl bg-[#121212] border border-[#3f3f46] text-white focus:outline-none focus:border-[#d4af37]">
             <input type="password" id="login-pass" placeholder="رمز الموقع للأدمن" class="w-full px-4 py-3 rounded-2xl bg-[#121212] border border-[#3f3f46] text-white focus:outline-none focus:border-[#d4af37]">
@@ -41,10 +44,11 @@
         </div>
     </div>
 
-    <div id="dashboard" class="hidden w-full max-w-7xl mx-auto space-y-6">
+    <!-- لوحة التحكم الشاملة -->
+    <div id="dashboard" class="hidden w-full max-w-[95%] mx-auto space-y-6 my-8">
         <header class="slate-card p-6 rounded-3xl flex justify-between items-center border gold-border">
             <div>
-                <h1 class="text-2xl font-black gold-text">لوحة إمداد وتحالف الجيوش (السحابي الفوري)</h1>
+                <h1 class="text-2xl font-black gold-text">لوحة إمداد وتحالف الجيوش (النسخة الشاملة)</h1>
                 <p id="last-update-time" class="text-xs text-gray-400 mt-1">آخر تحديث سحابي: --</p>
             </div>
             <div class="flex items-center gap-4">
@@ -57,19 +61,25 @@
 
         <section class="slate-card p-6 rounded-3xl border gold-border space-y-4">
             <div class="flex justify-between items-center">
-                <h3 class="text-xl font-bold gold-text">سجل الإمداد وقلاع الأعضاء</h3>
+                <h3 class="text-xl font-bold gold-text">سجل الإمداد وقلاع الأعضاء (كامل التفاصيل)</h3>
                 <button type="button" onclick="addNewMember()" class="px-4 py-2 bg-yellow-500 text-black font-bold rounded-xl text-xs cursor-pointer hover:bg-yellow-400">➕ إضافة عضو جديد</button>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-right border-collapse min-w-[900px]">
+                <table class="w-full text-right border-collapse min-w-[1200px]">
                     <thead>
-                        <tr class="border-b border-gray-800 text-gray-400 text-sm">
-                            <th class="p-3">العضو / القلعة</th>
-                            <th class="p-3 text-center">نوع القلعة</th>
-                            <th class="p-3">مدرع مشاة</th>
-                            <th class="p-3">خارق مشاة</th>
-                            <th class="p-3">✨ بلور النيزك</th>
-                            <th class="p-3 text-center">إجراءات</th>
+                        <tr class="border-b border-gray-800 text-gray-400 text-xs">
+                            <th class="p-2">اسم القلعة</th>
+                            <th class="p-2 text-center">نوع القلعة</th>
+                            <th class="p-2">إيميل الموقع</th>
+                            <th class="p-2">رمز الموقع</th>
+                            <th class="p-2">إيميل اللعبة</th>
+                            <th class="p-2">رمز اللعبة</th>
+                            <th class="p-2 text-center">مدرع مشاة</th>
+                            <th class="p-2 text-center">خارق مشاة</th>
+                            <th class="p-2 text-center">مدرع رماة</th>
+                            <th class="p-2 text-center">خارق رماة</th>
+                            <th class="p-2 text-center">✨ بلور النيزك</th>
+                            <th class="p-2 text-center">إجراءات</th>
                         </tr>
                     </thead>
                     <tbody id="members-table-body"></tbody>
@@ -138,13 +148,13 @@
                     }
                 } else {
                     membersData = [
-                        { id: 1, castleName: "قلعة القائد", castleType: "أساسي", infantryArmored: 0, infantrySuper: 0, meteor: 0 }
+                        { id: 1, castleName: "قلعة القائد", castleType: "أساسي", email: "", pass: "", gameEmail: "", gamePass: "", infantryArmored: 0, infantrySuper: 0, archerArmored: 0, archerSuper: 0, meteor: 0 }
                     ];
                 }
             } catch (e) {
                 console.error(e);
                 membersData = [
-                    { id: 1, castleName: "قلعة القائد", castleType: "أساسي", infantryArmored: 0, infantrySuper: 0, meteor: 0 }
+                    { id: 1, castleName: "قلعة القائد", castleType: "أساسي", email: "", pass: "", gameEmail: "", gamePass: "", infantryArmored: 0, infantrySuper: 0, archerArmored: 0, archerSuper: 0, meteor: 0 }
                 ];
             }
             document.getElementById('sync-loading').classList.add('hidden');
@@ -171,7 +181,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        message: "Update data.json and timestamp instantly",
+                        message: "Update full members details and timestamp",
                         content: encodedContent,
                         sha: fileSha 
                     })
@@ -215,12 +225,18 @@
                 const tr = document.createElement('tr');
                 tr.className = 'border-b border-gray-800/40 hover:bg-white/5';
                 tr.innerHTML = `
-                    <td class="p-3"><input type="text" value="${m.castleName || ''}" class="px-3 py-1 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white w-full" oninput="updateData(${m.id}, 'castleName', this.value)"></td>
-                    <td class="p-3 text-center"><input type="text" value="${m.castleType || 'عضو'}" class="px-3 py-1 bg-[#121212] border border-gray-700 rounded-xl text-xs text-center gold-text w-28" oninput="updateData(${m.id}, 'castleType', this.value)"></td>
-                    <td class="p-3"><input type="number" value="${m.infantryArmored || 0}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateData(${m.id}, 'infantryArmored', this.value)"></td>
-                    <td class="p-3"><input type="number" value="${m.infantrySuper || 0}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateData(${m.id}, 'infantrySuper', this.value)"></td>
-                    <td class="p-3"><input type="number" value="${m.meteor || 0}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-sm text-center gold-text font-bold" oninput="updateData(${m.id}, 'meteor', this.value)"></td>
-                    <td class="p-3 text-center"><button type="button" onclick="deleteMember(${m.id})" class="px-2 py-1 bg-red-900/60 text-red-200 rounded-lg text-xs hover:bg-red-700 cursor-pointer">حذف</button></td>
+                    <td class="p-2"><input type="text" value="${m.castleName || ''}" class="px-2 py-1 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white w-32" oninput="updateData(${m.id}, 'castleName', this.value)"></td>
+                    <td class="p-2 text-center"><input type="text" value="${m.castleType || 'عضو'}" class="px-2 py-1 bg-[#121212] border border-gray-700 rounded-xl text-xs text-center gold-text w-24" oninput="updateData(${m.id}, 'castleType', this.value)"></td>
+                    <td class="p-2"><input type="text" value="${m.email || ''}" class="px-2 py-1 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white w-32" oninput="updateData(${m.id}, 'email', this.value)"></td>
+                    <td class="p-2"><input type="text" value="${m.pass || ''}" class="px-2 py-1 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white w-24" oninput="updateData(${m.id}, 'pass', this.value)"></td>
+                    <td class="p-2"><input type="text" value="${m.gameEmail || ''}" class="px-2 py-1 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white w-32" oninput="updateData(${m.id}, 'gameEmail', this.value)"></td>
+                    <td class="p-2"><input type="text" value="${m.gamePass || ''}" class="px-2 py-1 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white w-24" oninput="updateData(${m.id}, 'gamePass', this.value)"></td>
+                    <td class="p-2 text-center"><input type="number" value="${m.infantryArmored || 0}" class="w-16 bg-[#121212] border border-gray-700 rounded-xl p-1 text-xs text-center text-white" oninput="updateData(${m.id}, 'infantryArmored', this.value)"></td>
+                    <td class="p-2 text-center"><input type="number" value="${m.infantrySuper || 0}" class="w-16 bg-[#121212] border border-gray-700 rounded-xl p-1 text-xs text-center text-white" oninput="updateData(${m.id}, 'infantrySuper', this.value)"></td>
+                    <td class="p-2 text-center"><input type="number" value="${m.archerArmored || 0}" class="w-16 bg-[#121212] border border-gray-700 rounded-xl p-1 text-xs text-center text-white" oninput="updateData(${m.id}, 'archerArmored', this.value)"></td>
+                    <td class="p-2 text-center"><input type="number" value="${m.archerSuper || 0}" class="w-16 bg-[#121212] border border-gray-700 rounded-xl p-1 text-xs text-center text-white" oninput="updateData(${m.id}, 'archerSuper', this.value)"></td>
+                    <td class="p-2 text-center"><input type="number" value="${m.meteor || 0}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-1 text-xs text-center gold-text font-bold" oninput="updateData(${m.id}, 'meteor', this.value)"></td>
+                    <td class="p-2 text-center"><button type="button" onclick="deleteMember(${m.id})" class="px-2 py-1 bg-red-900/60 text-red-200 rounded-lg text-xs hover:bg-red-700 cursor-pointer">حذف</button></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -232,8 +248,14 @@
                 id: newId,
                 castleName: "قلعة جديدة",
                 castleType: "عضو",
+                email: "",
+                pass: "",
+                gameEmail: "",
+                gamePass: "",
                 infantryArmored: 0,
                 infantrySuper: 0,
+                archerArmored: 0,
+                archerSuper: 0,
                 meteor: 0
             });
             initMembersTable();
