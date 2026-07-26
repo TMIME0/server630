@@ -14,13 +14,15 @@
       "archerSuper": 0,
       "meteor": 0,
       "lastUpdated": "مباشر"
+    },
+    {
+      "id": 2,
+      "castleName": "قلعة جديدة",
+      "castleType": "عضو",
+      "infantryArmored": 0,
+      "infantrySuper": 0,
+      "meteor": 0
     }
   ],
-  "admins": {
-    "1G630": { "name": "الأدمن الأول (مدير عام)", "pass": "Tmime9090", "isMaster": true, "active": true, "hiddenFields": [] },
-    "2G630": { "name": "الأدمن الثاني", "pass": "pass2", "isMaster": false, "active": true, "hiddenFields": [] },
-    "3G630": { "name": "الأدمن الثالث", "pass": "pass3", "isMaster": false, "active": true, "hiddenFields": [] },
-    "4G630": { "name": "الأدمن الرابع", "pass": "pass4", "isMaster": false, "active": true, "hiddenFields": [] },
-    "5G630": { "name": "الأدمن الخامس", "pass": "pass5", "isMaster": false, "active": true, "hiddenFields": [] }
-  }
+  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ١:٤١:٢٢ ص"
 }
