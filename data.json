@@ -4,8 +4,8 @@
       "id": 1,
       "castleName": "اسم القلعة",
       "castleType": "dual",
-      "email": "member1@alliance.com",
-      "pass": "pass1",
+      "email": "630f",
+      "pass": "630t",
       "gameEmail": "game1@game.com",
       "gamePass": "gpass1",
       "infantryArmored": 0,
@@ -13,7 +13,8 @@
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
-      "lastUpdated": "مباشر"
+      "lastUpdated": "مباشر",
+      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٢:١١:٣١ ص"
     },
     {
       "id": 2,
@@ -1090,5 +1091,5 @@
       "lastSeen": "لم يسجل دخول بعد"
     }
   },
-  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٢:١٠:٤٣ ص"
+  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٢:١١:٣١ ص"
 }
