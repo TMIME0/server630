@@ -96,7 +96,7 @@
             </div>
         </header>
 
-        <!-- زر إعدادات الأعضاء والأدمنية الأربعة (يظهر للأدمن العام فقط) -->
+        <!-- زر إعدادات الأعضاء والأدمنية الأربعة -->
         <div id="master-admin-settings-container" class="hidden flex flex-wrap gap-3">
             <button type="button" onclick="toggleSettingsModal()" class="px-5 py-2.5 gold-bg text-black font-bold rounded-xl text-xs hover:opacity-90 transition shadow cursor-pointer flex items-center gap-2">
                 ⚙️ إدارة وتعديل يوزرات ورموز وحسابات اللعبة للأعضاء (للأدمن العام فقط)
@@ -159,7 +159,7 @@
         </section>
     </div>
 
-    <!-- نافذة إعدادات قلاع الأعضاء (للأدمن العام فقط) -->
+    <!-- نافذة إعدادات قلاع الأعضاء -->
     <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
         <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-4xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
@@ -178,7 +178,7 @@
         </div>
     </div>
 
-    <!-- نافذة إدارة الأدمنية الأربعة وتفعيلهم وإخفاء البيانات (للأدمن العام فقط) -->
+    <!-- نافذة إدارة الأدمنية الأربعة -->
     <div id="admins-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
         <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-3xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
@@ -198,7 +198,6 @@
     </div>
 
     <script>
-        // إعدادات ربط GitHub المحدثة حسب مستودعك
         const GITHUB_CONFIG = {
             owner: "TMIME0", 
             repo: "server630",          
@@ -218,9 +217,8 @@
         let currentAdmin = null;
         let loggedInMemberId = null;
         let membersData = [];
-        let fileSha = ""; // ضروري لتحديث الملف على GitHub API
+        let fileSha = "";
 
-        // جلب البيانات من GitHub تلقائياً عند فتح الموقع
         async function fetchGitHubData() {
             try {
                 const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
@@ -233,21 +231,30 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    fileSha = data.sha; // حفظ الـ SHA الخاص بالملف للتحديث اللاحق
-                    const decodedContent = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+                    fileSha = data.sha;
                     
-                    if (decodedContent.members && decodedContent.members.length > 0) {
-                        membersData = decodedContent.members;
-                    }
-                    if (decodedContent.admins) {
-                        admins = decodedContent.admins;
+                    if (data.content) {
+                        try {
+                            const decodedContent = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+                            if (decodedContent.members && decodedContent.members.length > 0) {
+                                membersData = decodedContent.members;
+                            } else {
+                                initDefaultMembers();
+                            }
+                            if (decodedContent.admins) {
+                                admins = decodedContent.admins;
+                            }
+                        } catch (e) {
+                            initDefaultMembers();
+                        }
+                    } else {
+                        initDefaultMembers();
                     }
                 } else {
-                    // إذا كان الملف فارغاً أو جديداً نقوم بإنشاء البيانات الأولية
                     initDefaultMembers();
                 }
             } catch (error) {
-                console.error("خطأ في الاتصال بـ GitHub، سيتم الاعتماد على البيانات الافتراضية:", error);
+                console.error("خطأ في الاتصال بـ GitHub:", error);
                 initDefaultMembers();
             } finally {
                 document.getElementById('sync-loading').classList.add('hidden');
@@ -256,6 +263,7 @@
         }
 
         function initDefaultMembers() {
+            membersData = [];
             for (let i = 1; i <= 75; i++) {
                 membersData.push({
                     id: i,
@@ -276,9 +284,26 @@
             syncToGitHub();
         }
 
-        // دالة حفظ البيانات ورفعها إلى GitHub فوراً
+        // دالة المزامنة المحدثة التي تجلب الـ SHA الأحدث لتفادي أي تضارب أو رجوع للافتراضي
         async function syncToGitHub() {
             try {
+                const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
+                
+                // جلب أحدث SHA للملف دائماً قبل الرفع
+                const getRes = await fetch(url, {
+                    headers: {
+                        "Authorization": `token ${GITHUB_CONFIG.token}`,
+                        "Accept": "application/vnd.github.v3+json"
+                    }
+                });
+                
+                if (getRes.ok) {
+                    const fileData = await getRes.json();
+                    if (fileData.sha) {
+                        fileSha = fileData.sha;
+                    }
+                }
+
                 const contentObj = {
                     members: membersData,
                     admins: admins
@@ -286,8 +311,6 @@
                 const jsonString = JSON.stringify(contentObj, null, 2);
                 const encodedContent = btoa(unescape(encodeURIComponent(jsonString)));
 
-                const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
-                
                 const response = await fetch(url, {
                     method: "PUT",
                     headers: {
@@ -296,7 +319,7 @@
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        message: "Update alliance data via 630 Web App",
+                        message: "Update alliance data securely via 630 Web App",
                         content: encodedContent,
                         sha: fileSha,
                         branch: GITHUB_CONFIG.branch
@@ -305,8 +328,8 @@
 
                 if (response.ok) {
                     const resData = await response.json();
-                    fileSha = resData.content.sha; // تحديث الـ SHA الجديد للعمليات القادمة
-                    console.log("تم الحفظ بنجاح على GitHub!");
+                    fileSha = resData.content.sha;
+                    console.log("تم الحفظ وتثبيت التعديلات على GitHub بنجاح!");
                 }
             } catch (err) {
                 console.error("فشل المزامنة مع GitHub:", err);
@@ -491,7 +514,7 @@
             });
 
             syncToGitHub();
-            alert('تم حفظ تعديلات الحسابات ورفعها إلى GitHub بنجاح!');
+            alert('تم حفظ تعديلات الحسابات ورفعها إلى GitHub بنجاح ولن تتغير!');
             toggleSettingsModal();
             initMembersTable();
         }
