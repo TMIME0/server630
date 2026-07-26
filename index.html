@@ -206,7 +206,7 @@
                 membersData.push({
                     id: i,
                     castleName: i === 1 ? 'قلعة سفاح' : '',
-                    castleType: 'dual', // القيم الممكنة: 'infantry_only' (مشاة فقط), 'archer_only' (رماة فقط), 'dual' (خطين)
+                    castleType: 'dual', 
                     email: `member${i}@alliance.com`,
                     pass: `pass${i}`,
                     gameEmail: `game${i}@game.com`,
@@ -215,10 +215,18 @@
                     archerArmored: 0,
                     infantrySuper: 0,
                     archerSuper: 0,
-                    meteor: 0
+                    meteor: 0,
+                    lastUpdated: 'لم يتم التحديث بعد'
                 });
             }
             localStorage.setItem('alliance_members', JSON.stringify(membersData));
+        }
+
+        function getFormattedDateTime() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('ar-EG');
+            const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+            return `${dateStr} - ${timeStr}`;
         }
 
         function handleLogin() {
@@ -276,6 +284,10 @@
                 currentAdmin = null;
                 loggedInMemberId = member.id;
                 welcomeMsg.classList.remove('hidden');
+
+                // تحديث وقت الدخول كآخر ظهور
+                member.lastUpdated = getFormattedDateTime();
+                localStorage.setItem('alliance_members', JSON.stringify(membersData));
 
                 setTimeout(() => {
                     document.getElementById('login-screen').classList.add('hidden');
@@ -448,6 +460,7 @@
                 if (loggedInMemberId !== null) {
                     columnContent = `
                         <div class="font-bold text-white text-sm mb-1">قلعتك الخاصة</div>
+                        <div class="text-[11px] text-yellow-500/90 mb-2 font-semibold">🕒 آخر تحديث: ${m.lastUpdated || 'لم يتم التحديث بعد'}</div>
                         <div class="bg-[#121212] p-2.5 rounded-xl border border-gray-800 space-y-2">
                             <div>
                                 <span class="text-[10px] text-gray-400 block mb-1">ايميل حساب اللعبة</span>
@@ -474,7 +487,10 @@
                     }
 
                     columnContent = `
-                        <div class="font-bold text-white text-sm">عضو رقم ${m.id}</div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-white text-sm">عضو رقم ${m.id}</span>
+                            <span class="text-[10px] text-yellow-500/90 font-medium">🕒 ${m.lastUpdated || 'لم يتم التحديث بعد'}</span>
+                        </div>
                         <input type="text" placeholder="اسم القلعة (مثل: سفاح)" value="${m.castleName}" 
                             class="castle-name-input px-3 py-1.5 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-[#d4af37] w-full"
                             oninput="updateCastleName(${m.id}, this.value)">
@@ -482,7 +498,6 @@
                     `;
                 }
 
-                // اختيار نوع القلعة (مشاة فقط، رماة فقط، خطين) متاح للأدمن العام فقط
                 let typeSelector = '';
                 let isMasterAdmin = currentAdmin && currentAdmin.isMaster;
                 
@@ -501,7 +516,6 @@
                     typeSelector = `<span class="text-xs gold-text font-bold">${typeText}</span>`;
                 }
 
-                // الحقول حسب نوع القلعة
                 let infantryField = '';
                 let archerField = '';
 
@@ -545,6 +559,7 @@
             const member = membersData.find(m => m.id === id);
             if (member) {
                 member.castleName = val;
+                member.lastUpdated = getFormattedDateTime();
                 localStorage.setItem('alliance_members', JSON.stringify(membersData));
             }
         }
@@ -553,7 +568,6 @@
             const member = membersData.find(m => m.id === id);
             if (member) {
                 member.castleType = val;
-                // تفريغ الحقول غير المطلوبة عند التغيير لمنع تداخل البيانات
                 if (val === 'infantry_only') {
                     member.archerArmored = 0;
                     member.archerSuper = 0;
@@ -561,6 +575,7 @@
                     member.infantryArmored = 0;
                     member.infantrySuper = 0;
                 }
+                member.lastUpdated = getFormattedDateTime();
                 localStorage.setItem('alliance_members', JSON.stringify(membersData));
                 initMembersTable();
             }
@@ -570,6 +585,7 @@
             const member = membersData.find(m => m.id === id);
             if (member) {
                 member[field] = val === '' ? 0 : Number(val);
+                member.lastUpdated = getFormattedDateTime();
                 localStorage.setItem('alliance_members', JSON.stringify(membersData));
                 updateTotals();
             }
@@ -579,6 +595,7 @@
             const member = membersData.find(m => m.id === id);
             if (member) {
                 member[field] = val;
+                member.lastUpdated = getFormattedDateTime();
                 localStorage.setItem('alliance_members', JSON.stringify(membersData));
             }
         }
