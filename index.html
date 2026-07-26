@@ -23,7 +23,7 @@
         <p class="text-sm gold-text font-bold">جاري الاتصال بالسحابة وجلب بيانات السيرفر...</p>
     </div>
 
-    <!-- شاشة إدخال التوكن لمرة واحدة (تظهر للمدير فقط) -->
+    <!-- شاشة إدخال التوكن لمرة واحدة -->
     <div id="token-screen" class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border hidden space-y-4">
         <h2 class="text-xl font-black gold-text">إعداد مفتاح الربط السحابي (Token)</h2>
         <p class="text-xs text-gray-400">هذه الخطوة تظهر لمرة واحدة فقط لربط متصفحك بالسحابة بأمان تام.</p>
@@ -60,7 +60,10 @@
         </header>
 
         <section class="slate-card p-6 rounded-3xl border gold-border space-y-4">
-            <h3 class="text-xl font-bold gold-text">سجل الإمداد وقلاع الأعضاء</h3>
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-bold gold-text">سجل الإمداد وقلاع الأعضاء</h3>
+                <button type="button" onclick="addNewMember()" class="px-4 py-2 bg-yellow-500 text-black font-bold rounded-xl text-xs cursor-pointer hover:bg-yellow-400">➕ إضافة عضو جديد</button>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-right border-collapse min-w-[900px]">
                     <thead>
@@ -134,12 +137,16 @@
                     const decodedContent = JSON.parse(decodeURIComponent(escape(atob(data.content))));
                     membersData = decodedContent.members || [];
                 } else {
-                    alert('فشل جلب البيانات، يرجى التحقق من صحة التوكن عبر إعادة ضبطه.');
-                    resetToken();
-                    return;
+                    // إذا الملف فارغ أو غير موجود ننشئ مصفوفة أولية
+                    membersData = [
+                        { id: 1, castleName: "قلعة القائد", castleType: "أساسي", infantryArmored: 0, infantrySuper: 0, meteor: 0 }
+                    ];
                 }
             } catch (e) {
                 console.error(e);
+                membersData = [
+                    { id: 1, castleName: "قلعة القائد", castleType: "أساسي", infantryArmored: 0, infantrySuper: 0, meteor: 0 }
+                ];
             }
             document.getElementById('sync-loading').classList.add('hidden');
             document.getElementById('login-screen').classList.remove('hidden');
@@ -201,19 +208,32 @@
         function initMembersTable() {
             const tbody = document.getElementById('members-table-body');
             tbody.innerHTML = '';
-            membersData.getData = membersData || [];
             membersData.forEach((m) => {
                 const tr = document.createElement('tr');
                 tr.className = 'border-b border-gray-800/40 hover:bg-white/5';
                 tr.innerHTML = `
                     <td class="p-3"><input type="text" value="${m.castleName || ''}" class="px-3 py-1 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white w-full" oninput="updateData(${m.id}, 'castleName', this.value)"></td>
-                    <td class="p-3 text-center"><span class="text-xs gold-text">${m.castleType}</span></td>
+                    <td class="p-3 text-center"><span class="text-xs gold-text">${m.castleType || 'عضو'}</span></td>
                     <td class="p-3"><input type="number" value="${m.infantryArmored || 0}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateData(${m.id}, 'infantryArmored', this.value)"></td>
                     <td class="p-3"><input type="number" value="${m.infantrySuper || 0}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateData(${m.id}, 'infantrySuper', this.value)"></td>
                     <td class="p-3"><input type="number" value="${m.meteor || 0}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-sm text-center gold-text font-bold" oninput="updateData(${m.id}, 'meteor', this.value)"></td>
                 `;
-                tbody.appendChild.tr;
+                tbody.appendChild(tr);
             });
+        }
+
+        function addNewMember() {
+            const newId = membersData.length > 0 ? Math.max(...membersData.map(x => x.id)) + 1 : 1;
+            membersData.push({
+                id: newId,
+                castleName: "قلعة جديدة",
+                castleType: "عضو",
+                infantryArmored: 0,
+                infantrySuper: 0,
+                meteor: 0
+            });
+            initMembersTable();
+            saveToCloud();
         }
 
         let updateTimer;
