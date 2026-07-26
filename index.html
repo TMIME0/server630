@@ -31,20 +31,20 @@
     <!-- شاشة التحميل السحابي -->
     <div id="sync-loading" class="fixed inset-0 bg-[#121212] z-50 flex flex-col items-center justify-center space-y-4">
         <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-sm gold-text font-bold">جاري الاتصال بالسحابة وجلب تفاصيل السيرفر الكاملة لـ 75 قلعة...</p>
+        <p class="text-sm gold-text font-bold">جاري الاتصال بالسحابة وجلب تفاصيل السيرفر لـ 75 قلعة...</p>
     </div>
 
-    <!-- شاشة إدخال التوكن لمرة واحدة -->
+    <!-- شاشة إدخال التوكن (تظهر للأدمن فقط عند الحاجة) -->
     <div id="token-screen" class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border hidden space-y-4">
         <h2 class="text-xl font-black gold-text">إعداد مفتاح الربط السحابي (Token)</h2>
-        <p class="text-xs text-gray-400">هذه الخطوة تظهر لمرة واحدة فقط لربط متصفحك بالسحابة بأمان تام.</p>
+        <p class="text-xs text-gray-400">هذه الخطوة خاصة بالأدمن العام فقط لربط الموقع بالسحابة.</p>
         <input type="password" id="token-input" placeholder="الصق التوكن هنا (ghp_...)" class="w-full px-4 py-3 rounded-2xl bg-[#121212] border border-[#3f3f46] text-white focus:outline-none focus:border-[#d4af37] text-xs">
         <button type="button" onclick="saveTokenAndStart()" class="w-full py-3 rounded-2xl gold-bg text-black font-bold hover:opacity-95 transition shadow-lg cursor-pointer text-sm">حفظ والبدء</button>
     </div>
 
     <!-- شاشة تسجيل الدخول -->
     <div id="login-screen" class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border hidden">
-        <h2 class="text-2xl font-black gold-text mb-6">الدخول الى 630</h2>
+        <h2 class="text-2xl font-black gold-text mb-6"> Server 630</h2>
         <div class="space-y-4">
             <div>
                 <input type="text" id="login-code" placeholder="كود الأدمن (مثال: 1G630)" 
@@ -82,7 +82,7 @@
             مليون هلا <span class="text-xl">❤️</span>
         </div>
         <div class="mt-4 flex justify-center items-center text-xs">
-            <button type="button" onclick="resetToken()" class="text-gray-500 hover:underline">إعادة ضبط التوكن السحابي</button>
+            <button type="button" onclick="resetToken()" class="text-gray-500 hover:underline">إعادة ضبط التوكن السحابي (للأدمن)</button>
         </div>
     </div>
 
@@ -231,13 +231,15 @@
 
         checkTokenAndLoad();
 
-        function checkTokenAndLoad() {
-            document.getElementById('sync-loading').classList.add('hidden');
+        async function checkTokenAndLoad() {
+            // إذا ماكو توكن (يعني جهاز عضو مو جهاز الأدمن)، ما نظهر شاشة التوكن أبداً وننتقل لتسجيل الدخول مباشرة
             if (!GITHUB_TOKEN) {
-                document.getElementById('token-screen').classList.remove('hidden');
-            } else {
-                loadCloudData();
+                document.getElementById('sync-loading').classList.add('hidden');
+                document.getElementById('login-screen').classList.remove('hidden');
+                initDefaultMembers(); // تجهيز هيكل مؤقت لحين تسجيل دخول العضو
+                return;
             }
+            loadCloudData();
         }
 
         function saveTokenAndStart() {
@@ -273,7 +275,6 @@
                     mergeWithFullMembers(loadedMembers);
 
                     if (decodedContent.admins) {
-                        // دمج بيانات الأدمن مع الاحتفاظ بسجل آخر ظهور القديم إذا وجد
                         Object.keys(decodedContent.admins).forEach(code => {
                             if (admins[code]) {
                                 admins[code] = { ...admins[code], ...decodedContent.admins[code] };
@@ -340,10 +341,11 @@
                     lastMemberUpdate: 'لم يتم التعديل بعد'
                 });
             }
-            saveToCloud();
         }
 
         async function saveToCloud() {
+            if (!GITHUB_TOKEN) return; // العضو ما يقدر يرفع مباشرة للسحابة إذا ما عنده توكن الأدمن
+
             const statusDiv = document.getElementById('cloud-status');
             if (statusDiv) {
                 statusDiv.innerText = "⏳ جاري الرفع السحابي...";
@@ -379,18 +381,26 @@
                         statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
                     }
                     document.getElementById('last-update-time').innerText = `آخر تحديث سحابي عام: ${timeString}`;
-                } else {
-                    if (statusDiv) {
-                        statusDiv.innerText = "❌ فشل الرفع (تحقق من الصلاحيات)";
-                        statusDiv.className = "text-xs text-red-400 bg-red-950/40 px-3 py-1.5 rounded-xl border border-red-800 font-bold";
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function fetchLatestDataForMember() {
+            try {
+                const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`;
+                const res = await fetch(url);
+                if (res.ok) {
+                    const data = await res.json();
+                    fileSha = data.sha;
+                    const decodedContent = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+                    if (decodedContent.members) {
+                        mergeWithFullMembers(decodedContent.members);
                     }
                 }
             } catch (e) {
                 console.error(e);
-                if (statusDiv) {
-                    statusDiv.innerText = "❌ خطأ في الاتصال بالسحابة";
-                    statusDiv.className = "text-xs text-red-400 bg-red-950/40 px-3 py-1.5 rounded-xl border border-red-800 font-bold";
-                }
             }
         }
 
@@ -399,16 +409,23 @@
             const pass = document.getElementById('login-pass').value.trim();
             const welcomeMsg = document.getElementById('welcome-msg');
 
+            // إذا حاول الأدمن يسجل دخول وما عنده توكن، نظهرله شاشة التوكن
+            if (!GITHUB_TOKEN) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('token-screen').classList.remove('hidden');
+                alert('يرجى إدخال مفتاح الربط السحابي (Token) الخاص بالأدمن أولاً.');
+                return;
+            }
+
             if (admins[code] && admins[code].pass === pass) {
                 if (!admins[code].active && !admins[code].isMaster) {
                     alert('عذراً، هذا الحساب تم إيقافه من قبل الأدمن العام!');
                     return;
                 }
 
-                // تسجيل وقت آخر ظهور للأدمن
                 const now = new Date();
                 admins[code].lastSeen = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
-                saveToCloud(); // حفظ وقت آخر ظهور سحابياً فوراً
+                saveToCloud();
 
                 currentAdmin = admins[code];
                 loggedInMemberId = null;
@@ -443,10 +460,14 @@
             box.classList.toggle('hidden');
         }
 
-        function handleMemberLogin() {
+        async function handleMemberLogin() {
             const mEmail = document.getElementById('member-email-input').value.trim().toLowerCase();
             const mPass = document.getElementById('member-pass-input').value.trim();
             const welcomeMsg = document.getElementById('welcome-msg');
+
+            document.getElementById('sync-loading').classList.remove('hidden');
+            await fetchLatestDataForMember();
+            document.getElementById('sync-loading').classList.add('hidden');
 
             const member = membersData.find(m => m.email.toLowerCase() === mEmail && m.pass === mPass);
 
