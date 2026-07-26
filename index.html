@@ -17,13 +17,11 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <!-- شاشة التحميل السحابي -->
     <div id="sync-loading" class="fixed inset-0 bg-[#121212] z-50 flex flex-col items-center justify-center space-y-4">
         <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
         <p class="text-sm gold-text font-bold">جاري الاتصال بالسحابة وجلب بيانات السيرفر...</p>
     </div>
 
-    <!-- شاشة إدخال التوكن لمرة واحدة -->
     <div id="token-screen" class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border hidden space-y-4">
         <h2 class="text-xl font-black gold-text">إعداد مفتاح الربط السحابي (Token)</h2>
         <p class="text-xs text-gray-400">هذه الخطوة تظهر لمرة واحدة فقط لربط متصفحك بالسحابة بأمان تام.</p>
@@ -31,7 +29,6 @@
         <button type="button" onclick="saveTokenAndStart()" class="w-full py-3 rounded-2xl gold-bg text-black font-bold hover:opacity-95 transition shadow-lg cursor-pointer text-sm">حفظ والبدء</button>
     </div>
 
-    <!-- شاشة تسجيل الدخول -->
     <div id="login-screen" class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border hidden">
         <h2 class="text-2xl font-black gold-text mb-6">الدخول السحابي 630</h2>
         <div class="space-y-4">
@@ -44,12 +41,11 @@
         </div>
     </div>
 
-    <!-- لوحة التحكم -->
     <div id="dashboard" class="hidden w-full max-w-7xl mx-auto space-y-6">
         <header class="slate-card p-6 rounded-3xl flex justify-between items-center border gold-border">
             <div>
                 <h1 class="text-2xl font-black gold-text">لوحة إمداد وتحالف الجيوش (السحابي الفوري)</h1>
-                <p id="admin-role-title" class="text-sm text-gray-400">متصل بالسحابة مباشرة</p>
+                <p id="last-update-time" class="text-xs text-gray-400 mt-1">آخر تحديث سحابي: --</p>
             </div>
             <div class="flex items-center gap-4">
                 <div id="cloud-status" class="text-xs text-yellow-400 bg-yellow-950/40 px-3 py-1.5 rounded-xl border border-yellow-800 font-bold">
@@ -137,6 +133,9 @@
                     fileSha = data.sha; 
                     const decodedContent = JSON.parse(decodeURIComponent(escape(atob(data.content))));
                     membersData = decodedContent.members || [];
+                    if(decodedContent.lastUpdated) {
+                        document.getElementById('last-update-time').innerText = `آخر تحديث سحابي: ${decodedContent.lastUpdated}`;
+                    }
                 } else {
                     membersData = [
                         { id: 1, castleName: "قلعة القائد", castleType: "أساسي", infantryArmored: 0, infantrySuper: 0, meteor: 0 }
@@ -157,8 +156,11 @@
             statusDiv.innerText = "⏳ جاري الرفع السحابي...";
             statusDiv.className = "text-xs text-blue-400 bg-blue-950/40 px-3 py-1.5 rounded-xl border border-blue-800 font-bold";
 
+            const now = new Date();
+            const timeString = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
+
             const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`;
-            const fileContent = JSON.stringify({ members: membersData }, null, 2);
+            const fileContent = JSON.stringify({ members: membersData, lastUpdated: timeString }, null, 2);
             const encodedContent = btoa(unescape(encodeURIComponent(fileContent)));
 
             try {
@@ -169,7 +171,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        message: "Update data.json from web dashboard instantly",
+                        message: "Update data.json and timestamp instantly",
                         content: encodedContent,
                         sha: fileSha 
                     })
@@ -180,6 +182,7 @@
                     fileSha = result.content.sha; 
                     statusDiv.innerText = "☁️ تم التحديث سحابياً بنجاح الفوري";
                     statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
+                    document.getElementById('last-update-time').innerText = `آخر تحديث سحابي: ${timeString}`;
                 } else {
                     statusDiv.innerText = "❌ فشل الرفع (تحقق من الصلاحيات)";
                     statusDiv.className = "text-xs text-red-400 bg-red-950/40 px-3 py-1.5 rounded-xl border border-red-800 font-bold";
