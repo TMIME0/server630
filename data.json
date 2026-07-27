@@ -33,8 +33,8 @@
       "id": 3,
       "castleName": "قلعة عواطف",
       "castleType": "dual",
-      "email": "awatif",
-      "pass": "630aa",
+      "email": "a",
+      "pass": "a",
       "gameEmail": "game3@game.com",
       "gamePass": "gpass3",
       "infantryArmored": 0,
@@ -42,7 +42,7 @@
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
-      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٢:٣٣:٣١ ص"
+      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٣:٤٢:١٠ ص"
     },
     {
       "id": 4,
@@ -1096,5 +1096,5 @@
       "lastSeen": "لم يسجل دخول بعد"
     }
   },
-  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٣:٤١:٥٣ ص"
+  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٣:٤٢:١٠ ص"
 }
