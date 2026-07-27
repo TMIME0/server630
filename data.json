@@ -31,7 +31,7 @@
     },
     {
       "id": 3,
-      "castleName": " عواطف",
+      "castleName": "",
       "castleType": "archer_only",
       "email": "a",
       "pass": "a",
@@ -42,7 +42,7 @@
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
-      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٦:٣٣:٣٦ م"
+      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٦:٣٣:٥٠ م"
     },
     {
       "id": 4,
@@ -1096,5 +1096,5 @@
       "lastSeen": "لم يسجل دخول بعد"
     }
   },
-  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٦:٣٣:٣٩ م"
+  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٦:٣٣:٥١ م"
 }
