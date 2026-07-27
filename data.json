@@ -19,13 +19,13 @@
     {
       "id": 2,
       "castleName": "قلعة جديدة",
-      "castleType": "عضو",
+      "castleType": "dual",
       "infantryArmored": 0,
       "infantrySuper": 0,
       "meteor": 0,
       "email": "falcon",
       "pass": "630tt",
-      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٣:٢١:٣٩ ص",
+      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٦:٣٣:٣١ م",
       "archerArmored": 0,
       "archerSuper": 0
     },
@@ -1096,5 +1096,5 @@
       "lastSeen": "لم يسجل دخول بعد"
     }
   },
-  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٦:١٤:٥٩ م"
+  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٦:٣٣:٣١ م"
 }
