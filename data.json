@@ -47,7 +47,7 @@
     {
       "id": 4,
       "castleName": "",
-      "castleType": "dual",
+      "castleType": "infantry_only",
       "email": "h630h630",
       "pass": "630h",
       "gameEmail": "game4@game.com",
@@ -57,7 +57,7 @@
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
-      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٢:٣١:٣٨ ص"
+      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٦:٣٣:٣٩ م"
     },
     {
       "id": 5,
@@ -1096,5 +1096,5 @@
       "lastSeen": "لم يسجل دخول بعد"
     }
   },
-  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٦:٣٣:٣٦ م"
+  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٦:٣٣:٣٩ م"
 }
