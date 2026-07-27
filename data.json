@@ -8,13 +8,13 @@
       "pass": "630t",
       "gameEmail": "game1@game.com",
       "gamePass": "gpass1",
-      "infantryArmored": 20000000,
+      "infantryArmored": 0,
       "archerArmored": 0,
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
       "lastUpdated": "مباشر",
-      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٣:٢١:٢١ ص"
+      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٣:٢١:٢٢ ص"
     },
     {
       "id": 2,
@@ -1096,5 +1096,5 @@
       "lastSeen": "لم يسجل دخول بعد"
     }
   },
-  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٣:٢١:٢٢ ص"
+  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٣:٢١:٢٣ ص"
 }
