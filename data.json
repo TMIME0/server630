@@ -25,8 +25,9 @@
       "meteor": 0,
       "email": "falcon",
       "pass": "630tt",
-      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٣:٠٧:٣٨ ص",
-      "archerArmored": 70000000
+      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٣:٠٧:٤٣ ص",
+      "archerArmored": 70000000,
+      "archerSuper": 3000000
     },
     {
       "id": 3,
@@ -1095,5 +1096,5 @@
       "lastSeen": "لم يسجل دخول بعد"
     }
   },
-  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٣:٠٧:٣٩ ص"
+  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٣:٠٧:٤٤ ص"
 }
