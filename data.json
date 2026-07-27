@@ -21,11 +21,11 @@
       "castleName": "قلعة جديدة",
       "castleType": "عضو",
       "infantryArmored": 6800000,
-      "infantrySuper": 0,
+      "infantrySuper": 12000000,
       "meteor": 0,
       "email": "falcon",
       "pass": "630tt",
-      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٣:٠٧:٣٤ ص",
+      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٣:٠٧:٣٨ ص",
       "archerArmored": 70000000
     },
     {
@@ -1095,5 +1095,5 @@
       "lastSeen": "لم يسجل دخول بعد"
     }
   },
-  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٣:٠٧:٣٥ ص"
+  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٣:٠٧:٣٩ ص"
 }
