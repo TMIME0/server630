@@ -44,7 +44,7 @@
 
     <!-- شاشة تسجيل الدخول -->
     <div id="login-screen" class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border hidden">
-        <h2 class="text-2xl font-black gold-text mb-6">الدخول الى 630</h2>
+        <h2 class="text-2xl font-black gold-text mb-6">اServer 630</h2>
         <div class="space-y-4">
             <div>
                 <input type="text" id="login-code" placeholder="كود الأدمن (مثال: 1G630)" 
@@ -232,11 +232,10 @@
         checkTokenAndLoad();
 
         async function checkTokenAndLoad() {
-            // إذا ماكو توكن (يعني جهاز عضو مو جهاز الأدمن)، ما نظهر شاشة التوكن أبداً وننتقل لتسجيل الدخول مباشرة
             if (!GITHUB_TOKEN) {
                 document.getElementById('sync-loading').classList.add('hidden');
                 document.getElementById('login-screen').classList.remove('hidden');
-                initDefaultMembers(); // تجهيز هيكل مؤقت لحين تسجيل دخول العضو
+                initDefaultMembers();
                 return;
             }
             loadCloudData();
@@ -344,7 +343,7 @@
         }
 
         async function saveToCloud() {
-            if (!GITHUB_TOKEN) return; // العضو ما يقدر يرفع مباشرة للسحابة إذا ما عنده توكن الأدمن
+            if (!GITHUB_TOKEN) return;
 
             const statusDiv = document.getElementById('cloud-status');
             if (statusDiv) {
@@ -409,7 +408,6 @@
             const pass = document.getElementById('login-pass').value.trim();
             const welcomeMsg = document.getElementById('welcome-msg');
 
-            // إذا حاول الأدمن يسجل دخول وما عنده توكن، نظهرله شاشة التوكن
             if (!GITHUB_TOKEN) {
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('token-screen').classList.remove('hidden');
@@ -676,6 +674,11 @@
                                     oninput="updateMemberGameData(${m.id}, 'gamePass', this.value)">
                             </div>
                             <div class="text-[10px] text-gray-500 pt-1">آخر تحديث لبياناتك: ${m.lastMemberUpdate || 'لم يتم التعديل'}</div>
+                            <div class="pt-2">
+                                <button type="button" onclick="saveSingleMemberData(${m.id})" class="w-full py-1.5 gold-bg text-black rounded-lg text-xs font-bold hover:opacity-90 transition cursor-pointer">
+                                    💾 حفظ التعديلات
+                                </button>
+                            </div>
                         </div>
                     `;
                 } else {
@@ -698,6 +701,11 @@
                             class="castle-name-input px-3 py-1.5 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-[#d4af37] w-full"
                             oninput="updateCastleName(${m.id}, this.value)">
                         ${gameDataSection}
+                        <div class="pt-1">
+                            <button type="button" onclick="saveSingleMemberData(${m.id})" class="w-full py-1 bg-gray-800 hover:bg-[#d4af37] hover:text-black text-gray-300 rounded-lg text-[11px] font-bold transition cursor-pointer border border-gray-700">
+                                💾 حفظ بيانات العضو
+                            </button>
+                        </div>
                     `;
                 }
 
@@ -821,6 +829,11 @@
                 initMembersTable();
                 updateTotals();
             }
+        }
+
+        function saveSingleMemberData(id) {
+            saveToCloud();
+            alert('تم حفظ بيانات العضو ورفعها بنجاح!');
         }
 
         function updateTotals() {
