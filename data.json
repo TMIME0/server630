@@ -38,11 +38,11 @@
       "gameEmail": "game3@game.com",
       "gamePass": "gpass3",
       "infantryArmored": 1,
-      "archerArmored": 0,
+      "archerArmored": 1,
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
-      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٣:٥١:١٠ ص"
+      "lastMemberUpdate": "٢٧‏/٧‏/٢٠٢٦ - ٣:٥١:١٢ ص"
     },
     {
       "id": 4,
@@ -1096,5 +1096,5 @@
       "lastSeen": "لم يسجل دخول بعد"
     }
   },
-  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٣:٥١:١١ ص"
+  "lastUpdated": "٢٧‏/٧‏/٢٠٢٦ - ٣:٥١:١٣ ص"
 }
