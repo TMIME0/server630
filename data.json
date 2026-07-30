@@ -1137,7 +1137,7 @@
     },
     "2G630": {
       "name": "الأدمن الثاني",
-      "pass": "pass2",
+      "pass": "2",
       "isMaster": false,
       "active": true,
       "hiddenFields": [],
@@ -1168,5 +1168,5 @@
       "lastSeen": "لم يسجل دخول بعد"
     }
   },
-  "lastUpdated": "٣٠‏/٧‏/٢٠٢٦ - ٥:٣١:٥٢ ص"
+  "lastUpdated": "٣٠‏/٧‏/٢٠٢٦ - ٥:٣٢:٥١ ص"
 }
