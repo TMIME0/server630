@@ -7,13 +7,13 @@
       "email": "1",
       "pass": "1",
       "gameEmail": "",
-      "gamePass": "Tesst",
+      "gamePass": "",
       "infantryArmored": 0,
       "archerArmored": 0,
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
-      "lastMemberUpdate": "٣٠‏/٧‏/٢٠٢٦ - ١٠:١٠:١٢ ص"
+      "lastMemberUpdate": "لم يتم التعديل بعد"
     },
     {
       "id": 2,
@@ -1133,7 +1133,7 @@
       "isMaster": true,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "٣٠‏/٧‏/٢٠٢٦ - ١٠:٠٨:٣١ ص"
+      "lastSeen": "٣٠‏/٧‏/٢٠٢٦ - ١٠:١٠:٢٧ ص"
     },
     "2G630": {
       "name": "الأدمن الثاني",
