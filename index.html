@@ -3,92 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة لوحة تحكم جيش السيرفر</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>إدارة بيانات الجيش - سرفر 630</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: Tahoma, sans-serif;
+            color: white;
+        }
+
+        body {
+            background: #000 url('photo_2026-07-30_07-05-40.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dashboard-container {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 25px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 900px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: #ffcc00;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        th {
+            background: rgba(0, 150, 255, 0.4);
+            color: #fff;
+        }
+
+        .update-time {
+            text-align: left;
+            font-size: 13px;
+            color: #00ffcc;
+        }
+    </style>
 </head>
-<body class="bg-[#0b0b0b] text-white min-h-screen">
+<body>
 
-    <!-- شاشة التحميل (سيتم إخفاؤها فوراً بعد جلب البيانات) -->
-    <div id="sync-loading" class="fixed inset-0 bg-black/90 flex flex-col items-center justify-center z-50">
-        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-yellow-500 mb-4"></div>
-        <div class="text-yellow-400 font-bold text-lg">جاري تحميل بيانات السيرفر...</div>
-    </div>
+    <div class="dashboard-container">
+        <div class="header-title">لوحة تحكم إمدادات الجيش - سرفر 630</div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم العضو</th>
+                    <th>نوع القوات</th>
+                    <th>الكمية المتاحة</th>
+                    <th>الحالة</th>
+                </tr>
+            </thead>
+            <tbody id="data-table-body">
+                <!-- البيانات يتم جلبها وحقنها تلقائياً من ملف الداتا -->
+            </tbody>
+        </table>
 
-    <!-- المحتوى الرئيسي للموقع -->
-    <div class="p-6">
-        <header class="flex justify-between items-center mb-6">
-            <h1 class="text-xl font-bold text-yellow-500">لوحة تحكم السيرفر</h1>
-            <div id="cloud-status" class="text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold">متصل 🟢</div>
-        </header>
-
-        <div id="content-container">
-            <!-- هنا تظهر بيانات الأعضاء والتحكم -->
+        <div class="update-time">
+            آخر تحديث للبيانات: <span id="timeField">جاري التحميل...</span>
         </div>
     </div>
 
+    <!-- ربط ملف البيانات الخارجي (تأكد أن اسم الملف مطابق، مثلاً data.js) -->
+    <script src="data.js"></script>
+
     <script>
-        let membersData = [];
-        let admins = [];
-        let loggedInMemberId = null;
-
-        function initDefaultMembers() {
-            membersData = [];
-            for (let i = 1; i <= 75; i++) {
-                membersData.push({
-                    id: i,
-                    castleName: i === 1 ? 'قمة' : '',
-                    castleType: 'dual',
-                    email: `member${i}@alliance.com`,
-                    pass: `pass${i}`,
-                    gameEmail: `game${i}@game.com`,
-                    gamePass: `gpass${i}`,
-                    infantryArmored: 0,
-                    archerArmored: 0,
-                    infantrySuper: 0
-                });
-            }
+        // التحقق من وجود البيانات في ملف الداتا المربوط وعرضها بالجداول
+        const tableBody = document.getElementById('data-table-body');
+        
+        if (typeof armyData !== 'undefined' && Array.isArray(armyData)) {
+            tableBody.innerHTML = ''; // تنظيف الحقل
+            armyData.forEach(item => {
+                const row = `<tr>
+                    <td>${item.name}</td>
+                    <td>${item.troopType}</td>
+                    <td>${item.quantity}</td>
+                    <td style="color: ${item.status === 'جاهز' ? '#00ffcc' : '#ffcc00'};">${item.status}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        } else {
+            tableBody.innerHTML = `<tr><td colspan="4" style="color: #ff4d4d;">خطأ: لم يتم العثور على ملف الداتا أو أن تنسيق البيانات غير صحيح!</td></tr>`;
         }
 
-        async function loadFromCloud() {
-            const statusDiv = document.getElementById('cloud-status');
-            try {
-                const response = await fetch('data.json?t=' + new Date().getTime());
-                const data = await response.json();
-                
-                if (data && data.members && data.members.length > 0) {
-                    membersData = data.members;
-                } else {
-                    initDefaultMembers();
-                }
-                
-                if (data && data.admins) {
-                    admins = data.admins;
-                }
-                
-                if (statusDiv) {
-                    statusDiv.innerText = "متصل 🟢";
-                    statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
-                }
-            } catch (e) {
-                initDefaultMembers();
-                if (statusDiv) {
-                    statusDiv.innerText = "وضع الافتراضي ⚠️";
-                    statusDiv.className = "text-xs text-yellow-400 bg-yellow-950/40 px-3 py-1.5 rounded-xl border border-yellow-800 font-bold";
-                }
-            } finally {
-                // إخفاء شاشة التحميل بشكل نهائي وفوري لفتح الموقع كالبرق
-                const loadingScreen = document.getElementById('sync-loading');
-                if (loadingScreen) {
-                    loadingScreen.classList.add('hidden');
-                    loadingScreen.style.display = 'none';
-                }
-            }
-        }
-
-        // تشغيل التحميل فور دخول الصفحة
-        window.addEventListener('DOMContentLoaded', () => {
-            loadFromCloud();
-        });
+        // تحديث الوقت والتاريخ الحالي
+        const now = new Date();
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+        document.getElementById('timeField').innerText = now.toLocaleDateString('ar-EG', options);
     </script>
+
 </body>
 </html>
