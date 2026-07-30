@@ -37,7 +37,7 @@
 
     <div id="sync-loading" class="fixed inset-0 bg-[#121212] z-50 flex flex-col items-center justify-center space-y-4">
         <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-sm gold-text font-bold">جاري تحميل بيانات السيرفر من ملف data.json...</p>
+        <p class="text-sm gold-text font-bold">جاري المزامنة السحابية مع جدول بيانات جوجل...</p>
     </div>
 
     <!-- شاشة تسجيل الدخول -->
@@ -90,7 +90,7 @@
             </div>
             <div class="flex flex-col md:flex-row items-center gap-4">
                 <div id="cloud-status" class="text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold">
-                    📁 مرتبط بملف data.json
+                    ☁️ متصل بسحابة جوجل (Google Sheets)
                 </div>
                 <div id="user-info" class="bg-[#121212] px-4 py-2 rounded-xl border border-gray-800 text-xs gold-text font-bold">
                     مرحباً بك
@@ -192,6 +192,8 @@
     </div>
 
     <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUDGC_Hh5d2bBQXeu1dOCuu7NfnXNCp5XYTP1EMCZMl4QsHMHhlSgSILFiXaSyiWj3QA/exec";
+
         let admins = {
             "1G630": { name: "الأدمن الأول (مدير عام)", pass: "Tmime9090", isMaster: true, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
             "2G630": { name: "الأدمن الثاني", pass: "pass2", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
@@ -211,35 +213,34 @@
             if (savedMemberSession) {
                 loggedInMemberId = Number(savedMemberSession);
             }
-            loadDataFile();
+            loadFromCloud();
         }
 
-        async function loadDataFile() {
+        async function loadFromCloud() {
             const statusDiv = document.getElementById('cloud-status');
             try {
-                // جلب البيانات من ملف data.json مباشرة مع مانع الكاش (timestamp)
-                const response = await fetch('data.json?t=' + new Date().getTime());
-                if (!response.ok) throw new Error("لم يتم العثور على الملف");
-                
+                const response = await fetch(SCRIPT_URL);
                 const data = await response.json();
-                if (data) {
-                    if (data.members && data.members.length > 0) membersData = data.members;
-                    if (data.admins) admins = data.admins;
-                }
                 
-                if (membersData.length === 0) {
+                if (data && data.members && data.members.length > 0) {
+                    membersData = data.members;
+                } else {
                     initDefaultMembers();
                 }
 
+                if (data && data.admins) {
+                    admins = data.admins;
+                }
+
                 if (statusDiv) {
-                    statusDiv.innerText = "📁 متصل بملف data.json بنجاح";
+                    statusDiv.innerText = "☁️ متصل بسحابة جوجل بنجاح";
                     statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
                 }
             } catch (e) {
                 initDefaultMembers();
                 if (statusDiv) {
-                    statusDiv.innerText = "⚠️ جارٍ العمل بالقالب الافتراضي";
-                    statusDiv.className = "text-xs text-orange-400 bg-orange-950/40 px-3 py-1.5 rounded-xl border border-orange-800 font-bold";
+                    statusDiv.innerText = "⚠️ خطأ بالاتصال السحابي (وضع الطوارئ)";
+                    statusDiv.className = "text-xs text-red-400 bg-red-950/40 px-3 py-1.5 rounded-xl border border-red-800 font-bold";
                 }
             }
 
@@ -273,22 +274,40 @@
             updateTotals();
         }
 
-        // ملاحظة هامة: GitHub Pages صفحات ساكنة (Static)، لذا التحديث الفوري لملف data.json يحتاج ربطه بسكريبت خارجي أو حفظ التغييرات وتحميل الملف، 
-        // لكن لتجربة خفيفة ومستقرة، سنقوم بتحديث التخزين المحلي (LocalStorage) وتنبيهك لتنزيل الملف أو حفظه، 
-        // أو يمكنك استخدام GitHub API إذا أردت رفعه تلقائياً. حالياً سنقوم بالحفظ المحلي لضمان سرعة الاستجابة وعدم انقطاع العمل:
         function saveChanges() {
             const now = new Date();
             const timeString = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
             document.getElementById('last-update-time').innerText = `آخر تحديث: ${timeString}`;
 
-            localStorage.setItem("server630_members", JSON.stringify(membersData));
-            localStorage.setItem("server630_admins", JSON.stringify(admins));
-            
             const statusDiv = document.getElementById('cloud-status');
             if (statusDiv) {
-                statusDiv.innerText = "💾 تم الحفظ بنجاح (محلياً وسريعاً)";
-                statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
+                statusDiv.innerText = "🔄 جاري الحفظ السحابي...";
+                statusDiv.className = "text-xs text-yellow-400 bg-yellow-950/40 px-3 py-1.5 rounded-xl border border-yellow-800 font-bold";
             }
+
+            const payload = {
+                members: membersData,
+                admins: admins
+            };
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                if (statusDiv) {
+                    statusDiv.innerText = "☁️ تم الحفظ في سحابة جوجل بنجاح";
+                    statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
+                }
+            }).catch(() => {
+                if (statusDiv) {
+                    statusDiv.innerText = "❌ فشل الحفظ السحابي";
+                    statusDiv.className = "text-xs text-red-400 bg-red-950/40 px-3 py-1.5 rounded-xl border border-red-800 font-bold";
+                }
+            });
         }
 
         function handleLogin() {
@@ -604,7 +623,7 @@
             }
             saveChanges();
             initMembersTable();
-            alert('تم حفظ بيانات القلعة بنجاح!');
+            alert('تم حفظ بيانات القلعة بنجاح في سحابة جوجل!');
         }
 
         function updateTotals() {
