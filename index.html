@@ -9,20 +9,20 @@
     <style>
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #121212;
+            background-color: #0b0b0f;
             color: #e5e7eb;
         }
         .gold-border { border-color: #d4af37; }
         .gold-text { color: #d4af37; }
         .gold-bg { background-color: #d4af37; }
         .slate-card {
-            background-color: #1e1e24;
+            background-color: rgba(30, 30, 36, 0.95);
             border: 1px solid #2d2d38;
         }
         
-        /* الخلفية الثابتة تماماً وبدون أي حركة */
+        /* الخلفية المضمونة والثابتة */
         .full-bg-image {
-            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://raw.githubusercontent.com/TMIME0/server630/main/bg.png');
+            background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -44,14 +44,16 @@
         <p class="text-sm gold-text font-bold">جاري الاتصال بالسحابة وجلب تفاصيل السيرفر...</p>
     </div>
 
-    <!-- شاشة تسجيل الدخول (خلفية ثابتة) -->
-    <div id="login-screen" class="fixed inset-0 z-40 flex items-center justify-center p-4 overflow-y-auto" style="background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url('https://raw.githubusercontent.com/TMIME0/server630/main/bg.png'); background-size: cover; background-position: center; background-attachment: fixed;">
-        <div class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border bg-opacity-90 backdrop-blur-md">
+    <!-- شاشة تسجيل الدخول -->
+    <div id="login-screen" class="fixed inset-0 z-40 flex items-center justify-center p-4 overflow-y-auto full-bg-image">
+        <div class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border backdrop-blur-md">
             
-            <!-- الشعار المصغر داخل القائمة -->
-            <div class="mb-4 w-full h-28 bg-cover bg-center rounded-2xl border border-yellow-600/50 shadow-inner" style="background-image: url('https://raw.githubusercontent.com/TMIME0/server630/main/bg.png');"></div>
+            <!-- شعار فخم مؤقت -->
+            <div class="mb-6 py-4 px-6 bg-black/40 rounded-2xl border border-yellow-600/40 shadow-inner">
+                <h2 class="text-2xl font-black gold-text tracking-wider">سيرفر 630</h2>
+                <p class="text-[11px] text-gray-400 mt-1">نظام إدارة الإمداد والجيوش العسكري</p>
+            </div>
 
-            <h2 class="text-2xl font-black gold-text mb-6">الدخول الى 630</h2>
             <div class="space-y-4">
                 <div>
                     <input type="text" id="login-code" placeholder="كود الأدمن (مثال: 1G630)" 
@@ -94,7 +96,7 @@
     <!-- لوحة التحكم الرئيسية -->
     <div id="dashboard" class="hidden w-full max-w-7xl mx-auto space-y-6 my-8 z-30 relative">
         <!-- هيدر الموقع -->
-        <header class="slate-card p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center border gold-border gap-4 bg-opacity-90 backdrop-blur-md">
+        <header class="slate-card p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center border gold-border gap-4 backdrop-blur-md">
             <div>
                 <h1 class="text-2xl font-black gold-text">لوحة إمداد وتحالف الجيوش (630)</h1>
                 <p id="admin-role-title" class="text-sm text-gray-400">لوحة القيادة والسيطرة</p>
@@ -125,19 +127,19 @@
 
         <!-- قسم الإحصائيات الكلية -->
         <section id="totals-section" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div class="slate-card p-4 rounded-2xl border border-gray-800 text-center shadow-md bg-opacity-90 backdrop-blur-md">
+            <div class="slate-card p-4 rounded-2xl border border-gray-800 text-center shadow-md backdrop-blur-md">
                 <span class="text-gray-400 text-xs block mb-1">مدرع رماة</span>
                 <span id="total-armored-archers" class="text-2xl font-black gold-text">0</span>
             </div>
-            <div class="slate-card p-4 rounded-2xl border border-gray-800 text-center shadow-md bg-opacity-90 backdrop-blur-md">
+            <div class="slate-card p-4 rounded-2xl border border-gray-800 text-center shadow-md backdrop-blur-md">
                 <span class="text-gray-400 text-xs block mb-1">مدرع مشاة</span>
                 <span id="total-armored-infantry" class="text-2xl font-black gold-text">0</span>
             </div>
-            <div class="slate-card p-4 rounded-2xl border border-gray-800 text-center shadow-md bg-opacity-90 backdrop-blur-md">
+            <div class="slate-card p-4 rounded-2xl border border-gray-800 text-center shadow-md backdrop-blur-md">
                 <span class="text-gray-400 text-xs block mb-1">خارق رماة</span>
                 <span id="total-super-archers" class="text-2xl font-black gold-text">0</span>
             </div>
-            <div class="slate-card p-4 rounded-2xl border border-gray-800 text-center shadow-md bg-opacity-90 backdrop-blur-md">
+            <div class="slate-card p-4 rounded-2xl border border-gray-800 text-center shadow-md backdrop-blur-md">
                 <span class="text-gray-400 text-xs block mb-1">خارق مشاة</span>
                 <span id="total-super-infantry" class="text-2xl font-black gold-text">0</span>
             </div>
@@ -148,7 +150,7 @@
         </section>
 
         <!-- جدول القلاع والجيوش -->
-        <section class="slate-card p-6 rounded-3xl border gold-border space-y-4 bg-opacity-90 backdrop-blur-md">
+        <section class="slate-card p-6 rounded-3xl border gold-border space-y-4 backdrop-blur-md">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <h3 id="table-section-title" class="text-xl font-bold gold-text">سجل الإمداد وقلاع الأعضاء (75 قلعة)</h3>
                 <div id="search-box-container" class="w-full md:w-72">
@@ -176,7 +178,7 @@
 
     <!-- نافذة إعدادات الأعضاء -->
     <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-        <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-4xl max-h-[85vh] overflow-y-auto space-y-4 bg-opacity-95">
+        <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-4xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
                 <h3 class="text-lg font-bold gold-text">إدارة وتعديل يوزرات ورموز وحسابات اللعبة لـ 75 عضواً</h3>
                 <button type="button" onclick="toggleSettingsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
@@ -192,7 +194,7 @@
 
     <!-- نافذة الأدمنية -->
     <div id="admins-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-        <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-3xl max-h-[85vh] overflow-y-auto space-y-4 bg-opacity-95">
+        <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-3xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
                 <h3 class="text-lg font-bold gold-text">سجل آخر ظهور للأدمنية وإدارة صلاحياتهم</h3>
                 <button type="button" onclick="toggleAdminsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
@@ -614,7 +616,7 @@
             const query = document.getElementById('search-input').value.toLowerCase().trim();
             document.querySelectorAll('#members-table-body tr').forEach(row => {
                 const nameInput = row.querySelector('.castle-name-input');
-                if (nameInput) {
+                if(nameInput) {
                     row.style.display = nameInput.value.toLowerCase().includes(query) ? '' : 'none';
                 }
             });
