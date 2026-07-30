@@ -90,7 +90,7 @@
             </div>
             <div class="flex flex-col md:flex-row items-center gap-4">
                 <div id="cloud-status" class="text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold">
-                    ☁️ متصل بسحابة جوجل (Google Sheets)
+                    ☁️ متصل  (Google Sheets)
                 </div>
                 <div id="user-info" class="bg-[#121212] px-4 py-2 rounded-xl border border-gray-800 text-xs gold-text font-bold">
                     مرحباً بك
@@ -150,7 +150,7 @@
                             <th class="p-3 text-center">نوع القلعة</th>
                             <th class="p-3">قوات المدرع (مشاة / رماة)</th>
                             <th class="p-3">قوات الخارق (مشاة / رماة)</th>
-                            <th class="p-3">✨ نيزك</th>
+                            <th class="p-3">✨ النيزك</th>
                         </tr>
                     </thead>
                     <tbody id="members-table-body"></tbody>
@@ -234,7 +234,7 @@
                 }
 
                 if (statusDiv) {
-                    statusDiv.innerText = "☁️ متصل بسحابة جوجل بنجاح";
+                    statusDiv.innerText = "☁️ متصل بنجاح";
                     statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
                 }
             } catch (e) {
@@ -264,7 +264,7 @@
             for (let i = 1; i <= 75; i++) {
                 membersData.push({
                     id: i,
-                    castleName: i === 1 ? 'قلعة سفاح' : '',
+                    castleName: i === 1 ? 'قلعة فالكون' : '',
                     castleType: 'dual',
                     email: `member${i}@alliance.com`,
                     pass: `pass${i}`,
@@ -288,7 +288,7 @@
 
             const statusDiv = document.getElementById('cloud-status');
             if (statusDiv) {
-                statusDiv.innerText = "🔄 جاري الحفظ السحابي...";
+                statusDiv.innerText = "🔄 جاري الحفظ ...";
                 statusDiv.className = "text-xs text-yellow-400 bg-yellow-950/40 px-3 py-1.5 rounded-xl border border-yellow-800 font-bold";
             }
 
@@ -306,12 +306,12 @@
                 body: JSON.stringify(payload)
             }).then(() => {
                 if (statusDiv) {
-                    statusDiv.innerText = "☁️ تم الحفظ في سحابة جوجل بنجاح";
+                    statusDiv.innerText = "☁️ تم الحفظ بنجاح";
                     statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
                 }
             }).catch(() => {
                 if (statusDiv) {
-                    statusDiv.innerText = "❌ فشل الحفظ السحابي";
+                    statusDiv.innerText = "❌ فشل الحفظ ";
                     statusDiv.className = "text-xs text-red-400 bg-red-950/40 px-3 py-1.5 rounded-xl border border-red-800 font-bold";
                 }
             });
@@ -571,7 +571,7 @@
                     <td class="p-3 text-center">${typeField}</td>
                     <td class="p-3">${armoredField}</td>
                     <td class="p-3">${superField}</td>
-                    <td class="p-3"><input type="number" placeholder="نيزك" value="${m.meteor || ''}" class="w-28 bg-[#121212] border border-gray-700 rounded-xl p-2 text-sm text-center gold-text font-bold" oninput="updateMemberData(${m.id}, 'meteor', this.value)"></td>
+                    <td class="p-3"><input type="number" placeholder="النيزك" value="${m.meteor || ''}" class="w-28 bg-[#121212] border border-gray-700 rounded-xl p-2 text-sm text-center gold-text font-bold" oninput="updateMemberData(${m.id}, 'meteor', this.value)"></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -638,7 +638,7 @@
             }
             saveChanges();
             initMembersTable();
-            alert('تم حفظ بيانات القلعة بنجاح في سحابة جوجل!');
+            alert('تم حفظ بيانات القلعة بنجاح  !');
         }
 
         function updateTotals() {
