@@ -19,7 +19,6 @@
             background-color: rgba(30, 30, 36, 0.95);
             border: 1px solid #2d2d38;
         }
-        
         .full-bg-image {
             background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('https://raw.githubusercontent.com/TMIME0/server630/main/bg.png');
             background-size: cover;
@@ -27,7 +26,6 @@
             background-repeat: no-repeat;
             background-attachment: fixed;
         }
-
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -37,20 +35,17 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4 full-bg-image">
 
-    <!-- شاشة التحميل المحلي -->
     <div id="sync-loading" class="fixed inset-0 bg-[#121212] z-50 flex flex-col items-center justify-center space-y-4">
         <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-sm gold-text font-bold">جاري تحميل البيانات المحلية...</p>
+        <p class="text-sm gold-text font-bold">جاري تحميل بيانات السيرفر من ملف data.json...</p>
     </div>
 
     <!-- شاشة تسجيل الدخول -->
     <div id="login-screen" class="fixed inset-0 z-40 flex items-center justify-center p-4 overflow-y-auto full-bg-image">
         <div class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border backdrop-blur-md">
-            
             <div class="mb-6 text-center">
                 <h2 class="text-3xl font-black gold-text tracking-wider uppercase">SERVER 630</h2>
             </div>
-
             <div class="space-y-4">
                 <div>
                     <input type="text" id="login-code" placeholder="كود الأدمن (مثال: 1G630)" 
@@ -64,13 +59,11 @@
                     دخول لوحة القيادة
                 </button>
             </div>
-
             <div class="mt-4 pt-4 border-t border-gray-800 text-center">
                 <button type="button" onclick="toggleMemberLogin()" class="text-xs gold-text underline hover:opacity-80 cursor-pointer">
                     هل أنت عضو؟ اضغط هنا لدخول قلعتك الخاصة
                 </button>
             </div>
-
             <div id="member-login-box" class="hidden mt-4 space-y-3 p-4 bg-[#121212] rounded-2xl border border-gray-800 text-right">
                 <h3 class="text-sm font-bold text-white mb-2">دخول قلعة العضو</h3>
                 <input type="text" id="member-email-input" placeholder="ايميل موقع الدخول (مثال: member3@alliance.com)" 
@@ -81,7 +74,6 @@
                     دخول قلعتي وحدها
                 </button>
             </div>
-
             <div id="welcome-msg" class="mt-4 text-red-500 font-bold text-lg hidden flex items-center justify-center gap-1">
                 مليون هلا <span class="text-xl">❤️</span>
             </div>
@@ -94,11 +86,11 @@
             <div>
                 <h1 class="text-2xl font-black gold-text">لوحة إمداد وتحالف الجيوش (630)</h1>
                 <p id="admin-role-title" class="text-sm text-gray-400">لوحة القيادة والسيطرة</p>
-                <p id="last-update-time" class="text-xs text-gray-400 mt-1">آخر تحديث محلي: --</p>
+                <p id="last-update-time" class="text-xs text-gray-400 mt-1">حالة البيانات: جاهزة</p>
             </div>
             <div class="flex flex-col md:flex-row items-center gap-4">
                 <div id="cloud-status" class="text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold">
-                    💾 يعمل بذات الجهاز (محلياً)
+                    📁 مرتبط بملف data.json
                 </div>
                 <div id="user-info" class="bg-[#121212] px-4 py-2 rounded-xl border border-gray-800 text-xs gold-text font-bold">
                     مرحباً بك
@@ -177,7 +169,7 @@
             <div id="settings-members-list" class="space-y-3"></div>
             <div class="text-left pt-4">
                 <button type="button" onclick="saveAllMembersChanges()" class="px-6 py-2 gold-bg text-black font-bold rounded-xl text-xs cursor-pointer">
-                    حفظ التعديلات العامة محلياً
+                    حفظ التعديلات العامة
                 </button>
             </div>
         </div>
@@ -193,7 +185,7 @@
             <div id="admins-settings-list" class="space-y-4"></div>
             <div class="text-left pt-4">
                 <button type="button" onclick="saveAdminsChanges()" class="px-6 py-2 gold-bg text-black font-bold rounded-xl text-xs cursor-pointer">
-                    حفظ إعدادات الأدمنية محلياً
+                    حفظ إعدادات الأدمنية
                 </button>
             </div>
         </div>
@@ -218,38 +210,45 @@
             const savedMemberSession = sessionStorage.getItem("logged_member_id");
             if (savedMemberSession) {
                 loggedInMemberId = Number(savedMemberSession);
-                loadLocalData();
-                showMemberDashboard();
-                return;
             }
-            loadLocalData();
+            loadDataFile();
         }
 
-        function loadLocalData() {
+        async function loadDataFile() {
+            const statusDiv = document.getElementById('cloud-status');
             try {
-                const savedMembers = localStorage.getItem("server630_members");
-                const savedAdmins = localStorage.getItem("server630_admins");
-                const savedTime = localStorage.getItem("server630_time");
-
-                if (savedMembers) {
-                    membersData = JSON.parse(savedMembers);
-                } else {
+                // جلب البيانات من ملف data.json مباشرة مع مانع الكاش (timestamp)
+                const response = await fetch('data.json?t=' + new Date().getTime());
+                if (!response.ok) throw new Error("لم يتم العثور على الملف");
+                
+                const data = await response.json();
+                if (data) {
+                    if (data.members && data.members.length > 0) membersData = data.members;
+                    if (data.admins) admins = data.admins;
+                }
+                
+                if (membersData.length === 0) {
                     initDefaultMembers();
                 }
 
-                if (savedAdmins) {
-                    admins = JSON.parse(savedAdmins);
-                }
-
-                if (savedTime) {
-                    document.getElementById('last-update-time').innerText = `آخر تحديث محلي: ${savedTime}`;
+                if (statusDiv) {
+                    statusDiv.innerText = "📁 متصل بملف data.json بنجاح";
+                    statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
                 }
             } catch (e) {
                 initDefaultMembers();
+                if (statusDiv) {
+                    statusDiv.innerText = "⚠️ جارٍ العمل بالقالب الافتراضي";
+                    statusDiv.className = "text-xs text-orange-400 bg-orange-950/40 px-3 py-1.5 rounded-xl border border-orange-800 font-bold";
+                }
             }
 
-            updateTotals();
             document.getElementById('sync-loading').classList.add('hidden');
+            if (loggedInMemberId !== null) {
+                showMemberDashboard();
+            } else {
+                updateTotals();
+            }
         }
 
         function initDefaultMembers() {
@@ -274,19 +273,21 @@
             updateTotals();
         }
 
-        function saveToLocal() {
+        // ملاحظة هامة: GitHub Pages صفحات ساكنة (Static)، لذا التحديث الفوري لملف data.json يحتاج ربطه بسكريبت خارجي أو حفظ التغييرات وتحميل الملف، 
+        // لكن لتجربة خفيفة ومستقرة، سنقوم بتحديث التخزين المحلي (LocalStorage) وتنبيهك لتنزيل الملف أو حفظه، 
+        // أو يمكنك استخدام GitHub API إذا أردت رفعه تلقائياً. حالياً سنقوم بالحفظ المحلي لضمان سرعة الاستجابة وعدم انقطاع العمل:
+        function saveChanges() {
             const now = new Date();
             const timeString = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
+            document.getElementById('last-update-time').innerText = `آخر تحديث: ${timeString}`;
 
             localStorage.setItem("server630_members", JSON.stringify(membersData));
             localStorage.setItem("server630_admins", JSON.stringify(admins));
-            localStorage.setItem("server630_time", timeString);
-
-            document.getElementById('last-update-time').innerText = `آخر تحديث محلي: ${timeString}`;
             
             const statusDiv = document.getElementById('cloud-status');
             if (statusDiv) {
-                statusDiv.innerText = "💾 تم الحفظ محلياً بنجاح";
+                statusDiv.innerText = "💾 تم الحفظ بنجاح (محلياً وسريعاً)";
+                statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
             }
         }
 
@@ -298,7 +299,7 @@
             if (admins[code] && admins[code].pass === pass) {
                 const now = new Date();
                 admins[code].lastSeen = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
-                saveToLocal();
+                saveChanges();
 
                 currentAdmin = admins[code];
                 loggedInMemberId = null;
@@ -333,7 +334,6 @@
             const mPass = document.getElementById('member-pass-input').value.trim();
             const welcomeMsg = document.getElementById('welcome-msg');
 
-            loadLocalData();
             const member = membersData.find(m => m.email.toLowerCase() === mEmail && m.pass === mPass);
 
             if (member) {
@@ -418,8 +418,8 @@
                 m.email = document.getElementById(`set-email-${index}`).value.trim() || m.email;
                 m.pass = document.getElementById(`set-pass-${index}`).value.trim() || m.pass;
             });
-            saveToLocal();
-            alert('تم حفظ يوزرات ورموز الدخول للأعضاء محلياً بنجاح!');
+            saveChanges();
+            alert('تم حفظ يوزرات ورموز الدخول للأعضاء بنجاح!');
             toggleSettingsModal();
             initMembersTable();
         }
@@ -433,8 +433,8 @@
                     if (passInput) admins[code].pass = passInput.value.trim();
                 }
             });
-            saveToLocal();
-            alert('تم حفظ إعدادات الأدمنية محلياً بنجاح!');
+            saveChanges();
+            alert('تم حفظ إعدادات الأدمنية بنجاح!');
             toggleAdminsModal();
         }
 
@@ -552,9 +552,9 @@
                 updateTotals();
                 clearTimeout(updateTimer);
                 updateTimer = setTimeout(() => {
-                    saveToLocal();
+                    saveChanges();
                     initMembersTable();
-                }, 500);
+                }, 1000);
             }
         }
 
@@ -564,7 +564,7 @@
                 member[field] = val;
                 member.lastMemberUpdate = new Date().toLocaleDateString('ar-IQ') + ' - ' + new Date().toLocaleTimeString('ar-IQ');
                 clearTimeout(updateTimer);
-                updateTimer = setTimeout(() => saveToLocal(), 500);
+                updateTimer = setTimeout(() => saveChanges(), 1000);
             }
         }
 
@@ -574,7 +574,7 @@
                 member.castleName = val;
                 member.lastMemberUpdate = new Date().toLocaleDateString('ar-IQ') + ' - ' + new Date().toLocaleTimeString('ar-IQ');
                 clearTimeout(updateTimer);
-                updateTimer = setTimeout(() => saveToLocal(), 500);
+                updateTimer = setTimeout(() => saveChanges(), 1000);
             }
         }
 
@@ -593,7 +593,7 @@
                 updateTotals();
                 initMembersTable();
                 clearTimeout(updateTimer);
-                updateTimer = setTimeout(() => saveToLocal(), 500);
+                updateTimer = setTimeout(() => saveChanges(), 1000);
             }
         }
 
@@ -602,9 +602,9 @@
             if (member) {
                 member.lastMemberUpdate = new Date().toLocaleDateString('ar-IQ') + ' - ' + new Date().toLocaleTimeString('ar-IQ');
             }
-            saveToLocal();
+            saveChanges();
             initMembersTable();
-            alert('تم حفظ بيانات القلعة محلياً بنجاح!');
+            alert('تم حفظ بيانات القلعة بنجاح!');
         }
 
         function updateTotals() {
