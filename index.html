@@ -3,703 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الدخول الى 630 - إدارة الإمداد والجيوش</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <title>إدارة Server 630</title>
     <style>
         body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #0b0b0f;
-            color: #e5e7eb;
+            font-family: Tahoma, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
         }
-        .gold-border { border-color: #d4af37; }
-        .gold-text { color: #d4af37; }
-        .gold-bg { background-color: #d4af37; }
-        .slate-card {
-            background-color: rgba(30, 30, 36, 0.95);
-            border: 1px solid #2d2d38;
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
-        
-        .full-bg-image {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('https://raw.githubusercontent.com/TMIME0/server630/main/bg.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
         }
-
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #status {
+            margin-top: 15px;
+            font-weight: bold;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4 full-bg-image">
+<body>
 
-    <!-- شاشة التحميل السحابي -->
-    <div id="sync-loading" class="fixed inset-0 bg-[#121212] z-50 flex flex-col items-center justify-center space-y-4">
-        <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-sm gold-text font-bold">جاري الاتصال بالسحابة وجلب تفاصيل السيرفر...</p>
-    </div>
-
-    <!-- شاشة تسجيل الدخول -->
-    <div id="login-screen" class="fixed inset-0 z-40 flex items-center justify-center p-4 overflow-y-auto full-bg-image">
-        <div class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border backdrop-blur-md">
-            
-            <div class="mb-6 py-4 px-6 bg-black/40 rounded-2xl border border-yellow-600/40 shadow-inner">
-                <h2 class="text-2xl font-black gold-text tracking-wider uppercase">SERVER 630</h2>
-                <p class="text-[11px] text-gray-400 mt-1">نظام إدارة الإمداد والجيوش العسكري</p>
-            </div>
-
-            <div class="space-y-4">
-                <div>
-                    <input type="text" id="login-code" placeholder="كود الأدمن (مثال: 1G630)" 
-                        class="w-full px-4 py-3 rounded-2xl bg-[#121212] border border-[#3f3f46] text-white focus:outline-none focus:border-[#d4af37]">
-                </div>
-                <div>
-                    <input type="password" id="login-pass" placeholder="رمز الموقع للأدمن" 
-                        class="w-full px-4 py-3 rounded-2xl bg-[#121212] border border-[#3f3f46] text-white focus:outline-none focus:border-[#d4af37]">
-                </div>
-                <button type="button" onclick="handleLogin()" class="w-full py-3 rounded-2xl gold-bg text-black font-bold hover:opacity-90 transition shadow-lg cursor-pointer">
-                    دخول لوحة القيادة
-                </button>
-            </div>
-
-            <div class="mt-4 pt-4 border-t border-gray-800 text-center">
-                <button type="button" onclick="toggleMemberLogin()" class="text-xs gold-text underline hover:opacity-80 cursor-pointer">
-                    هل أنت عضو؟ اضغط هنا لدخول قلعتك الخاصة
-                </button>
-            </div>
-
-            <div id="member-login-box" class="hidden mt-4 space-y-3 p-4 bg-[#121212] rounded-2xl border border-gray-800 text-right">
-                <h3 class="text-sm font-bold text-white mb-2">دخول قلعة العضو</h3>
-                <input type="text" id="member-email-input" placeholder="ايميل موقع الدخول (مثال: member3@alliance.com)" 
-                    class="w-full px-3 py-2 rounded-xl bg-[#1e1e24] border border-gray-700 text-xs text-white focus:outline-none focus:border-[#d4af37]">
-                <input type="password" id="member-pass-input" placeholder="رمز موقع الدخول الخاص" 
-                    class="w-full px-3 py-2 rounded-xl bg-[#1e1e24] border border-gray-700 text-xs text-white focus:outline-none focus:border-[#d4af37]">
-                <button type="button" onclick="handleMemberLogin()" class="w-full py-2 rounded-xl bg-gray-800 hover:bg-[#d4af37] hover:text-black text-xs font-bold transition cursor-pointer">
-                    دخول قلعتي وحدها
-                </button>
-            </div>
-
-            <div id="welcome-msg" class="mt-4 text-red-500 font-bold text-lg hidden flex items-center justify-center gap-1">
-                مليون هلا <span class="text-xl">❤️</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- لوحة التحكم الرئيسية -->
-    <div id="dashboard" class="hidden w-full max-w-7xl mx-auto space-y-6 my-8 z-30 relative">
-        <header class="slate-card p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center border gold-border gap-4 backdrop-blur-md">
-            <div>
-                <h1 class="text-2xl font-black gold-text">لوحة إمداد وتحالف الجيوش (630)</h1>
-                <p id="admin-role-title" class="text-sm text-gray-400">لوحة القيادة والسيطرة</p>
-                <p id="last-update-time" class="text-xs text-gray-400 mt-1">آخر تحديث سحابي عام: --</p>
-            </div>
-            <div class="flex flex-col md:flex-row items-center gap-4">
-                <div id="cloud-status" class="text-xs text-yellow-400 bg-yellow-950/40 px-3 py-1.5 rounded-xl border border-yellow-800 font-bold">
-                    ☁️ جاهز للتحديث السحابي
-                </div>
-                <div id="user-info" class="bg-[#121212] px-4 py-2 rounded-xl border border-gray-800 text-xs gold-text font-bold">
-                    مرحباً بك
-                </div>
-                <button type="button" onclick="logout()" class="px-4 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer">
-                    تسجيل خروج 🚪
-                </button>
-            </div>
-        </header>
-
-        <div id="master-admin-settings-container" class="hidden flex flex-wrap gap-3">
-            <button type="button" onclick="toggleSettingsModal()" class="px-5 py-2.5 gold-bg text-black font-bold rounded-xl text-xs hover:opacity-90 transition shadow cursor-pointer flex items-center gap-2">
-                ⚙️ إدارة وتعديل يوزرات ورموز الدخول للأعضاء
-            </button>
-            <button type="button" onclick="toggleAdminsModal()" class="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl text-xs transition shadow cursor-pointer border border-gray-700 flex items-center gap-2">
-                🛡️ سجل آخر ظهور للأدمنية وإدارة صلاحياتهم
-            </button>
-        </div>
-
-        <section id="totals-section" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div class="slate-card p-4 rounded-2xl border border-gray-800 text-center shadow-md backdrop-blur-md">
-                <span class="text-gray-400 text-xs block mb-1">مدرع رماة</span>
-                <span id="total-armored-archers" class="text-2xl font-black gold-text">0</span>
-            </div>
-            <div class="slate-card p-4 rounded-2xl border border-gray-800 text-center shadow-md backdrop-blur-md">
-                <span class="text-gray-400 text-xs block mb-1">مدرع مشاة</span>
-                <span id="total-armored-infantry" class="text-2xl font-black gold-text">0</span>
-            </div>
-            <div class="slate-card p-4 rounded-2xl border border-gray-800 text-center shadow-md backdrop-blur-md">
-                <span class="text-gray-400 text-xs block mb-1">خارق رماة</span>
-                <span id="total-super-archers" class="text-2xl font-black gold-text">0</span>
-            </div>
-            <div class="slate-card p-4 rounded-2xl border border-gray-800 text-center shadow-md backdrop-blur-md">
-                <span class="text-gray-400 text-xs block mb-1">خارق مشاة</span>
-                <span id="total-super-infantry" class="text-2xl font-black gold-text">0</span>
-            </div>
-            <div class="slate-card p-4 rounded-2xl border gold-border text-center shadow-md bg-[#1e1e24]/90 backdrop-blur-md">
-                <span class="gold-text text-xs block mb-1 font-bold">✨ بلور النيزك الكلي</span>
-                <span id="total-meteor-crystal" class="text-2xl font-black gold-text">0</span>
-            </div>
-        </section>
-
-        <section class="slate-card p-6 rounded-3xl border gold-border space-y-4 backdrop-blur-md">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <h3 id="table-section-title" class="text-xl font-bold gold-text">سجل الإمداد وقلاع الأعضاء (75 قلعة)</h3>
-                <div id="search-box-container" class="w-full md:w-72">
-                    <input type="text" id="search-input" onkeyup="filterTable()" placeholder="ابحث عن اسم القلعة..." 
-                        class="w-full px-4 py-2 rounded-xl bg-[#121212] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
-                </div>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-right border-collapse min-w-[900px]">
-                    <thead>
-                        <tr class="border-b border-gray-800 text-gray-400 text-sm">
-                            <th class="p-3">العضو / القلعة والبيانات</th>
-                            <th class="p-3 text-center">نوع القلعة</th>
-                            <th class="p-3">قوات المدرع (مشاة / رماة)</th>
-                            <th class="p-3">قوات الخارق (مشاة / رماة)</th>
-                            <th class="p-3">✨ نيزك</th>
-                        </tr>
-                    </thead>
-                    <tbody id="members-table-body"></tbody>
-                </table>
-            </div>
-        </section>
-    </div>
-
-    <!-- نافذة إعدادات الأعضاء -->
-    <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-        <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-4xl max-h-[85vh] overflow-y-auto space-y-4">
-            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="text-lg font-bold gold-text">إدارة يوزرات ورموز دخول الأعضاء للموقع</h3>
-                <button type="button" onclick="toggleSettingsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
-            </div>
-            <div id="settings-members-list" class="space-y-3"></div>
-            <div class="text-left pt-4">
-                <button type="button" onclick="saveAllMembersChanges()" class="px-6 py-2 gold-bg text-black font-bold rounded-xl text-xs cursor-pointer">
-                    حفظ التعديلات العامة والسحابية
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- نافذة الأدمنية -->
-    <div id="admins-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-        <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-3xl max-h-[85vh] overflow-y-auto space-y-4">
-            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="text-lg font-bold gold-text">سجل آخر ظهور للأدمنية وإدارة صلاحياتهم</h3>
-                <button type="button" onclick="toggleAdminsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
-            </div>
-            <div id="admins-settings-list" class="space-y-4"></div>
-            <div class="text-left pt-4">
-                <button type="button" onclick="saveAdminsChanges()" class="px-6 py-2 gold-bg text-black font-bold rounded-xl text-xs cursor-pointer">
-                    حفظ إعدادات الأدمنية والسحابية
-                </button>
-            </div>
-        </div>
+    <div class="container">
+        <h2>لوحة إدارة Server 630</h2>
+        <p>قم بتعديل البيانات وحفظها لتتحدث سحابياً على GitHub</p>
+        
+        <textarea id="dataEditor" rows="10" style="width: 100%; background: #2d2d2d; color: #fff; padding: 10px; border-radius: 5px; border: 1px solid #444;"></textarea>
+        
+        <button onclick="saveData()">حفظ التحديثات</button>
+        <div id="status"></div>
     </div>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzyrt3FqrLXgLV_IwCVsJ0Xgtjd_osdSTILF1THswjIDNI8RPZRpUlak-xaZBWHNe5ZnQ/exec";
+        // رابط الـ Web App الخاص بك على Google Apps Script
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxwhlsqobiCy0am8pgw7xp3pDP9pFhuAa6Hqyb99MCIWakYylGnemVziJw_zH-JSFT0PA/exec";
 
-        let admins = {
-            "1G630": { name: "الأدمن الأول (مدير عام)", pass: "Tmime9090", isMaster: true, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
-            "2G630": { name: "الأدمن الثاني", pass: "pass2", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
-            "3G630": { name: "الأدمن الثالث", pass: "pass3", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
-            "4G630": { name: "الأدمن الرابع", pass: "pass4", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
-            "5G630": { name: "الأدمن الخامس", pass: "pass5", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" }
-        };
-
-        let currentAdmin = null;
-        let loggedInMemberId = null;
-        let membersData = [];
-
-        checkAndLoadData();
-
-        async function checkAndLoadData() {
-            const savedMemberSession = sessionStorage.getItem("logged_member_id");
-            if (savedMemberSession) {
-                loggedInMemberId = Number(savedMemberSession);
-                await loadCloudDataSilent();
-                showMemberDashboard();
-                return;
-            }
-            loadCloudData();
-        }
-
-        async function loadCloudDataSilent() {
+        // جلب البيانات الحالية عند فتح الصفحة
+        async function loadData() {
+            document.getElementById("status").innerText = "جاري تحميل البيانات...";
             try {
-                const res = await fetch("https://raw.githubusercontent.com/TMIME0/server630/main/data.json?r=" + Math.random());
-                if (res.ok) {
-                    const decodedContent = await res.json();
-                    if (decodedContent.members) mergeWithFullMembers(decodedContent.members);
-                }
-            } catch (e) {
-                initDefaultMembers();
+                let response = await fetch('data.json?t=' + new Date().getTime());
+                let data = await response.json();
+                document.getElementById("dataEditor").value = JSON.stringify(data, null, 2);
+                document.getElementById("status").innerText = "تم تحميل البيانات بنجاح.";
+            } catch (error) {
+                document.getElementById("status").innerText = "فشل في تحميل البيانات.";
             }
         }
 
-        async function loadCloudData() {
+        // حفظ البيانات وإرسالها عبر السكربت
+        async function saveData() {
+            document.getElementById("status").innerText = "جاري الحفظ والرفع سحابياً...";
             try {
-                const res = await fetch("https://raw.githubusercontent.com/TMIME0/server630/main/data.json?r=" + Math.random());
-                if (res.ok) {
-                    const decodedContent = await res.json();
-                    
-                    let loadedMembers = decodedContent.members || [];
-                    mergeWithFullMembers(loadedMembers);
+                let rawData = document.getElementById("dataEditor").value;
+                let parsedData = JSON.parse(rawData);
 
-                    if (decodedContent.admins) {
-                        Object.keys(decodedContent.admins).forEach(code => {
-                            if (admins[code]) {
-                                admins[code] = { ...admins[code], ...decodedContent.admins[code] };
-                            }
-                        });
-                    }
-                    if (decodedContent.lastUpdated) {
-                        document.getElementById('last-update-time').innerText = `آخر تحديث سحابي عام: ${decodedContent.lastUpdated}`;
-                    }
-                } else {
-                    initDefaultMembers();
-                }
-            } catch (e) {
-                initDefaultMembers();
-            }
-
-            document.getElementById('sync-loading').classList.add('hidden');
-        }
-
-        function mergeWithFullMembers(loadedMembers) {
-            membersData = [];
-            for (let i = 1; i <= 75; i++) {
-                const existing = loadedMembers.find(m => m.id === i);
-                if (existing) {
-                    membersData.push(existing);
-                } else {
-                    membersData.push({
-                        id: i,
-                        castleName: i === 1 ? 'قلعة سفاح' : '',
-                        castleType: 'dual',
-                        email: `member${i}@alliance.com`,
-                        pass: `pass${i}`,
-                        gameEmail: `game${i}@game.com`,
-                        gamePass: `gpass${i}`,
-                        infantryArmored: 0,
-                        archerArmored: 0,
-                        infantrySuper: 0,
-                        archerSuper: 0,
-                        meteor: 0,
-                        lastMemberUpdate: 'لم يتم التعديل بعد'
-                    });
-                }
-            }
-            updateTotals();
-        }
-
-        function initDefaultMembers() {
-            membersData = [];
-            for (let i = 1; i <= 75; i++) {
-                membersData.push({
-                    id: i,
-                    castleName: i === 1 ? 'قلعة سفاح' : '',
-                    castleType: 'dual',
-                    email: `member${i}@alliance.com`,
-                    pass: `pass${i}`,
-                    gameEmail: `game${i}@game.com`,
-                    gamePass: `gpass${i}`,
-                    infantryArmored: 0,
-                    archerArmored: 0,
-                    infantrySuper: 0,
-                    archerSuper: 0,
-                    meteor: 0,
-                    lastMemberUpdate: 'لم يتم التعديل بعد'
-                });
-            }
-            updateTotals();
-        }
-
-        async function saveToCloud() {
-            const statusDiv = document.getElementById('cloud-status');
-            if (statusDiv) {
-                statusDiv.innerText = "⏳ جاري الرفع السحابي عبر الوسيط...";
-                statusDiv.className = "text-xs text-blue-400 bg-blue-950/40 px-3 py-1.5 rounded-xl border border-blue-800 font-bold";
-            }
-
-            const now = new Date();
-            const timeString = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
-
-            const payloadData = {
-                members: membersData,
-                admins: admins,
-                lastUpdated: timeString
-            };
-
-            try {
-                await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
+                let response = await fetch(WEB_APP_URL, {
+                    method: "POST",
+                    mode: "no-cors",
                     headers: {
-                        'Content-Type': 'application/json',
+                        "Content-Type": "application/json"
                     },
-                    body: JSON.stringify(payloadData)
+                    body: JSON.stringify(parsedData)
                 });
 
-                if (statusDiv) {
-                    statusDiv.innerText = "☁️ تم التحديث سحابياً بنجاح";
-                    statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
-                }
-                document.getElementById('last-update-time').innerText = `آخر تحديث سحابي عام: ${timeString}`;
-            } catch (e) {
-                console.error(e);
-                if (statusDiv) {
-                    statusDiv.innerText = "❌ حدث خطأ أثناء الرفع السحابي";
-                    statusDiv.className = "text-xs text-red-400 bg-red-950/40 px-3 py-1.5 rounded-xl border border-red-800 font-bold";
-                }
+                document.getElementById("status").innerText = "تم إرسال التحديثات بنجاح إلى GitHub!";
+            } catch (error) {
+                document.getElementById("status").innerText = "خطأ في صيغة الـ JSON أو الاتصال!";
             }
         }
 
-        function handleLogin() {
-            const code = document.getElementById('login-code').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
-            const welcomeMsg = document.getElementById('welcome-msg');
-
-            if (admins[code] && admins[code].pass === pass) {
-                const now = new Date();
-                admins[code].lastSeen = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
-                saveToCloud();
-
-                currentAdmin = admins[code];
-                loggedInMemberId = null;
-                welcomeMsg.classList.remove('hidden');
-
-                setTimeout(() => {
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('dashboard').classList.remove('hidden');
-                    document.getElementById('user-info').innerText = currentAdmin.name;
-                    document.getElementById('admin-role-title').innerText = currentAdmin.isMaster ? 'صلاحيات كاملة للأدمن العام' : 'صلاحيات اطلاع وتعديل';
-                    
-                    if (currentAdmin.isMaster) {
-                        document.getElementById('master-admin-settings-container').classList.remove('hidden');
-                    } else {
-                        document.getElementById('master-admin-settings-container').classList.add('hidden');
-                    }
-
-                    initMembersTable();
-                    updateTotals();
-                }, 1000);
-            } else {
-                alert('كود أو رمز الأدمن غير صحيح!');
-            }
-        }
-
-        function toggleMemberLogin() {
-            document.getElementById('member-login-box').classList.toggle('hidden');
-        }
-
-        async function handleMemberLogin() {
-            const mEmail = document.getElementById('member-email-input').value.trim().toLowerCase();
-            const mPass = document.getElementById('member-pass-input').value.trim();
-            const welcomeMsg = document.getElementById('welcome-msg');
-
-            document.getElementById('sync-loading').classList.remove('hidden');
-            await loadCloudDataSilent();
-            document.getElementById('sync-loading').classList.add('hidden');
-
-            const member = membersData.find(m => m.email.toLowerCase() === mEmail && m.pass === mPass);
-
-            if (member) {
-                loggedInMemberId = member.id;
-                sessionStorage.setItem("logged_member_id", member.id);
-                welcomeMsg.classList.remove('hidden');
-
-                setTimeout(() => {
-                    showMemberDashboard();
-                }, 1000);
-            } else {
-                alert('الايميل أو رمز الدخول غير صحيح!');
-            }
-        }
-
-        function showMemberDashboard() {
-            const member = membersData.find(m => m.id === loggedInMemberId);
-            if (!member) return;
-
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('sync-loading').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-            
-            const castleDisplayName = member.castleName ? member.castleName : `قلعة رقم ${member.id}`;
-            document.getElementById('user-info').innerText = `${castleDisplayName} (عضو ${member.id})`;
-            document.getElementById('admin-role-title').innerText = 'لوحة قلعتك الخاصة';
-            document.getElementById('master-admin-settings-container').classList.add('hidden');
-            document.getElementById('totals-section').classList.add('hidden');
-            document.getElementById('search-box-container').classList.add('hidden');
-            document.getElementById('table-section-title').innerText = 'حساب اللعبة والجيوش الخاصة بك';
-
-            initMembersTable();
-        }
-
-        function toggleSettingsModal() {
-            const modal = document.getElementById('settings-modal');
-            modal.classList.toggle('hidden');
-            if (!modal.classList.contains('hidden')) renderSettingsList();
-        }
-
-        function toggleAdminsModal() {
-            const modal = document.getElementById('admins-modal');
-            modal.classList.toggle('hidden');
-            if (!modal.classList.contains('hidden')) renderAdminsList();
-        }
-
-        function renderSettingsList() {
-            const container = document.getElementById('settings-members-list');
-            container.innerHTML = '';
-            membersData.forEach((m, index) => {
-                container.innerHTML += `
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2 p-3 bg-[#121212] rounded-xl border border-gray-800 items-center">
-                        <span class="text-xs font-bold text-white">عضو رقم ${m.id} (${m.castleName || 'بلا اسم'})</span>
-                        <input type="text" id="set-email-${index}" value="${m.email}" placeholder="يوزر الدخول" class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white">
-                        <input type="text" id="set-pass-${index}" value="${m.pass}" placeholder="رمز الدخول" class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white">
-                    </div>
-                `;
-            });
-        }
-
-        function renderAdminsList() {
-            const container = document.getElementById('admins-settings-list');
-            container.innerHTML = '';
-            Object.keys(admins).forEach(code => {
-                if (code !== '1G630') {
-                    const adm = admins[code];
-                    container.innerHTML += `
-                        <div class="p-4 bg-[#121212] rounded-2xl border border-gray-800 space-y-3">
-                            <span class="text-xs font-bold gold-text">كود الأدمن: ${code} (آخر ظهور: ${adm.lastSeen || 'لم يسجل'})</span>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                <input type="text" id="adm-name-${code}" value="${adm.name}" class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white">
-                                <input type="text" id="adm-pass-${code}" value="${adm.pass}" class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white">
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-        }
-
-        function saveAllMembersChanges() {
-            membersData.forEach((m, index) => {
-                m.email = document.getElementById(`set-email-${index}`).value.trim() || m.email;
-                m.pass = document.getElementById(`set-pass-${index}`).value.trim() || m.pass;
-            });
-            saveToCloud();
-            alert('تم حفظ يوزرات ورموز الدخول للأعضاء بنجاح!');
-            toggleSettingsModal();
-            initMembersTable();
-        }
-
-        function saveAdminsChanges() {
-            Object.keys(admins).forEach(code => {
-                if (code !== '1G630') {
-                    const nameInput = document.getElementById(`adm-name-${code}`);
-                    const passInput = document.getElementById(`adm-pass-${code}`);
-                    if (nameInput) admins[code].name = nameInput.value.trim();
-                    if (passInput) admins[code].pass = passInput.value.trim();
-                }
-            });
-            saveToCloud();
-            alert('تم حفظ إعدادات الأدمنية بنجاح!');
-            toggleAdminsModal();
-        }
-
-        function logout() {
-            sessionStorage.clear();
-            document.getElementById('dashboard').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('hidden');
-            loggedInMemberId = null;
-            currentAdmin = null;
-        }
-
-        function initMembersTable() {
-            const tbody = document.getElementById('members-table-body');
-            tbody.innerHTML = '';
-
-            let dataToShow = membersData;
-            if (loggedInMemberId !== null) {
-                dataToShow = membersData.filter(m => m.id === loggedInMemberId);
-            }
-
-            const isMasterAdmin = currentAdmin && currentAdmin.isMaster;
-
-            dataToShow.forEach((m) => {
-                const tr = document.createElement('tr');
-                tr.className = 'border-b border-gray-800/40 hover:bg-white/5 transition';
-                
-                let columnContent = '';
-                if (loggedInMemberId !== null) {
-                    // واجهة العضو الخاصة بقلعته مع زر "حفظ" صغير ومرتب
-                    columnContent = `
-                        <div class="font-bold text-white text-sm mb-1">قلعتك الخاصة (${m.castleName || 'بدون اسم'})</div>
-                        <div class="bg-[#121212] p-2.5 rounded-xl border border-gray-800 space-y-2">
-                            <div>
-                                <span class="text-[10px] text-gray-400 block mb-1">إيميل القلعة (للاطلاع فقط)</span>
-                                <input type="text" value="${m.gameEmail || ''}" readonly class="w-full px-2 py-1 bg-gray-900 border border-gray-800 rounded-lg text-xs text-gray-400 cursor-not-allowed">
-                            </div>
-                            <div>
-                                <span class="text-[10px] gold-text block mb-1 font-bold">رمز القلعة (قابل للتعديل)</span>
-                                <input type="text" value="${m.gamePass || ''}" class="w-full px-2 py-1 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs gold-text font-bold" oninput="updateMemberGameData(${m.id}, 'gamePass', this.value)">
-                            </div>
-                            <div class="text-left">
-                                <button type="button" onclick="saveSingleMemberData()" class="px-4 py-1.5 gold-bg text-black rounded-lg text-xs font-bold hover:opacity-90 transition shadow cursor-pointer inline-block">
-                                    حفظ
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    // واجهة الأدمن
-                    columnContent = `
-                        <div class="flex justify-between items-center mb-1"><span class="font-bold text-white text-sm">عضو رقم ${m.id}</span></div>
-                        <div class="space-y-1.5">
-                            <input type="text" placeholder="اسم القلعة" value="${m.castleName || ''}" class="castle-name-input px-3 py-1.5 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white w-full font-bold" oninput="updateCastleName(${m.id}, this.value)">
-                            <div class="bg-[#121212]/80 p-2 rounded-xl border border-gray-800/80 space-y-1">
-                                <div>
-                                    <span class="text-[9px] text-gray-400 block">إيميل القلعة</span>
-                                    <input type="text" value="${m.gameEmail || ''}" placeholder="ايميل القلعة" class="w-full px-2 py-1 bg-[#18181c] border border-gray-700 rounded-lg text-xs text-gray-300" oninput="updateMemberGameData(${m.id}, 'gameEmail', this.value)">
-                                </div>
-                                <div>
-                                    <span class="text-[9px] gold-text block">رمز القلعة</span>
-                                    <input type="text" value="${m.gamePass || ''}" placeholder="رمز القلعة" class="w-full px-2 py-1 bg-[#18181c] border border-gray-700 rounded-lg text-xs gold-text font-bold" oninput="updateMemberGameData(${m.id}, 'gamePass', this.value)">
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                // خيار نوع القلعة (لصلاحية الأدمن العام فقط، أو تظهر للعضو كقراءة فقط إذا لم يكن أدمن عام)
-                let typeField = '';
-                if (isMasterAdmin || loggedInMemberId === null) {
-                    typeField = `
-                        <select onchange="updateCastleType(${m.id}, this.value)" class="bg-[#121212] border border-gray-700 rounded-xl px-2 py-1 text-xs gold-text font-bold focus:outline-none focus:border-[#d4af37]">
-                            <option value="infantry" ${m.castleType === 'infantry' ? 'selected' : ''}>مشاة</option>
-                            <option value="archer" ${m.castleType === 'archer' ? 'selected' : ''}>رماة</option>
-                            <option value="dual" ${m.castleType === 'dual' ? 'selected' : ''}>خطين</option>
-                        </select>
-                    `;
-                } else {
-                    let typeText = m.castleType === 'infantry' ? 'مشاة' : (m.castleType === 'archer' ? 'رماة' : 'خطين');
-                    typeField = `<span class="text-xs gold-text font-bold">${typeText}</span>`;
-                }
-
-                // ديناميكية خلايا الجيوش حسب نوع القلعة (مشاة، رماة، خطين)
-                let armoredField = '';
-                let superField = '';
-
-                if (m.castleType === 'infantry') {
-                    armoredField = `<div class="flex gap-1 justify-center"><input type="number" placeholder="مدرع مشاة" value="${m.infantryArmored || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberData(${m.id}, 'infantryArmored', this.value)"></div>`;
-                    superField = `<div class="flex gap-1 justify-center"><input type="number" placeholder="خارق مشاة" value="${m.infantrySuper || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberData(${m.id}, 'infantrySuper', this.value)"></div>`;
-                } else if (m.castleType === 'archer') {
-                    armoredField = `<div class="flex gap-1 justify-center"><input type="number" placeholder="مدرع رماة" value="${m.archerArmored || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberData(${m.id}, 'archerArmored', this.value)"></div>`;
-                    superField = `<div class="flex gap-1 justify-center"><input type="number" placeholder="خارق رماة" value="${m.archerSuper || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberData(${m.id}, 'archerSuper', this.value)"></div>`;
-                } else {
-                    armoredField = `<div class="flex gap-1"><input type="number" placeholder="مدرع مشاة" value="${m.infantryArmored || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberData(${m.id}, 'infantryArmored', this.value)"><input type="number" placeholder="مدرع رماة" value="${m.archerArmored || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberData(${m.id}, 'archerArmored', this.value)"></div>`;
-                    superField = `<div class="flex gap-1"><input type="number" placeholder="خارق مشاة" value="${m.infantrySuper || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberData(${m.id}, 'infantrySuper', this.value)"><input type="number" placeholder="خارق رماة" value="${m.archerSuper || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberData(${m.id}, 'archerSuper', this.value)"></div>`;
-                }
-
-                tr.innerHTML = `
-                    <td class="p-3 w-80 space-y-2">${columnContent}</td>
-                    <td class="p-3 text-center">${typeField}</td>
-                    <td class="p-3">${armoredField}</td>
-                    <td class="p-3">${superField}</td>
-                    <td class="p-3"><input type="number" placeholder="نيزك" value="${m.meteor || ''}" class="w-28 bg-[#121212] border border-gray-700 rounded-xl p-2 text-sm text-center gold-text font-bold" oninput="updateMemberData(${m.id}, 'meteor', this.value)"></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        let updateTimer;
-        function updateMemberData(id, field, val) {
-            const member = membersData.find(m => m.id === id);
-            if (member) {
-                member[field] = val === '' ? 0 : Number(val);
-                member.lastMemberUpdate = new Date().toLocaleDateString('ar-IQ') + ' - ' + new Date().toLocaleTimeString('ar-IQ');
-                updateTotals();
-                clearTimeout(updateTimer);
-                updateTimer = setTimeout(() => saveToCloud(), 1000);
-            }
-        }
-
-        function updateMemberGameData(id, field, val) {
-            const member = membersData.find(m => m.id === id);
-            if (member) {
-                member[field] = val;
-                member.lastMemberUpdate = new Date().toLocaleDateString('ar-IQ') + ' - ' + new Date().toLocaleTimeString('ar-IQ');
-                clearTimeout(updateTimer);
-                updateTimer = setTimeout(() => saveToCloud(), 1000);
-            }
-        }
-
-        function updateCastleName(id, val) {
-            const member = membersData.find(m => m.id === id);
-            if (member) {
-                member.castleName = val;
-                clearTimeout(updateTimer);
-                updateTimer = setTimeout(() => saveToCloud(), 1000);
-            }
-        }
-
-        function updateCastleType(id, val) {
-            const member = membersData.find(m => m.id === id);
-            if (member) {
-                member.castleType = val;
-                // إعادة تعيين القيم غير المرتبطة بالنوع المختار لتلافي الحسابات الخاطئة
-                if(val === 'infantry') {
-                    member.archerArmored = 0;
-                    member.archerSuper = 0;
-                } else if(val === 'archer') {
-                    member.infantryArmored = 0;
-                    member.infantrySuper = 0;
-                }
-                updateTotals();
-                initMembersTable();
-                clearTimeout(updateTimer);
-                updateTimer = setTimeout(() => saveToCloud(), 1000);
-            }
-        }
-
-        function saveSingleMemberData() {
-            saveToCloud();
-            alert('تم حفظ بيانات القلعة ورفعها للسحابة بنجاح!');
-        }
-
-        function updateTotals() {
-            let tInfantryArmored = 0;
-            let tArcherArmored = 0;
-            let tInfantrySuper = 0;
-            let tArcherSuper = 0;
-            let tMeteor = 0;
-
-            membersData.forEach(m => {
-                tInfantryArmored += Number(m.infantryArmored || 0);
-                tArcherArmored += Number(m.archerArmored || 0);
-                tInfantrySuper += Number(m.infantrySuper || 0);
-                tArcherSuper += Number(m.archerSuper || 0);
-                tMeteor += Number(m.meteor || 0);
-            });
-
-            document.getElementById('total-armored-infantry').innerText = tInfantryArmored.toLocaleString();
-            document.getElementById('total-armored-archers').innerText = tArcherArmored.toLocaleString();
-            document.getElementById('total-super-infantry').innerText = tInfantrySuper.toLocaleString();
-            document.getElementById('total-super-archers').innerText = tArcherSuper.toLocaleString();
-            document.getElementById('total-meteor-crystal').innerText = tMeteor.toLocaleString();
-        }
-
-        function filterTable() {
-            const query = document.getElementById('search-input').value.toLowerCase().trim();
-            document.querySelectorAll('#members-table-body tr').forEach(row => {
-                const nameInput = row.querySelector('.castle-name-input');
-                if(nameInput) {
-                    row.style.display = nameInput.value.toLowerCase().includes(query) ? '' : 'none';
-                }
-            });
-        }
+        // تشغيل دالة الجلب عند فتح الموقع
+        loadData();
     </script>
+
 </body>
 </html>
