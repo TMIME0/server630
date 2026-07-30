@@ -330,7 +330,8 @@
                 currentAdmin = admins[code];
                 loggedInMemberId = null;
                 welcomeMsg.classList.remove('hidden');
-
+document.getElementById('admin-email').value = currentAdmin.pass;
+document.getElementById('admin-pass').value = currentAdmin.email;
                 setTimeout(() => {
                     document.getElementById('login-screen').classList.add('hidden');
                     document.getElementById('dashboard').classList.remove('hidden');
