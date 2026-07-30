@@ -1,189 +1,44 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة سرفر 630 - النسخة الكاملة</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #0b0dbf;
-            color: #e5e7eb;
-        }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
-
-    <!-- واجهة تسجيل الدخول -->
-    <div id="login-screen" class="w-full max-w-md bg-gray-900/90 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-gray-700">
-        <h2 class="text-2xl font-bold text-center mb-6 text-white">تسجيل الدخول - سرفر 630</h2>
-        <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
-            <div>
-                <label class="block text-sm font-semibold mb-2">اسم المستخدم / الإيميل / اسم القلعة</label>
-                <input type="text" id="login-user" required class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 text-white">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold mb-2">كلمة المرور</label>
-                <input type="password" id="login-pass" required class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 text-white">
-            </div>
-            <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition duration-200 shadow-lg">دخول</button>
-            <p id="login-error" class="text-red-400 text-sm text-center mt-2 hidden">الرمز أو اسم المستخدم غير صحيح!</p>
-        </form>
-    </div>
-
-    <!-- لوحة التحكم الرئيسية الكاملة -->
-    <div id="dashboard-screen" class="w-full max-w-6xl bg-gray-900/95 backdrop-blur-md p-6 rounded-2xl shadow-2xl border border-gray-700 hidden">
-        <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-700">
-            <h1 class="text-xl font-bold text-white">لوحة تحكم أعضاء سرفر 630 (75 عضو)</h1>
-            <div class="flex gap-3">
-                <button onclick="loadCloudData()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg transition">تحديث البيانات</button>
-                <button onclick="logout()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition">تسجيل خروج</button>
-            </div>
-        </div>
-
-        <!-- محتوى الإدارة وجدول الأعضاء -->
-        <div class="space-y-6">
-            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 flex justify-between items-center">
-                <div>
-                    <h3 class="text-lg font-bold text-blue-400">حالة الربط السحابي: متصل 🟢</h3>
-                    <p class="text-sm text-gray-300">التعديلات ترسل مباشرة إلى Google Apps Script وتتحدث على GitHub.</p>
-                </div>
-                <div id="sync-status" class="text-sm text-gray-400">البيانات محدثة</div>
-            </div>
-
-            <!-- جدول الأعضاء والتحكم -->
-            <div class="overflow-x-auto bg-gray-800 rounded-xl border border-gray-700 p-4">
-                <table class="w-full text-right border-collapse">
-                    <thead>
-                        <tr class="border-b border-gray-700 text-blue-300">
-                            <th class="p-3">ID</th>
-                            <th class="p-3">اسم القلعة</th>
-                            <th class="p-3">نوع القلعة</th>
-                            <th class="p-3">الإيميل / اليوزر</th>
-                            <th class="p-3">كلمة المرور</th>
-                            <th class="p-3">إجراء</th>
-                        </tr>
-                    </thead>
-                    <tbody id="members-table-body">
-                        <!-- يتم تعبئة الأعضاء برمجياً هنا -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // رابط الـ Web App الخاص بك
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzberVESMGbIogN9Tk-A5KrV-c8-WrtsUHlt-KoIuNqGXmTowbQr7opu9XeC3HLDlClwQ/exec";
-        
-        let serverData = null;
-
-        // جلب البيانات مع مانع الكاش (Cache-Buster) لضمان الحصول على أحدث تعديل فوراً
-        async function loadCloudData() {
-            try {
-                const response = await fetch('data.json?t=' + new Date().getTime());
-                if (!response.ok) throw new Error('فشل في جلب البيانات');
-                serverData = await response.json();
-                console.log("تم تحميل البيانات بنجاح:", serverData);
-                renderTable();
-            } catch (error) {
-                console.error("خطأ في جلب البيانات السحابية:", error);
-            }
-        }
-
-        // عرض الأعضاء في الجدول
-        function renderTable() {
-            const tbody = document.getElementById('members-table-body');
-            if (!serverData || !serverData.members) return;
-
-            tbody.innerHTML = '';
-            serverData.members.forEach(member => {
-                let tr = document.createElement('tr');
-                tr.className = "border-b border-gray-700/50 hover:bg-gray-700/30";
-                tr.innerHTML = `
-                    <td class="p-3">${member.id}</td>
-                    <td class="p-3"><input type="text" value="${member.castleName || ''}" onchange="updateLocalMember(${member.id}, 'castleName', this.value)" class="bg-gray-900 px-2 py-1 rounded border border-gray-600 w-full text-white"></td>
-                    <td class="p-3">${member.castleType || ''}</td>
-                    <td class="p-3"><input type="text" value="${member.email || member.gameEmail || ''}" onchange="updateLocalMember(${member.id}, 'email', this.value)" class="bg-gray-900 px-2 py-1 rounded border border-gray-600 w-full text-white"></td>
-                    <td class="p-3"><input type="text" value="${member.pass || member.gamePass || ''}" onchange="updateLocalMember(${member.id}, 'pass', this.value)" class="bg-gray-900 px-2 py-1 rounded border border-gray-600 w-full text-white"></td>
-                    <td class="p-3"><button onclick="saveChangesToCloud()" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">حفظ للسحاب</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // تحديث البيانات محلياً قبل إرسالها
-        function updateLocalMember(id, field, value) {
-            let member = serverData.members.find(m => m.id === id);
-            if (member) {
-                member[field] = value;
-            }
-        }
-
-        // إرسال التعديلات للسحاب (عبر Google Apps Script)
-        async function saveChangesToCloud() {
-            const statusEl = document.getElementById('sync-status');
-            statusEl.textContent = "جاري الحفظ للسحاب...";
-            statusEl.className = "text-sm text-yellow-400";
-
-            try {
-                const response = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(serverData)
-                });
-
-                statusEl.textContent = "تم الحفظ والتحديث بنجاح! 🟢";
-                statusEl.className = "text-sm text-emerald-400";
-                setTimeout(loadCloudData, 2000); // إعادة تحميل البيانات بعد ثانيتين لتأكيد التطابق
-            } catch (error) {
-                console.error("خطأ بالحفظ:", error);
-                statusEl.textContent = "فشل الحفظ، حاول مرة أخرى 🔴";
-                statusEl.className = "text-sm text-red-400";
-            }
-        }
-
-        // التحقق من تسجيل الدخول بمقارنة دقيقة مع البيانات المسحوبة
-        async function handleLogin(event) {
-            event.preventDefault();
-            const userInput = document.getElementById('login-user').value.trim();
-            const passInput = document.getElementById('login-pass').value.trim();
-            const errorElement = document.getElementById('login-error');
-
-            await loadCloudData(); // جلب أحدث نسخة فور محاولة الدخول
-
-            if (!serverData || !serverData.members) {
-                errorElement.textContent = "جاري الاتصال بالقاعدة، حاول مجدداً...";
-                errorElement.classList.remove('hidden');
-                return;
-            }
-
-            let foundUser = serverData.members.find(m => 
-                (m.email === userInput || m.gameEmail === userInput || m.castleName === userInput) && 
-                (m.pass === passInput || m.gamePass === passInput)
-            );
-
-            if (foundUser) {
-                errorElement.classList.add('hidden');
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('dashboard-screen').classList.remove('hidden');
-            } else {
-                errorElement.textContent = "اسم المستخدم أو كلمة المرور غير صحيحة!";
-                errorElement.classList.remove('hidden');
-            }
-        }
-
-        function logout() {
-            document.getElementById('dashboard-screen').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('hidden');
-            document.getElementById('login-form').reset();
-        }
-
-        // التحميل الأولي عند فتح الصفحة
-        loadCloudData();
-    </script>
-</body>
-</html>
+function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents);
+    var token = "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";
+    var repo = "TMIME0/server630";
+    var filePath = "data.json";
+    
+    var url = "https://api.github.com/repos/" + repo + "/contents/" + filePath;
+    
+    // جلب الشفرة الحالية للملف للحصول على الـ sha
+    var optionsGet = {
+      "method": "get",
+      "headers": { "Authorization": "token " + token, "User-Agent": "AppsScript" },
+      "muteHttpExceptions": true
+    };
+    var getResponse = UrlFetchApp.fetch(url, optionsGet);
+    var fileData = JSON.parse(getResponse.getContentText());
+    var sha = fileData.sha;
+    
+    // ترميز البيانات الجديدة
+    var contentEncoded = Utilities.base64Encode(JSON.stringify(data, null, 2), Utilities.Charset.UTF_8);
+    
+    // إرسال التحديث لـ GitHub
+    var payload = {
+      "message": "Update data.json from web dashboard",
+      "content": contentEncoded,
+      "sha": sha
+    };
+    
+    var optionsPut = {
+      "method": "put",
+      "headers": { "Authorization": "token " + token, "User-Agent": "AppsScript" },
+      "contentType": "application/json",
+      "payload": JSON.stringify(payload),
+      "muteHttpExceptions": true
+    };
+    
+    UrlFetchApp.fetch(url, optionsPut);
+    
+    return ContentService.createTextOutput(JSON.stringify({"status": "success"})).setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({"status": "error", "message": error.toString()})).setMimeType(ContentService.MimeType.JSON);
+  }
+}
