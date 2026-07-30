@@ -194,13 +194,13 @@
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzeufQCIuImDsSSQvB052k_F6UMi7RBrFl4beTiFqDh28HQbPO1K40ujrX1UGVYKjSd/exec";
 
-        let admins = {
-            "1G630": { name: "الأدمن الأول (مدير عام)", pass: "Tmime9090", isMaster: true, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
-            "2G630": { name: "الأدمن الثاني", pass: "pass2", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
-            "3G630": { name: "الأدمن الثالث", pass: "pass3", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
-            "4G630": { name: "الأدمن الرابع", pass: "pass4", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
-            "5G630": { name: "الأدمن الخامس", pass: "pass5", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" }
-        };
+       let admins = {
+    "1G630": { name: "الأمن الأول (مدير عام)", pass: "Tmime9090", isMaster: true, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
+    "2G630": { name: "الأمن الثاني", pass: "pass2", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
+    "3G630": { name: "الأمن الثالث", pass: "pass3", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
+    "4G630": { name: "الأمن الرابع", pass: "pass4", isMaster: false, active: true, hiddenFields: ["email", "castleCode"], lastSeen: "لم يسجل دخول بعد" },
+    "5G630": { name: "الأمن الخامس", pass: "pass5", isMaster: false, active: true, hiddenFields: ["email", "castleCode"], lastSeen: "لم يسجل دخول بعد" }
+};
 
         let currentAdmin = null;
         let loggedInMemberId = null;
@@ -229,9 +229,19 @@
                     initDefaultMembers();
                 }
 
-                if (data && data.admins) {
-                    admins = data.admins;
-                }
+               if (data && data.admins) {
+            admins = data.admins;
+        }
+
+        if (loggedInMemberId === 3G630) {
+            document.querySelectorAll("input, select, textarea").forEach(el => el.disabled = true);
+        } 
+        else if (loggedInMemberId === 4G630 || loggedInMemberId === 5G630) {
+            document.querySelectorAll("input, select, textarea").forEach(el => el.disabled = true);
+            document.querySelectorAll(".email-field, .castle-code-field, [data-field='email'], [data-field='castleCode']").forEach(el => {
+                el.style.display = "none";
+            });
+        }
 
                 if (statusDiv) {
                     statusDiv.innerText = "☁️ متصل بنجاح";
