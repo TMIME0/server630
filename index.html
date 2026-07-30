@@ -11,9 +11,6 @@
             font-family: 'Cairo', sans-serif;
             background-color: #0b0b0f;
             color: #e5e7eb;
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
         }
         .gold-border { border-color: #d4af37; }
         .gold-text { color: #d4af37; }
@@ -23,18 +20,12 @@
             border: 1px solid #2d2d38;
         }
         
-        /* خلفية عامة ثابتة تملي الشاشة بالكامل وبشكل احترافي */
-        .page-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://raw.githubusercontent.com/TMIME0/server630/main/bg.png');
+        .full-bg-image {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('https://raw.githubusercontent.com/TMIME0/server630/main/bg.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            z-index: -1;
+            background-attachment: fixed;
         }
 
         input::-webkit-outer-spin-button,
@@ -44,10 +35,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
-
-    <!-- طبقة الخلفية الثابتة للشاشة كلها -->
-    <div class="page-bg"></div>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 full-bg-image">
 
     <!-- شاشة التحميل السحابي -->
     <div id="sync-loading" class="fixed inset-0 bg-[#121212] z-50 flex flex-col items-center justify-center space-y-4">
@@ -56,7 +44,7 @@
     </div>
 
     <!-- شاشة تسجيل الدخول -->
-    <div id="login-screen" class="fixed inset-0 z-40 flex items-center justify-center p-4 overflow-y-auto">
+    <div id="login-screen" class="fixed inset-0 z-40 flex items-center justify-center p-4 overflow-y-auto full-bg-image">
         <div class="slate-card p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border backdrop-blur-md">
             
             <div class="mb-6 py-4 px-6 bg-black/40 rounded-2xl border border-yellow-600/40 shadow-inner">
@@ -601,7 +589,7 @@
         }
 
         function updateCastleName(id, val) {
-            The member = membersData.find(m => m.id === id);
+            const member = membersData.find(m => m.id === id);
             if (member) {
                 member.castleName = val;
                 clearTimeout(updateTimer);
