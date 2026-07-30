@@ -1,11 +1,39 @@
 {
-  "members": [],
+  "members": [
+    {
+      "id": 1,
+      "castleName": "قلعة فالكون",
+      "castleType": "dual",
+      "email": "member1@alliance.com",
+      "pass": "pass1",
+      "gameEmail": "game1@game.com",
+      "gamePass": "gpass1",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "جاهز"
+    },
+    {
+      "id": 2,
+      "castleName": "قلعة 2",
+      "castleType": "dual",
+      "email": "member2@alliance.com",
+      "pass": "pass2",
+      "gameEmail": "game2@game.com",
+      "gamePass": "gpass2",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "جاهز"
+    }
+  ],
   "admins": {
     "1G630": { "name": "الأدمن الأول (مدير عام)", "pass": "Tmime9090", "isMaster": true, "active": true, "hiddenFields": [], "lastSeen": "لم يسجل دخول بعد" },
-    "2G630": { "name": "الأدمن الثاني", "pass": "pass2", "isMaster": false, "active": true, "hiddenFields": [], "lastSeen": "لم يسجل دخول بعد" },
-    "3G630": { "name": "الأدمن الثالث", "pass": "pass3", "isMaster": false, "active": true, "hiddenFields": [], "lastSeen": "لم يسجل دخول بعد" },
-    "4G630": { "name": "الأدمن الرابع", "pass": "pass4", "isMaster": false, "active": true, "hiddenFields": [], "lastSeen": "لم يسجل دخول بعد" },
-    "5G630": { "name": "الأدمن الخامس", "pass": "pass5", "isMaster": false, "active": true, "hiddenFields": [], "lastSeen": "لم يسجل دخول بعد" }
+    "2G630": { "name": "الأدمن الثاني", "pass": "pass2", "isMaster": false, "active": true, "hiddenFields": [], "lastSeen": "لم يسجل دخول بعد" }
   },
-  "lastUpdated": "تم التصفير البدائي"
+  "lastUpdated": "تم التحديث اليدوي"
 }
