@@ -216,10 +216,9 @@
             loadFromCloud();
         }
 
-        async function loadFromCloud() {
+      async function loadFromCloud() {
   const statusDiv = document.getElementById('cloud-status');
   try {
-    // قراءة البيانات من ملف data.json مباشرة لفتح الموقع فوراً
     const response = await fetch('data.json?t=' + new Date().getTime());
     const data = await response.json();
     
@@ -232,31 +231,28 @@
     if (data && data.admins) {
       admins = data.admins;
     }
-
+    
     if (statusDiv) {
-      statusDiv.innerText = "متصل  🟢";
+      statusDiv.innerText = "متصل 🟢";
       statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
     }
   } catch (e) {
     initDefaultMembers();
     if (statusDiv) {
-      statusDiv.innerText = "خطأ في تحميل البيانات  ⚠️";
+      statusDiv.innerText = "خطأ في تحميل البيانات ⚠️";
       statusDiv.className = "text-xs text-red-400 bg-red-950/40 px-3 py-1.5 rounded-xl border border-red-800 font-bold";
+    }
+  } finally {
+    // إخفاء شاشة التحميل المعلقة فوراً وفتح الموقع
+    document.getElementById('sync-loading').classList.add('hidden');
+    
+    if (typeof loggedInMemberId !== 'undefined' && loggedInMemberId !== null) {
+      showMemberDashboard();
+    } else if (typeof updateTotals === 'function') {
+      updateTotals();
     }
   }
 }
-                    statusDiv.className = "text-xs text-red-400 bg-red-950/40 px-3 py-1.5 rounded-xl border border-red-800 font-bold";
-                }
-            }
-
-            document.getElementById('sync-loading').classList.add('hidden');
-            if (loggedInMemberId !== null) {
-                showMemberDashboard();
-            } else {
-                updateTotals();
-            }
-        }
-
         function initDefaultMembers() {
             membersData = [];
             for (let i = 1; i <= 75; i++) {
