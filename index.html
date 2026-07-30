@@ -233,7 +233,7 @@
                 }
 
                 if (statusDiv) {
-                    statusDiv.innerText = "☁️ متصل بسحابة جوجل بنجاح";
+                    statusDiv.innerText = "☁️ متصل  بنجاح";
                     statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
                 }
             } catch (e) {
@@ -257,7 +257,7 @@
             for (let i = 1; i <= 75; i++) {
                 membersData.push({
                     id: i,
-                    castleName: i === 1 ? 'قلعة سفاح' : '',
+                    castleName: i === 1 ? 'قلعة ' : '',
                     castleType: 'dual',
                     email: `member${i}@alliance.com`,
                     pass: `pass${i}`,
@@ -281,7 +281,7 @@
 
             const statusDiv = document.getElementById('cloud-status');
             if (statusDiv) {
-                statusDiv.innerText = "🔄 جاري الحفظ السحابي...";
+                statusDiv.innerText = "🔄 جاري الحفظ ...";
                 statusDiv.className = "text-xs text-yellow-400 bg-yellow-950/40 px-3 py-1.5 rounded-xl border border-yellow-800 font-bold";
             }
 
@@ -303,13 +303,13 @@ fetch(SCRIPT_URL, {
 .then(response => response.json())
 .then(data => {
     if (statusDiv) {
-        statusDiv.innerText = "تم الحفظ في سحابة جوجل بنجاح ✓";
+        statusDiv.innerText = "تم الحفظ بنجاح ✓";
         statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
     }
 })
 .catch(error => {
     if (statusDiv) {
-        statusDiv.innerText = "فشل الحفظ السحابي ✗";
+        statusDiv.innerText = "فشل الحفظ  ✗";
         statusDiv.className = "text-xs text-red-400 bg-red-950/40 px-3 py-1.5 rounded-xl border border-red-800 font-bold";
     }
 });
@@ -629,7 +629,7 @@ fetch(SCRIPT_URL, {
             }
             saveChanges();
             initMembersTable();
-            alert('تم حفظ بيانات القلعة بنجاح في سحابة جوجل!');
+            alert('تم حفظ بيانات القلعة بنجاح  !');
         }
 
         function updateTotals() {
