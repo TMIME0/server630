@@ -1118,12 +1118,12 @@
       "pass": "99",
       "gameEmail": "game75@game.com",
       "gamePass": "gpass75",
-      "infantryArmored": 0,
-      "archerArmored": 0,
-      "infantrySuper": 0,
-      "archerSuper": 0,
+      "infantryArmored": 1,
+      "archerArmored": 10,
+      "infantrySuper": 9,
+      "archerSuper": 8,
       "meteor": 0,
-      "lastMemberUpdate": "لم يتم التعديل بعد"
+      "lastMemberUpdate": "٣٠‏/٧‏/٢٠٢٦ - ٥:٢٤:٣٣ ص"
     }
   ],
   "admins": {
@@ -1133,7 +1133,7 @@
       "isMaster": true,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "٣٠‏/٧‏/٢٠٢٦ - ٥:٢٥:٢٢ ص"
+      "lastSeen": "لم يسجل دخول بعد"
     },
     "2G630": {
       "name": "الأدمن الثاني",
@@ -1168,5 +1168,5 @@
       "lastSeen": "لم يسجل دخول بعد"
     }
   },
-  "lastUpdated": "٣٠‏/٧‏/٢٠٢٦ - ٥:٢٥:٢٢ ص"
+  "lastUpdated": "٣٠‏/٧‏/٢٠٢٦ - ٥:٢٥:٢٦ ص"
 }
