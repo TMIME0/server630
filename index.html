@@ -534,7 +534,6 @@
                 
                 let columnContent = '';
                 if (loggedInMemberId !== null) {
-                    // واجهة العضو الخاصة بقلعته مع زر "حفظ" صغير ومرتب
                     columnContent = `
                         <div class="font-bold text-white text-sm mb-1">قلعتك الخاصة (${m.castleName || 'بدون اسم'})</div>
                         <div class="bg-[#121212] p-2.5 rounded-xl border border-gray-800 space-y-2">
@@ -554,7 +553,6 @@
                         </div>
                     `;
                 } else {
-                    // واجهة الأدمن
                     columnContent = `
                         <div class="flex justify-between items-center mb-1"><span class="font-bold text-white text-sm">عضو رقم ${m.id}</span></div>
                         <div class="space-y-1.5">
@@ -573,7 +571,6 @@
                     `;
                 }
 
-                // خيار نوع القلعة (لصلاحية الأدمن العام فقط، أو تظهر للعضو كقراءة فقط إذا لم يكن أدمن عام)
                 let typeField = '';
                 if (isMasterAdmin || loggedInMemberId === null) {
                     typeField = `
@@ -588,7 +585,6 @@
                     typeField = `<span class="text-xs gold-text font-bold">${typeText}</span>`;
                 }
 
-                // ديناميكية خلايا الجيوش حسب نوع القلعة (مشاة، رماة، خطين)
                 let armoredField = '';
                 let superField = '';
 
@@ -649,7 +645,6 @@
             const member = membersData.find(m => m.id === id);
             if (member) {
                 member.castleType = val;
-                // إعادة تعيين القيم غير المرتبطة بالنوع المختار لتلافي الحسابات الخاطئة
                 if(val === 'infantry') {
                     member.archerArmored = 0;
                     member.archerSuper = 0;
