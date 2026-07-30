@@ -330,8 +330,11 @@
                 currentAdmin = admins[code];
                 loggedInMemberId = null;
                 welcomeMsg.classList.remove('hidden');
-document.getElementById('admin-email').value = currentAdmin.pass;
-document.getElementById('admin-pass').value = currentAdmin.email;
+            const passField = document.getElementById('admin-pass');
+            if (passField) passField.value = currentAdmin.pass;
+
+           const emailField = document.getElementById('admin-email');
+           if (emailField) emailField.value = currentAdmin.email;
                 setTimeout(() => {
                     document.getElementById('login-screen').classList.add('hidden');
                     document.getElementById('dashboard').classList.remove('hidden');
