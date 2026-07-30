@@ -1133,7 +1133,7 @@
       "isMaster": true,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "٣٠‏/٧‏/٢٠٢٦ - ١١:٠٧:١٨ ص"
+      "lastSeen": "٣٠‏/٧‏/٢٠٢٦ - ١١:١٧:٠٨ ص"
     },
     "2G630": {
       "name": "الأدمن الثاني",
@@ -1153,19 +1153,27 @@
     },
     "4G630": {
       "name": "الأدمن الرابع",
-      "pass": "4",
+      "pass": "pass4",
       "isMaster": false,
       "active": true,
-      "hiddenFields": [],
+      "hiddenFields": [
+        "email",
+        "castleCode",
+        "army"
+      ],
       "lastSeen": "لم يسجل دخول بعد"
     },
     "5G630": {
       "name": "الأدمن الخامس",
-      "pass": "5",
+      "pass": "pass5",
       "isMaster": false,
       "active": true,
-      "hiddenFields": [],
-      "lastSeen": "٣٠‏/٧‏/٢٠٢٦ - ١١:١٦:٢٢ ص"
+      "hiddenFields": [
+        "email",
+        "castleCode",
+        "army"
+      ],
+      "lastSeen": "لم يسجل دخول بعد"
     }
   }
 }
