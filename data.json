@@ -1119,11 +1119,11 @@
       "gameEmail": "game75@game.com",
       "gamePass": "gpass75",
       "infantryArmored": 1,
-      "archerArmored": 0,
+      "archerArmored": 10,
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
-      "lastMemberUpdate": "٣٠‏/٧‏/٢٠٢٦ - ٥:٢٤:٢٨ ص"
+      "lastMemberUpdate": "٣٠‏/٧‏/٢٠٢٦ - ٥:٢٤:٣١ ص"
     }
   ],
   "admins": {
@@ -1168,5 +1168,5 @@
       "lastSeen": "لم يسجل دخول بعد"
     }
   },
-  "lastUpdated": "٣٠‏/٧‏/٢٠٢٦ - ٥:٢٤:٢٩ ص"
+  "lastUpdated": "٣٠‏/٧‏/٢٠٢٦ - ٥:٢٤:٣٢ ص"
 }
