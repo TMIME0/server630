@@ -217,29 +217,34 @@
         }
 
         async function loadFromCloud() {
-            const statusDiv = document.getElementById('cloud-status');
-            try {
-                const response = await fetch(SCRIPT_URL);
-                const data = await response.json();
-                
-                if (data && data.members && data.members.length > 0) {
-                    membersData = data.members;
-                } else {
-                    initDefaultMembers();
-                }
+  const statusDiv = document.getElementById('cloud-status');
+  try {
+    // قراءة البيانات من ملف data.json مباشرة لفتح الموقع فوراً
+    const response = await fetch('data.json?t=' + new Date().getTime());
+    const data = await response.json();
+    
+    if (data && data.members && data.members.length > 0) {
+      membersData = data.members;
+    } else {
+      initDefaultMembers();
+    }
+    
+    if (data && data.admins) {
+      admins = data.admins;
+    }
 
-                if (data && data.admins) {
-                    admins = data.admins;
-                }
-
-                if (statusDiv) {
-                    statusDiv.innerText = "☁️ متصل  بنجاح";
-                    statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
-                }
-            } catch (e) {
-                initDefaultMembers();
-                if (statusDiv) {
-                    statusDiv.innerText = "⚠️ خطأ بالاتصال السحابي (وضع الطوارئ)";
+    if (statusDiv) {
+      statusDiv.innerText = "متصل  🟢";
+      statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
+    }
+  } catch (e) {
+    initDefaultMembers();
+    if (statusDiv) {
+      statusDiv.innerText = "خطأ في تحميل البيانات  ⚠️";
+      statusDiv.className = "text-xs text-red-400 bg-red-950/40 px-3 py-1.5 rounded-xl border border-red-800 font-bold";
+    }
+  }
+}
                     statusDiv.className = "text-xs text-red-400 bg-red-950/40 px-3 py-1.5 rounded-xl border border-red-800 font-bold";
                 }
             }
