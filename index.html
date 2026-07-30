@@ -3,124 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة 630 - لوحة التحكم</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>إدارة Server 630</title>
+    <style>
+        body {
+            font-family: Tahoma, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #status {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen p-4 sm:p-8">
+<body>
 
-    <div class="max-w-4xl mx-auto space-y-6">
-        <!-- رأس الصفحة -->
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div>
-                <h1 class="text-2xl font-black text-amber-500">نظام إدارة وتحتكم القلاع (630)</h1>
-                <p id="last-update-time" class="text-xs text-gray-400 mt-1">آخر تحديث سحابي عام: غير متوفر</p>
-            </div>
-            <div id="cloud-status" class="text-xs text-gray-400 bg-gray-800 px-3 py-1.5 rounded-xl border border-gray-700 font-bold">
-                ⚪ في انتظار الاتصال...
-            </div>
-        </div>
-
-        <!-- أزرار التحكم -->
-        <div class="flex gap-4">
-            <button onclick="saveToCloud()" class="bg-amber-600 hover:bg-amber-500 text-gray-950 font-bold px-6 py-2.5 rounded-xl transition shadow-lg">
-                حفظ وتحديث سحابي
-            </button>
-        </div>
-
-        <!-- معلومات النظام -->
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl">
-            <h2 class="text-lg font-bold mb-4 text-gray-200">بيانات الأعضاء</h2>
-            <div id="data-container" class="overflow-x-auto">
-                <!-- جدول البيانات يعرض هنا -->
-            </div>
-        </div>
+    <div class="container">
+        <h2>لوحة إدارة Server 630</h2>
+        <p>قم بتعديل البيانات وحفظها لتتحدث سحابياً على GitHub</p>
+        
+        <textarea id="dataEditor" rows="10" style="width: 100%; background: #2d2d2d; color: #fff; padding: 10px; border-radius: 5px; border: 1px solid #444;"></textarea>
+        
+        <button onclick="saveData()">حفظ التحديثات</button>
+        <div id="status"></div>
     </div>
 
     <script>
-        // إعدادات جيت هب (تأكد من مطابقتها لبيانات مستودعك)
-        const GITHUB_USER = "TMIME0";
-        const GITHUB_REPO = "server630";
-        const GITHUB_PATH = "data.json";
-        
-        let membersData = [];
-        let admins = [];
+        // رابط الـ Web App الخاص بك على Google Apps Script
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxwhlsqobiCy0am8pgw7xp3pDP9pFhuAa6Hqyb99MCIWakYylGnemVziJw_zH-JSFT0PA/exec";
 
-        // دالة الحفظ والتحديث السحابي المحسنة
-        async function saveToCloud() {
-            const activeToken = localStorage.getItem("github_token_630") || GITHUB_TOKEN;
-            if (!activeToken || activeToken.includes("...")) {
-                console.error("التوكن مفقود أو غير صالح");
-                return;
-            }
-
-            const statusDiv = document.getElementById('cloud-status');
-            if (statusDiv) {
-                statusDiv.innerText = "⏳ جاري الرفع للسحابة...";
-                statusDiv.className = "text-xs text-blue-400 bg-blue-950/40 px-3 py-1.5 rounded-xl border border-blue-800 font-bold";
-            }
-
-            const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`;
-            
+        // جلب البيانات الحالية عند فتح الصفحة
+        async function loadData() {
+            document.getElementById("status").innerText = "جاري تحميل البيانات...";
             try {
-                // 1. جلب الـ SHA الأحدث حصراً قبل كل عملية تعديل لمنع تعارض الـ Conflict
-                const getRes = await fetch(url, {
-                    headers: { 
-                        'Authorization': `token ${activeToken}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
-                
-                let currentSha = "";
-                if (getRes.ok) {
-                    const getData = await getRes.json();
-                    currentSha = getData.sha;
-                }
-
-                const now = new Date();
-                const timeString = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
-
-                const fileContent = JSON.stringify({ members: membersData, admins: admins, lastUpdated: timeString }, null, 2);
-                
-                // الترميز الصحيح للـ UTF-8 لضمان عدم تلف الحروف العربية أسماء القلاع
-                const encodedContent = btoa(unescape(encodeURIComponent(fileContent)));
-
-                // 2. إرسال البيانات بطلب الـ PUT مع الـ SHA المضبوط
-                const response = await fetch(url, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${activeToken}`,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/vnd.github.v3+json'
-                    },
-                    body: JSON.stringify({
-                        message: "Update members and admins data.json",
-                        content: encodedContent,
-                        sha: currentSha
-                    })
-                });
-
-                if (response.ok) {
-                    if (statusDiv) {
-                        statusDiv.innerText = "☁️ تم التحديث سحابياً بنجاح";
-                        statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
-                    }
-                    document.getElementById('last-update-time').innerText = `آخر تحديث سحابي عام: ${timeString}`;
-                } else {
-                    const errData = await response.json();
-                    console.error("GitHub API Error:", errData);
-                    if (statusDiv) {
-                        statusDiv.innerText = "⚠️ خطأ بالرفع، راجع الـ Console";
-                        statusDiv.className = "text-xs text-red-400 bg-red-950/40 px-3 py-1.5 rounded-xl border border-red-800 font-bold";
-                    }
-                }
-            } catch (e) {
-                console.error("Network or Code Error:", e);
-                if (statusDiv) {
-                    statusDiv.innerText = "⚠️ خطأ بالاتصال بالسحابة";
-                    statusDiv.className = "text-xs text-red-400 bg-red-950/40 px-3 py-1.5 rounded-xl border border-red-800 font-bold";
-                }
+                let response = await fetch('data.json?t=' + new Date().getTime());
+                let data = await response.json();
+                document.getElementById("dataEditor").value = JSON.stringify(data, null, 2);
+                document.getElementById("status").innerText = "تم تحميل البيانات بنجاح.";
+            } catch (error) {
+                document.getElementById("status").innerText = "فشل في تحميل البيانات.";
             }
         }
+
+        // حفظ البيانات وإرسالها عبر السكربت
+        async function saveData() {
+            document.getElementById("status").innerText = "جاري الحفظ والرفع سحابياً...";
+            try {
+                let rawData = document.getElementById("dataEditor").value;
+                let parsedData = JSON.parse(rawData);
+
+                let response = await fetch(WEB_APP_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(parsedData)
+                });
+
+                document.getElementById("status").innerText = "تم إرسال التحديثات بنجاح إلى GitHub!";
+            } catch (error) {
+                document.getElementById("status").innerText = "خطأ في صيغة الـ JSON أو الاتصال!";
+            }
+        }
+
+        // تشغيل دالة الجلب عند فتح الموقع
+        loadData();
     </script>
+
 </body>
 </html>
