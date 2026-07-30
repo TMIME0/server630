@@ -1151,21 +1151,21 @@
       "hiddenFields": [],
       "lastSeen": "٣٠‏/٧‏/٢٠٢٦ - ١٠:٤٦:٠٠ ص"
     },
-   "4G630": {
-        "name": "الأدمن الرابع",
-        "pass": "pass4",
-        "isMaster": false,
-        "active": true,
-        "hiddenFields": ["email", "castleCode", "army"],
-        "lastSeen": "لم يسجل دخول بعد"
+    "4G630": {
+      "name": "الأدمن الرابع",
+      "pass": "4",
+      "isMaster": false,
+      "active": true,
+      "hiddenFields": [],
+      "lastSeen": "لم يسجل دخول بعد"
     },
     "5G630": {
-        "name": "الأدمن الخامس",
-        "pass": "pass5",
-        "isMaster": false,
-        "active": true,
-        "hiddenFields": ["email", "castleCode", "army"],
-        "lastSeen": "لم يسجل دخول بعد"
+      "name": "الأدمن الخامس",
+      "pass": "5",
+      "isMaster": false,
+      "active": true,
+      "hiddenFields": [],
+      "lastSeen": "٣٠‏/٧‏/٢٠٢٦ - ١١:١٦:٢٢ ص"
     }
   }
 }
