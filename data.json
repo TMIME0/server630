@@ -1165,7 +1165,7 @@
     },
     "5G630": {
       "name": "الأدمن الخامس",
-      "pass": "W555",
+      "pass": "T555",
       "isMaster": false,
       "active": true,
       "hiddenFields": [
