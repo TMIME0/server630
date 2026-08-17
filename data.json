@@ -467,7 +467,7 @@
     },
     {
       "id": 32,
-      "castleName": "أرضية جمره ",
+      "castleName": "",
       "castleType": "dual",
       "email": "",
       "pass": "",
@@ -478,11 +478,11 @@
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
-      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٨:٠٧ ص"
+      "lastMemberUpdate": "لم يتم التعديل بعد"
     },
     {
       "id": 33,
-      "castleName": "ارضية ابو لجين",
+      "castleName": "",
       "castleType": "dual",
       "email": "",
       "pass": "",
@@ -493,7 +493,7 @@
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
-      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٨:١٤ ص"
+      "lastMemberUpdate": "لم يتم التعديل بعد"
     },
     {
       "id": 34,
@@ -1133,7 +1133,7 @@
       "isMaster": true,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٢:٤٧ ص"
+      "lastSeen": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٩:٢٨ ص"
     },
     "2G630": {
       "name": "Falcon",
@@ -1145,7 +1145,7 @@
     },
     "3G630": {
       "name": "M",
-      "pass": "M",
+      "pass": "L",
       "isMaster": false,
       "active": true,
       "hiddenFields": [],
@@ -1153,7 +1153,7 @@
     },
     "4G630": {
       "name": "الأدمن الرابع",
-      "pass": "K",
+      "pass": "4",
       "isMaster": false,
       "active": true,
       "hiddenFields": [
@@ -1165,7 +1165,7 @@
     },
     "5G630": {
       "name": "الأدمن الخامس",
-      "pass": "H",
+      "pass": "5",
       "isMaster": false,
       "active": true,
       "hiddenFields": [
