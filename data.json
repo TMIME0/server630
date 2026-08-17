@@ -3,7 +3,7 @@
     {
       "id": 1,
       "castleName": "Falcon",
-      "castleType": "dual",
+      "castleType": "infantry",
       "email": "Falcon",
       "pass": "F630",
       "gameEmail": "mm630nn@gmail.com",
@@ -13,7 +13,7 @@
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
-      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٧:٠٧:٠٨ ص"
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٧:١١:٤٥ ص"
     },
     {
       "id": 2,
