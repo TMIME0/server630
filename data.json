@@ -1145,7 +1145,7 @@
     },
     "3G630": {
       "name": "M",
-      "pass": "L",
+      "pass": "M",
       "isMaster": false,
       "active": true,
       "hiddenFields": [],
@@ -1153,7 +1153,7 @@
     },
     "4G630": {
       "name": "الأدمن الرابع",
-      "pass": "4",
+      "pass": "K",
       "isMaster": false,
       "active": true,
       "hiddenFields": [
@@ -1165,7 +1165,7 @@
     },
     "5G630": {
       "name": "الأدمن الخامس",
-      "pass": "5",
+      "pass": "H",
       "isMaster": false,
       "active": true,
       "hiddenFields": [
