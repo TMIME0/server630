@@ -38,12 +38,12 @@
       "pass": "M112233",
       "gameEmail": "saleh630@gmail.com",
       "gamePass": "Aa112233",
-      "infantryArmored": 24,
+      "infantryArmored": 0,
       "archerArmored": 0,
       "infantrySuper": 45,
       "archerSuper": 0,
       "meteor": 22,
-      "lastMemberUpdate": "١٨‏/٨‏/٢٠٢٦ - ١:٣٥:٠٨ ص"
+      "lastMemberUpdate": "١٨‏/٨‏/٢٠٢٦ - ١:٣٧:٣٧ ص"
     },
     {
       "id": 4,
@@ -1133,7 +1133,7 @@
       "isMaster": true,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "١٨‏/٨‏/٢٠٢٦ - ١:٣٢:٠٩ ص"
+      "lastSeen": "١٨‏/٨‏/٢٠٢٦ - ١:٣٤:٥٠ ص"
     },
     "2G630": {
       "name": "Falcon",
