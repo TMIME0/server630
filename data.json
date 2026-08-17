@@ -278,12 +278,12 @@
       "pass": "AS630",
       "gameEmail": "",
       "gamePass": "",
-      "infantryArmored": 6.9,
-      "archerArmored": 1.5,
-      "infantrySuper": 20.4,
-      "archerSuper": 3.3,
-      "meteor": 18.9,
-      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٥:٢٦:٠٢ م"
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٥:٥٩ ص"
     },
     {
       "id": 20,
@@ -1133,7 +1133,7 @@
       "isMaster": true,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "١٧‏/٨‏/٢٠٢٦ - ٩:١٠:٤٢ ص"
+      "lastSeen": "١٧‏/٨‏/٢٠٢٦ - ٥:٢٦:٣٠ م"
     },
     "2G630": {
       "name": "Falcon",
