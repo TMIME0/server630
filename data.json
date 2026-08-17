@@ -153,7 +153,7 @@
     {
       "id": 11,
       "castleName": "سويد",
-      "castleType": "infantry",
+      "castleType": "dual",
       "email": "Suwaid",
       "pass": "SW5678",
       "gameEmail": "",
@@ -163,7 +163,7 @@
       "infantrySuper": 30,
       "archerSuper": 0,
       "meteor": 40,
-      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٥:٢٩:٣٥ م"
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ١:٠٣:٣٩ م"
     },
     {
       "id": 12,
@@ -278,12 +278,12 @@
       "pass": "AS630",
       "gameEmail": "",
       "gamePass": "",
-      "infantryArmored": 0,
-      "archerArmored": 0,
-      "infantrySuper": 0,
-      "archerSuper": 0,
-      "meteor": 0,
-      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٥:٥٩ ص"
+      "infantryArmored": 86.9,
+      "archerArmored": 1.5,
+      "infantrySuper": 20.4,
+      "archerSuper": 3.3,
+      "meteor": 18.9,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٥:٣٤:٤٨ م"
     },
     {
       "id": 20,
@@ -1133,7 +1133,7 @@
       "isMaster": true,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "١٧‏/٨‏/٢٠٢٦ - ٥:٣٣:١٨ م"
+      "lastSeen": "١٧‏/٨‏/٢٠٢٦ - ٩:١٠:٤٢ ص"
     },
     "2G630": {
       "name": "Falcon",
