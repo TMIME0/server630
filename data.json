@@ -153,7 +153,7 @@
     {
       "id": 11,
       "castleName": "سويد",
-      "castleType": "dual",
+      "castleType": "infantry",
       "email": "Suwaid",
       "pass": "SW5678",
       "gameEmail": "",
@@ -163,7 +163,7 @@
       "infantrySuper": 30,
       "archerSuper": 0,
       "meteor": 40,
-      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ١:٠٣:٣٩ م"
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٥:٢٩:٣٥ م"
     },
     {
       "id": 12,
