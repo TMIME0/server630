@@ -1137,15 +1137,15 @@
     },
     "2G630": {
       "name": "Falcon",
-      "pass": "F630",
+      "pass": "F1234",
       "isMaster": false,
       "active": true,
       "hiddenFields": [],
       "lastSeen": "٣‏/٨‏/٢٠٢٦ - ١٢:٣٢:٠٣ ص"
     },
     "3G630": {
-      "name": "M",
-      "pass": "L",
+      "name": "الادمن الثالث",
+      "pass": "30",
       "isMaster": false,
       "active": true,
       "hiddenFields": [],
@@ -1153,7 +1153,7 @@
     },
     "4G630": {
       "name": "الأدمن الرابع",
-      "pass": "4",
+      "pass": "40",
       "isMaster": false,
       "active": true,
       "hiddenFields": [
@@ -1165,7 +1165,7 @@
     },
     "5G630": {
       "name": "الأدمن الخامس",
-      "pass": "5",
+      "pass": "50",
       "isMaster": false,
       "active": true,
       "hiddenFields": [
