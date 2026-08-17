@@ -318,17 +318,17 @@
     {
       "id": 22,
       "castleName": "كيلر",
-      "castleType": "infantry",
+      "castleType": "dual",
       "email": "",
       "pass": "",
-      "gameEmail": "abnbad808@gmail.com",
-      "gamePass": "KsA135790@&﷼",
-      "infantryArmored": 5480956,
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
       "archerArmored": 0,
-      "infantrySuper": 15941716,
+      "infantrySuper": 0,
       "archerSuper": 0,
-      "meteor": 8000000,
-      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٨:١٨:٣٢ ص"
+      "meteor": 0,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٦:٢٢ ص"
     },
     {
       "id": 23,
@@ -1133,7 +1133,7 @@
       "isMaster": true,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "١٧‏/٨‏/٢٠٢٦ - ٨:٠٨:٤٣ ص"
+      "lastSeen": "١٧‏/٨‏/٢٠٢٦ - ٨:١٩:٠٤ ص"
     },
     "2G630": {
       "name": "Falcon",
