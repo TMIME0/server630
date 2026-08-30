@@ -1137,7 +1137,7 @@
     },
     "2G630": {
       "name": "Falcon",
-      "pass": "F630",
+      "pass": "F123",
       "isMaster": false,
       "active": true,
       "hiddenFields": [],
@@ -1145,7 +1145,7 @@
     },
     "3G630": {
       "name": "ابو لجين",
-      "pass": "G333",
+      "pass": "G555",
       "isMaster": false,
       "active": true,
       "hiddenFields": [],
