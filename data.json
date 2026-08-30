@@ -172,13 +172,13 @@
       "email": "Abod",
       "pass": "A121212",
       "gameEmail": "",
-      "gamePass": "Aa630@Aa",
+      "gamePass": "",
       "infantryArmored": 0,
       "archerArmored": 0,
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
-      "lastMemberUpdate": "٣٠‏/٨‏/٢٠٢٦ - ١١:٠٣:٢٣ م"
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٥:٠٢ ص"
     },
     {
       "id": 13,
@@ -394,8 +394,8 @@
       "id": 27,
       "castleName": "زهراوي",
       "castleType": "dual",
-      "email": "",
-      "pass": "",
+      "email": "Zar",
+      "pass": "Z3434",
       "gameEmail": "",
       "gamePass": "",
       "infantryArmored": 0,
@@ -424,8 +424,8 @@
       "id": 29,
       "castleName": "ابو راكان",
       "castleType": "dual",
-      "email": "",
-      "pass": "",
+      "email": "Aburakan",
+      "pass": "Abu123",
       "gameEmail": "",
       "gamePass": "",
       "infantryArmored": 0,
@@ -439,8 +439,8 @@
       "id": 30,
       "castleName": "سيف",
       "castleType": "dual",
-      "email": "",
-      "pass": "",
+      "email": "Seef",
+      "pass": "S1234",
       "gameEmail": "",
       "gamePass": "",
       "infantryArmored": 0,
@@ -1137,7 +1137,7 @@
     },
     "2G630": {
       "name": "Falcon",
-      "pass": "F630",
+      "pass": "F123",
       "isMaster": false,
       "active": true,
       "hiddenFields": [],
@@ -1145,7 +1145,7 @@
     },
     "3G630": {
       "name": "ابو لجين",
-      "pass": "G333",
+      "pass": "G555",
       "isMaster": false,
       "active": true,
       "hiddenFields": [],
@@ -1153,7 +1153,7 @@
     },
     "4G630": {
       "name": "الأدمن الرابع",
-      "pass": "F444",
+      "pass": "F4040",
       "isMaster": false,
       "active": true,
       "hiddenFields": [
@@ -1165,7 +1165,7 @@
     },
     "5G630": {
       "name": "الأدمن الخامس",
-      "pass": "T555",
+      "pass": "G9090",
       "isMaster": false,
       "active": true,
       "hiddenFields": [
