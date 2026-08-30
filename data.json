@@ -317,7 +317,7 @@
     },
     {
       "id": 22,
-      "castleName": "ابو سلطان",
+      "castleName": "كيلر",
       "castleType": "infantry",
       "email": "Colud",
       "pass": "F1234",
@@ -328,7 +328,7 @@
       "infantrySuper": 15941716,
       "archerSuper": 0,
       "meteor": 8000000,
-      "lastMemberUpdate": "٣٠‏/٨‏/٢٠٢٦ - ١١:٤٥:٣٩ م"
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٨:٢١:١٤ ص"
     },
     {
       "id": 23,
@@ -428,12 +428,12 @@
       "pass": "Abu123",
       "gameEmail": "",
       "gamePass": "",
-      "infantryArmored": 0,
+      "infantryArmored": 1077937,
       "archerArmored": 0,
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
-      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٧:١٥ ص"
+      "lastMemberUpdate": "٣٠‏/٨‏/٢٠٢٦ - ١١:٤٦:٤٢ م"
     },
     {
       "id": 30,
@@ -452,18 +452,18 @@
     },
     {
       "id": 31,
-      "castleName": "شمالي",
+      "castleName": "علاوي",
       "castleType": "dual",
       "email": "",
       "pass": "",
-      "gameEmail": "w630w@icloud.com",
+      "gameEmail": "",
       "gamePass": "",
       "infantryArmored": 0,
       "archerArmored": 0,
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
-      "lastMemberUpdate": "٣٠‏/٨‏/٢٠٢٦ - ١١:٤٦:٢٢ م"
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٧:٣٠ ص"
     },
     {
       "id": 32,
@@ -1114,7 +1114,7 @@
       "id": 75,
       "castleName": "",
       "castleType": "dual",
-      "email": "1",
+      "email": "90",
       "pass": "00",
       "gameEmail": "",
       "gamePass": "",
@@ -1133,7 +1133,7 @@
       "isMaster": true,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "٣٠‏/٨‏/٢٠٢٦ - ١١:٤٤:٤٠ م"
+      "lastSeen": "٣٠‏/٨‏/٢٠٢٦ - ١١:١٦:٥٢ م"
     },
     "2G630": {
       "name": "Falcon",
