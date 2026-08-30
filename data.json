@@ -1119,11 +1119,11 @@
       "gameEmail": "",
       "gamePass": "",
       "infantryArmored": 2790999,
-      "archerArmored": 0,
+      "archerArmored": 2790999,
       "infantrySuper": 2790999,
       "archerSuper": 2790999,
       "meteor": 2790999,
-      "lastMemberUpdate": "٣٠‏/٨‏/٢٠٢٦ - ١١:١٤:٥٥ م"
+      "lastMemberUpdate": "٣٠‏/٨‏/٢٠٢٦ - ١١:١٥:٠١ م"
     }
   ],
   "admins": {
