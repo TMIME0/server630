@@ -23,12 +23,12 @@
       "pass": "Abu12345",
       "gameEmail": "aasmimazin@gmail.com",
       "gamePass": "",
-      "infantryArmored": 30038911,
+      "infantryArmored": 29038911,
       "archerArmored": 2079571,
-      "infantrySuper": 98029766,
-      "archerSuper": 7010693,
-      "meteor": 9300000,
-      "lastMemberUpdate": "٣١‏/٨‏/٢٠٢٦ - ١٢:٣٠:٢٣ ص"
+      "infantrySuper": 93490623,
+      "archerSuper": 6761986,
+      "meteor": 9800000,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٥:٤٨:٥٠ م"
     },
     {
       "id": 3,
@@ -158,12 +158,12 @@
       "pass": "SW5678",
       "gameEmail": "",
       "gamePass": "sdxcwe911",
-      "infantryArmored": 0,
+      "infantryArmored": 17,
       "archerArmored": 0,
       "infantrySuper": 30,
       "archerSuper": 0,
-      "meteor": 55,
-      "lastMemberUpdate": "٣٠‏/٨‏/٢٠٢٦ - ١١:٣٨:٢٢ م"
+      "meteor": 40,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ١:٠٣:٣٩ م"
     },
     {
       "id": 12,
@@ -392,7 +392,7 @@
     },
     {
       "id": 27,
-      "castleName": "زهراوي",
+      "castleName": "زرقاوي",
       "castleType": "dual",
       "email": "Zar",
       "pass": "Z3434",
@@ -403,7 +403,7 @@
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
-      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٧:٠٠ ص"
+      "lastMemberUpdate": "٣٠‏/٨‏/٢٠٢٦ - ١١:٤٢:٠٧ م"
     },
     {
       "id": 28,
@@ -428,12 +428,12 @@
       "pass": "Abu123",
       "gameEmail": "",
       "gamePass": "",
-      "infantryArmored": 1077973,
+      "infantryArmored": 0,
       "archerArmored": 0,
-      "infantrySuper": 8914137,
-      "archerSuper": 14100,
-      "meteor": 434200,
-      "lastMemberUpdate": "٣٠‏/٨‏/٢٠٢٦ - ١١:٤١:٤٢ م"
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٧:١٥ ص"
     },
     {
       "id": 30,
