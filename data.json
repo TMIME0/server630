@@ -53,12 +53,12 @@
       "pass": "K007788",
       "gameEmail": "mlbb45gus@gmail.com",
       "gamePass": "m7mad112",
-      "infantryArmored": 25893523,
+      "infantryArmored": 26893523,
       "archerArmored": 374599,
-      "infantrySuper": 51393713,
-      "archerSuper": 481460,
+      "infantrySuper": 60393713,
+      "archerSuper": 80000000,
       "meteor": 5900000,
-      "lastMemberUpdate": "٣٠‏/٨‏/٢٠٢٦ - ١٠:٣١:٤٥ م"
+      "lastMemberUpdate": "٣٠‏/٨‏/٢٠٢٦ - ١١:٥٢:١٧ م"
     },
     {
       "id": 5,
@@ -1133,7 +1133,7 @@
       "isMaster": true,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "٣٠‏/٨‏/٢٠٢٦ - ١١:٥٣:٠٠ م"
+      "lastSeen": "٣٠‏/٨‏/٢٠٢٦ - ١١:٥٣:٤٤ م"
     },
     "2G630": {
       "name": "Falcon",
