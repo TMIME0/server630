@@ -27,8 +27,8 @@
       "archerArmored": 2079571,
       "infantrySuper": 98029766,
       "archerSuper": 7010693,
-      "meteor": 9800000,
-      "lastMemberUpdate": "٣١‏/٨‏/٢٠٢٦ - ١:٥٠:٣٠ ص"
+      "meteor": 15000000,
+      "lastMemberUpdate": "١‏/٩‏/٢٠٢٦ - ١٢:٢٢:٣٩ ص"
     },
     {
       "id": 3,
@@ -1133,7 +1133,7 @@
       "isMaster": true,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "٣١‏/٨‏/٢٠٢٦ - ١١:٢٢:١٣ م"
+      "lastSeen": "٣١‏/٨‏/٢٠٢٦ - ١١:١٢:٥٨ م"
     },
     "2G630": {
       "name": "Falcon",
@@ -1149,7 +1149,7 @@
       "isMaster": false,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "٣١‏/٨‏/٢٠٢٦ - ١:٥٣:٠٨ ص"
+      "lastSeen": "١‏/٩‏/٢٠٢٦ - ١٢:٢٢:٠١ ص"
     },
     "4G630": {
       "name": "الأدمن الرابع",
