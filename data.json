@@ -18,17 +18,17 @@
     {
       "id": 2,
       "castleName": "جلاديتور",
-      "castleType": "archer",
+      "castleType": "dual",
       "email": "AbuLujain",
       "pass": "Abu12345",
       "gameEmail": "aasmimazin@gmail.com",
       "gamePass": "",
-      "infantryArmored": 0,
+      "infantryArmored": 30038911,
       "archerArmored": 2079571,
-      "infantrySuper": 0,
+      "infantrySuper": 98029766,
       "archerSuper": 7010693,
       "meteor": 15000000,
-      "lastMemberUpdate": "١‏/٩‏/٢٠٢٦ - ١٢:٢٢:٣٩ ص"
+      "lastMemberUpdate": "١‏/٩‏/٢٠٢٦ - ١١:٤٨:٣٠ م"
     },
     {
       "id": 3,
