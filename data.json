@@ -18,14 +18,14 @@
     {
       "id": 2,
       "castleName": "جلاديتور",
-      "castleType": "dual",
+      "castleType": "archer",
       "email": "AbuLujain",
       "pass": "Abu12345",
       "gameEmail": "aasmimazin@gmail.com",
       "gamePass": "",
-      "infantryArmored": 30038911,
+      "infantryArmored": 0,
       "archerArmored": 2079571,
-      "infantrySuper": 98029766,
+      "infantrySuper": 0,
       "archerSuper": 7010693,
       "meteor": 15000000,
       "lastMemberUpdate": "١‏/٩‏/٢٠٢٦ - ١٢:٢٢:٣٩ ص"
@@ -62,7 +62,7 @@
     },
     {
       "id": 5,
-      "castleName": "هادي",
+      "castleName": "ابوناصر",
       "castleType": "dual",
       "email": "Hold",
       "pass": "H9077",
@@ -73,7 +73,7 @@
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
-      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٧:١٧:٤٨ ص"
+      "lastMemberUpdate": "١‏/٩‏/٢٠٢٦ - ٩:٣٨:٤٥ م"
     },
     {
       "id": 6,
