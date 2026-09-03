@@ -1,888 +1,1179 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة القلاع والجيوش - انتقام السلاطين</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #0b0b0e;
-            color: #e5e7eb;
-            overflow-x: hidden;
-        }
-        .gold-text {
-            color: #d4af37;
-        }
-        .gold-bg {
-            background-color: #d4af37;
-        }
-        .gold-border {
-            border-color: #d4af37;
-        }
-        #interactive-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .content-layer {
-            position: relative;
-            z-index: 10;
-        }
-    </style>
-</head>
-<body class="min-p-0 m-0">
-
-    <!-- خلفية التموجات المتفاعلة -->
-    <canvas id="interactive-canvas"></canvas>
-
-    <!-- شاشة التحميل -->
-    <div id="sync-loading" class="fixed inset-0 bg-[#0b0b0e] z-50 flex flex-col items-center justify-center space-y-4">
-        <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-sm gold-text font-bold">جاري المزامنة مع السيرفر...</p>
-    </div>
-
-    <!-- شاشة تسجيل الدخول -->
-    <div id="login-screen" class="content-layer min-h-screen flex items-center justify-center p-4">
-        <div class="bg-[#141418]/90 backdrop-blur-md border border-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-6">
-            <div class="text-center space-y-2">
-                <h1 class="text-2xl font-black gold-text">قاعدة بيانات سيرفر 630</h1>
-                <p class="text-xs text-gray-400">انتقام السلاطين - إدارة القلاع والجيوش</p>
-            </div>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs text-gray-300 mb-1 font-bold">كود الأدمن</label>
-                    <input type="text" id="login-code" placeholder="أدخل كود الأدمن (مثال: 1G630)" class="w-full px-4 py-3 bg-[#1e1e24] border border-gray-700 rounded-2xl text-xs text-white focus:outline-none focus:border-[#d4af37]">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-300 mb-1 font-bold">رمز الدخول</label>
-                    <input type="password" id="login-pass" placeholder="أدخل الرمز السري" class="w-full px-4 py-3 bg-[#1e1e24] border border-gray-700 rounded-2xl text-xs text-white focus:outline-none focus:border-[#d4af37]">
-                </div>
-                <button onclick="handleLogin()" class="w-full py-3 gold-bg text-black font-extrabold rounded-2xl text-sm hover:opacity-95 transition cursor-pointer shadow-lg">
-                    تسجيل دخول الأدمن
-                </button>
-            </div>
-
-            <div class="border-t border-gray-800 pt-4 text-center">
-                <button onclick="toggleMemberLogin()" class="text-xs gold-text font-bold hover:underline">
-                    هل أنت عضو بالتحالف؟ سجل دخول لقلعتك هنا 🏰
-                </button>
-            </div>
-
-            <!-- تسجيل دخول الأعضاء السريع -->
-            <div id="member-login-box" class="hidden space-y-3 bg-[#1a1a20] p-4 rounded-2xl border border-gray-800">
-                <h3 class="text-xs font-bold text-white text-center">تسجيل دخول الأعضاء</h3>
-                <input type="email" id="member-email-input" placeholder="ايميل العضو" class="w-full px-3 py-2 bg-[#121216] border border-gray-700 rounded-xl text-xs text-white">
-                <input type="password" id="member-pass-input" placeholder="رمز الدخول الخاص بك" class="w-full px-3 py-2 bg-[#121216] border border-gray-700 rounded-xl text-xs text-white">
-                <button onclick="handleMemberLogin()" class="w-full py-2 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-500 transition">
-                    دخول لقلعتي
-                </button>
-            </div>
-
-            <div id="welcome-msg" class="hidden text-center text-xs text-green-400 font-bold">
-                تم تسجيل الدخول بنجاح، جاري فتح اللوحة...
-            </div>
-        </div>
-    </div>
-
-    <!-- لوحة التحكم الرئيسية -->
-    <div id="dashboard" class="content-layer hidden min-h-screen p-4 md:p-8 space-y-6">
-        
-        <!-- الشريط العلوي -->
-        <div class="flex flex-col md:flex-row justify-between items-center bg-[#141418]/90 backdrop-blur-md border border-gray-800 p-4 rounded-2xl gap-4 shadow-xl">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl gold-bg flex items-center justify-center text-black font-black text-lg">630</div>
-                <div>
-                    <h2 id="user-info" class="text-sm font-bold text-white"></h2>
-                    <p id="admin-role-title" class="text-[10px] text-gray-400"></p>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-3 flex-wrap justify-center">
-                <div id="cloud-status" class="text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold">
-                    ☁️ متصل
-                </div>
-                <div id="last-update-time" class="text-xs text-gray-400 bg-[#1e1e24] px-3 py-1.5 rounded-xl border border-gray-800">
-                    آخر تحديث: لم يتم بعد
-                </div>
-                
-                <div id="master-admin-settings-container" class="hidden flex gap-2">
-                    <button onclick="toggleSettingsModal()" class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-xl text-xs font-bold transition">
-                        ⚙️ إعدادات الأعضاء
-                    </button>
-                    <button onclick="toggleAdminsModal()" class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-xl text-xs font-bold transition">
-                        🛡️ إدارة الأدمنية
-                    </button>
-                </div>
-
-                <button onclick="logout()" class="px-3 py-1.5 bg-red-950/60 hover:bg-red-900 text-red-300 border border-red-800 rounded-xl text-xs font-bold transition">
-                    تسجيل خروج
-                </button>
-            </div>
-        </div>
-
-        <!-- قسم الإجماليات -->
-        <div id="totals-section" class="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <div class="bg-[#141418]/90 backdrop-blur-md border border-gray-800 p-4 rounded-2xl text-center space-y-1">
-                <span class="text-[10px] text-gray-400 block">إجمالي مدرع مشاة</span>
-                <span id="total-armored-infantry" class="text-sm md:text-base font-black text-white">0</span>
-            </div>
-            <div class="bg-[#141418]/90 backdrop-blur-md border border-gray-800 p-4 rounded-2xl text-center space-y-1">
-                <span class="text-[10px] text-gray-400 block">إجمالي مدرع رماة</span>
-                <span id="total-armored-archers" class="text-sm md:text-base font-black text-white">0</span>
-            </div>
-            <div class="bg-[#141418]/90 backdrop-blur-md border border-gray-800 p-4 rounded-2xl text-center space-y-1">
-                <span class="text-[10px] text-gray-400 block">إجمالي خارق مشاة</span>
-                <span id="total-super-infantry" class="text-sm md:text-base font-black text-white">0</span>
-            </div>
-            <div class="bg-[#141418]/90 backdrop-blur-md border border-gray-800 p-4 rounded-2xl text-center space-y-1">
-                <span class="text-[10px] text-gray-400 block">إجمالي خارق رماة</span>
-                <span id="total-super-archers" class="text-sm md:text-base font-black text-white">0</span>
-            </div>
-            <div class="col-span-2 md:col-span-1 bg-[#141418]/90 backdrop-blur-md border border-gray-800 p-4 rounded-2xl text-center space-y-1">
-                <span class="text-[10px] gold-text block font-bold">إجمالي النيزك</span>
-                <span id="total-meteor-crystal" class="text-sm md:text-base font-black gold-text">0</span>
-            </div>
-        </div>
-
-        <!-- صندوق البحث -->
-        <div id="search-box-container" class="bg-[#141418]/90 backdrop-blur-md border border-gray-800 p-3 rounded-2xl flex items-center gap-3">
-            <span class="text-xs text-gray-400">🔍 بحث عن قلعة:</span>
-            <input type="text" id="search-input" oninput="filterTable()" placeholder="اكتب اسم القلعة..." class="w-full bg-[#1e1e24] border border-gray-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#d4af37]">
-        </div>
-
-        <!-- جدول القلاع -->
-        <div class="bg-[#141418]/90 backdrop-blur-md border border-gray-800 rounded-2xl overflow-hidden shadow-2xl">
-            <div class="p-4 border-b border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
-                <h3 id="table-section-title" class="text-sm font-bold gold-text">قلاع أعضاء التحالف (75 قلعة)</h3>
-                <!-- خانة مفتاح الذكاء الاصطناعي API Key -->
-                <div class="flex items-center gap-2 w-full md:w-auto">
-                    <span class="text-[10px] text-purple-300 font-bold whitespace-nowrap">مفتاح الذكاء الاصطناعي (Gemini API Key):</span>
-                    <input type="password" id="gemini-api-key-input" placeholder="الصق مفتاح الـ API هنا لتفعيل القراءة بالصورة" class="bg-[#121216] border border-purple-900/60 rounded-xl px-3 py-1.5 text-xs text-white w-full md:w-64 focus:outline-none focus:border-purple-500">
-                </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-right border-collapse">
-                    <thead>
-                        <tr class="border-b border-gray-800 text-xs text-gray-400 bg-black/40">
-                            <th class="p-3 min-w-[340px]">معلومات القلعة</th>
-                            <th class="p-3 text-center">النوع</th>
-                            <th class="p-3">المدرع</th>
-                            <th class="p-3">الخارق</th>
-                            <th class="p-3">النيزك</th>
-                        </tr>
-                    </thead>
-                    <tbody id="members-table-body">
-                        <!-- يتم تعبئتها ديناميكياً -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- عنصر مخفي لقراءة صور الجيش بالذكاء الاصطناعي -->
-    <input type="file" id="ai-file-input" accept="image/*" class="hidden" onchange="processAiImage(event)">
-
-    <!-- نافذة إعدادات الأعضاء (للأدمن العام) -->
-    <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-[#141418] border border-gray-800 rounded-3xl p-6 w-full max-w-2xl max-h-[80vh] flex flex-col space-y-4 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="text-sm font-bold gold-text">إعدادات يوزرات ورموز الأعضاء</h3>
-                <button onclick="toggleSettingsModal()" class="text-gray-400 hover:text-white text-sm font-bold">✕ إغلاق</button>
-            </div>
-            <div id="settings-members-list" class="overflow-y-auto space-y-3 flex-1 pr-1">
-                <!-- يتم تعبئتها ديناميكياً -->
-            </div>
-            <div class="border-t border-gray-800 pt-3 flex justify-end gap-2">
-                <button onclick="saveAllMembersChanges()" class="px-4 py-2 gold-bg text-black font-bold rounded-xl text-xs hover:opacity-90 transition">
-                    حفظ التغييرات
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- نافذة إدارة الأدمنية (للأدمن العام) -->
-    <div id="admins-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-[#141418] border border-gray-800 rounded-3xl p-6 w-full max-w-2xl max-h-[80vh] flex flex-col space-y-4 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="text-sm font-bold gold-text">إدارة صلاحيات الأدمنية</h3>
-                <button onclick="toggleAdminsModal()" class="text-gray-400 hover:text-white text-sm font-bold">✕ إغلاق</button>
-            </div>
-            <div id="admins-settings-list" class="overflow-y-auto space-y-3 flex-1 pr-1">
-                <!-- يتم تعبئتها ديناميكياً -->
-            </div>
-            <div class="border-t border-gray-800 pt-3 flex justify-end gap-2">
-                <button onclick="saveAdminsChanges()" class="px-4 py-2 gold-bg text-black font-bold rounded-xl text-xs hover:opacity-90 transition">
-                    حفظ إعدادات الأدمنية
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- السكريبت البرمجي الكامل والرسومات الخلفية -->
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKwlK9WUfqjHKlPOwvINEClRcpUXXQzc6CP47bnhSVnfN0H-dueXwb0ZkThyF6uuarGQ/exec";
-
-        let admins = {
-            "1G630": { name: "الأدمن الأول (مدير عام)", pass: "Tmime9090", isMaster: true, active: true, showGameCredentials: true, lastSeen: "لم يسجل دخول بعد" },
-            "2G630": { name: "الأدمن الثاني", pass: "pass2", isMaster: false, active: true, showGameCredentials: true, lastSeen: "لم يسجل دخول بعد" },
-            "3G630": { name: "الأدمن الثالث", pass: "pass3", isMaster: false, active: true, showGameCredentials: true, lastSeen: "لم يسجل دخول بعد" },
-            "4G630": { name: "الأدمن الرابع", pass: "pass4", isMaster: false, active: true, showGameCredentials: true, lastSeen: "لم يسجل دخول بعد" },
-            "5G630": { name: "الأدمن الخامس", pass: "pass5", isMaster: false, active: true, showGameCredentials: true, lastSeen: "لم يسجل دخول بعد" }
-        };
-
-        let currentAdmin = null;
-        let loggedInMemberId = null;
-        let membersData = [];
-        let activeAiMemberId = null;
-
-        const canvas = document.getElementById('interactive-canvas');
-        const ctx = canvas.getContext('2d');
-        let width, height;
-        let mouse = { x: -1000, y: -1000 };
-
-        function resizeCanvas() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        window.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-        });
-        window.addEventListener('touchmove', (e) => {
-            if (e.touches.length > 0) {
-                mouse.x = e.touches[0].clientX;
-                mouse.y = e.touches[0].clientY;
-            }
-        });
-
-        let angle = 0;
-        function drawInteractiveGrid() {
-            ctx.clearRect(0, 0, width, height);
-            angle += 0.015;
-
-            const numLines = 8;
-            for (let i = 0; i < numLines; i++) {
-                let startY = (height / (numLines + 1)) * (i + 1);
-                
-                ctx.beginPath();
-                ctx.lineWidth = 1.5;
-                ctx.strokeStyle = 'rgba(220, 38, 38, 0.25)';
-
-                for (let x = 0; x <= width; x += 15) {
-                    let waveOffset = Math.sin(x * 0.005 + angle + i) * 40 + Math.cos(x * 0.002 - angle) * 20;
-                    let currentY = startY + waveOffset;
-
-                    let dx = mouse.x - x;
-                    let dy = mouse.y - currentY;
-                    let dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 200) {
-                        let force = (200 - dist) / 200;
-                        currentY -= force * 30 * (dy > 0 ? 1 : -1);
-                    }
-
-                    if (x === 0) {
-                        ctx.moveTo(x, currentY);
-                    } else {
-                        ctx.lineTo(x, currentY);
-                    }
-                }
-                ctx.stroke();
-            }
-
-            requestAnimationFrame(drawInteractiveGrid);
-        }
-        drawInteractiveGrid();
-
-        checkAndLoadData();
-
-        function checkAndLoadData() {
-            const savedMemberSession = sessionStorage.getItem("logged_member_id");
-            if (savedMemberSession) {
-                loggedInMemberId = Number(savedMemberSession);
-            }
-            loadFromCloud();
-        }
-
-        async function loadFromCloud() {
-            const statusDiv = document.getElementById('cloud-status');
-            try {
-                const response = await fetch('data.json?t=' + new Date().getTime());
-                const data = await response.json();
-                
-                if (data && data.members && data.members.length > 0) {
-                    membersData = data.members;
-                } else {
-                    initDefaultMembers();
-                }
-
-                if (data && data.admins) {
-                    admins = data.admins;
-                }
-
-                if (statusDiv) {
-                    statusDiv.innerText = "☁️ متصل";
-                    statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
-                }
-            } catch (e) {
-                initDefaultMembers();
-                if (statusDiv) {
-                    statusDiv.innerText = "⚠️ وضع الطوارئ الافتراضي";
-                    statusDiv.className = "text-xs text-yellow-400 bg-yellow-950/40 px-3 py-1.5 rounded-xl border border-yellow-800 font-bold";
-                }
-            } finally {
-                const loadingScreen = document.getElementById('sync-loading');
-                if (loadingScreen) {
-                    loadingScreen.classList.add('hidden');
-                    loadingScreen.style.display = 'none';
-                }
-
-                if (loggedInMemberId !== null) {
-                    showMemberDashboard();
-                } else {
-                    updateTotals();
-                }
-            }
-        }
-
-        function initDefaultMembers() {
-            membersData = [];
-            for (let i = 1; i <= 75; i++) {
-                membersData.push({
-                    id: i,
-                    castleName: i === 1 ? 'قلعة فالكون' : '',
-                    castleType: 'dual',
-                    email: `member${i}@alliance.com`,
-                    pass: `pass${i}`,
-                    gameEmail: `game${i}@game.com`,
-                    gamePass: `gpass${i}`,
-                    infantryArmored: 0,
-                    archerArmored: 0,
-                    infantrySuper: 0,
-                    archerSuper: 0,
-                    meteor: 0,
-                    lastMemberUpdate: 'لم يتم التعديل بعد'
-                });
-            }
-            updateTotals();
-        }
-
-        function saveChanges() {
-            const now = new Date();
-            const timeString = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
-            document.getElementById('last-update-time').innerText = `آخر تحديث: ${timeString}`;
-
-            const statusDiv = document.getElementById('cloud-status');
-            if (statusDiv) {
-                statusDiv.innerText = "🔄 جاري الحفظ ...";
-                statusDiv.className = "text-xs text-yellow-400 bg-yellow-950/40 px-3 py-1.5 rounded-xl border border-yellow-800 font-bold";
-            }
-
-            const payload = {
-                members: membersData,
-                admins: admins
-            };
-
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload)
-            }).then(() => {
-                if (statusDiv) {
-                    statusDiv.innerText = "☁️ متصل";
-                    statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
-                }
-            }).catch(() => {
-                if (statusDiv) {
-                    statusDiv.innerText = "❌ فشل الحفظ ";
-                    statusDiv.className = "text-xs text-red-400 bg-red-950/40 px-3 py-1.5 rounded-xl border border-red-800 font-bold";
-                }
-            });
-        }
-
-        function handleLogin() {
-            const code = document.getElementById('login-code').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
-            const welcomeMsg = document.getElementById('welcome-msg');
-
-            if (admins[code] && admins[code].pass === pass) {
-                if (admins[code].active === false) {
-                    alert('عذراً، هذا الحساب معطل من قبل الأدمن العام!');
-                    return;
-                }
-
-                const now = new Date();
-                admins[code].lastSeen = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
-                saveChanges();
-
-                currentAdmin = admins[code];
-                loggedInMemberId = null;
-                welcomeMsg.classList.remove('hidden');
-
-                setTimeout(() => {
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('dashboard').classList.remove('hidden');
-                    document.getElementById('user-info').innerText = currentAdmin.name;
-                    document.getElementById('admin-role-title').innerText = currentAdmin.isMaster ? 'صلاحيات كاملة للأدمن العام' : 'صلاحيات اطلاع وتعديل';
-                    
-                    if (currentAdmin.isMaster) {
-                        document.getElementById('master-admin-settings-container').classList.remove('hidden');
-                    } else {
-                        document.getElementById('master-admin-settings-container').classList.add('hidden');
-                    }
-
-                    initMembersTable();
-                    updateTotals();
-                }, 1000);
-            } else {
-                alert('كود أو رمز الأدمن غير صحيح!');
-            }
-        }
-
-        function toggleMemberLogin() {
-            document.getElementById('member-login-box').classList.toggle('hidden');
-        }
-
-        function handleMemberLogin() {
-            const mEmail = document.getElementById('member-email-input').value.trim().toLowerCase();
-            const mPass = document.getElementById('member-pass-input').value.trim();
-            const welcomeMsg = document.getElementById('welcome-msg');
-
-            const member = membersData.find(m => m.email.toLowerCase() === mEmail && m.pass === mPass);
-
-            if (member) {
-                loggedInMemberId = member.id;
-                sessionStorage.setItem("logged_member_id", member.id);
-                welcomeMsg.classList.remove('hidden');
-
-                setTimeout(() => {
-                    showMemberDashboard();
-                }, 1000);
-            } else {
-                alert('الايميل أو رمز الدخول غير صحيح!');
-            }
-        }
-
-        function showMemberDashboard() {
-            const member = membersData.find(m => m.id === loggedInMemberId);
-            if (!member) return;
-
-            document.getElementById('login-screen').classList.add('hidden');
-            const loadingScreen = document.getElementById('sync-loading');
-            if (loadingScreen) {
-                loadingScreen.classList.add('hidden');
-                loadingScreen.style.display = 'none';
-            }
-            document.getElementById('dashboard').classList.remove('hidden');
-            
-            const castleDisplayName = member.castleName ? member.castleName : `قلعة رقم ${member.id}`;
-            document.getElementById('user-info').innerText = `${castleDisplayName} (عضو ${member.id})`;
-            document.getElementById('admin-role-title').innerText = 'لوحة قلعتك الخاصة';
-            document.getElementById('master-admin-settings-container').classList.add('hidden');
-            document.getElementById('totals-section').classList.add('hidden');
-            document.getElementById('search-box-container').classList.add('hidden');
-            document.getElementById('table-section-title').innerText = 'حساب اللعبة والجيوش الخاصة بك';
-
-            initMembersTable();
-        }
-
-        function toggleSettingsModal() {
-            const modal = document.getElementById('settings-modal');
-            modal.classList.toggle('hidden');
-            if (!modal.classList.contains('hidden')) renderSettingsList();
-        }
-
-        function toggleAdminsModal() {
-            const modal = document.getElementById('admins-modal');
-            modal.classList.toggle('hidden');
-            if (!modal.classList.contains('hidden')) renderAdminsList();
-        }
-
-        function renderSettingsList() {
-            const container = document.getElementById('settings-members-list');
-            container.innerHTML = '';
-            membersData.forEach((m, index) => {
-                container.innerHTML += `
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2 p-3 bg-[#121212] rounded-xl border border-gray-800 items-center">
-                        <span class="text-xs font-bold text-white">عضو رقم ${m.id} (${m.castleName || 'بلا اسم'})</span>
-                        <input type="text" id="set-email-${index}" value="${m.email}" placeholder="يوزر الدخول" class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white">
-                        <input type="text" id="set-pass-${index}" value="${m.pass}" placeholder="رمز الدخول" class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white">
-                    </div>
-                `;
-            });
-        }
-
-        function renderAdminsList() {
-            const container = document.getElementById('admins-settings-list');
-            container.innerHTML = '';
-            Object.keys(admins).forEach(code => {
-                if (code !== '1G630') {
-                    const adm = admins[code];
-                    container.innerHTML += `
-                        <div class="p-4 bg-[#121212] rounded-2xl border border-gray-800 space-y-3">
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs font-bold gold-text">كود الأدمن: ${code} (آخر ظهور: ${adm.lastSeen || 'لم يسجل'})</span>
-                                <div class="flex items-center gap-4 text-xs">
-                                    <label class="flex items-center gap-1 cursor-pointer text-gray-300">
-                                        <input type="checkbox" id="adm-active-${code}" ${adm.active !== false ? 'checked' : ''} class="accent-yellow-500"> تفعيل الحساب
-                                    </label>
-                                    <label class="flex items-center gap-1 cursor-pointer text-gray-300">
-                                        <input type="checkbox" id="adm-showcred-${code}" ${adm.showGameCredentials !== false ? 'checked' : ''} class="accent-yellow-500"> عرض إيميل ورمز القلعة
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                <input type="text" id="adm-name-${code}" value="${adm.name}" class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white">
-                                <input type="text" id="adm-pass-${code}" value="${adm.pass}" class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white">
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-        }
-
-        function saveAllMembersChanges() {
-            membersData.forEach((m, index) => {
-                m.email = document.getElementById(`set-email-${index}`).value.trim() || m.email;
-                m.pass = document.getElementById(`set-pass-${index}`).value.trim() || m.pass;
-            });
-            saveChanges();
-            alert('تم حفظ يوزرات ورموز الدخول للأعضاء بنجاح!');
-            toggleSettingsModal();
-            initMembersTable();
-        }
-
-        function saveAdminsChanges() {
-            Object.keys(admins).forEach(code => {
-                if (code !== '1G630') {
-                    const nameInput = document.getElementById(`adm-name-${code}`);
-                    const passInput = document.getElementById(`adm-pass-${code}`);
-                    const activeCheckbox = document.getElementById(`adm-active-${code}`);
-                    const showCredCheckbox = document.getElementById(`adm-showcred-${code}`);
-
-                    if (nameInput) admins[code].name = nameInput.value.trim();
-                    if (passInput) admins[code].pass = passInput.value.trim();
-                    if (activeCheckbox) admins[code].active = activeCheckbox.checked;
-                    if (showCredCheckbox) admins[code].showGameCredentials = showCredCheckbox.checked;
-                }
-            });
-            saveChanges();
-            alert('تم حفظ إعدادات الأدمنية بنجاح!');
-            toggleAdminsModal();
-        }
-
-        function logout() {
-            sessionStorage.clear();
-            document.getElementById('dashboard').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('hidden');
-            loggedInMemberId = null;
-            currentAdmin = null;
-        }
-
-        function initMembersTable() {
-            const tbody = document.getElementById('members-table-body');
-            tbody.innerHTML = '';
-
-            let dataToShow = membersData;
-            if (loggedInMemberId !== null) {
-                dataToShow = membersData.filter(m => m.id === loggedInMemberId);
-            }
-
-            const isMasterAdmin = currentAdmin && currentAdmin.isMaster;
-            const canSeeGameCreds = isMasterAdmin || (currentAdmin && currentAdmin.showGameCredentials !== false);
-
-            dataToShow.forEach((m) => {
-                const tr = document.createElement('tr');
-                tr.className = 'border-b border-gray-800/40 hover:bg-white/5 transition';
-                
-                let columnContent = '';
-                if (loggedInMemberId !== null) {
-                    columnContent = `
-                        <div class="font-bold text-white text-sm mb-1">قلعتك الخاصة (${m.castleName || 'بدون اسم'})</div>
-                        <div class="bg-[#121212] p-3 rounded-2xl border border-gray-800 space-y-3 w-full">
-                            <div>
-                                <span class="text-xs text-gray-400 block mb-1">إيميل القلعة (للاطلاع فقط)</span>
-                                <input type="text" value="${m.gameEmail || ''}" readonly class="w-full px-4 py-2 bg-gray-900 border border-gray-800 rounded-xl text-xs text-gray-300 cursor-not-allowed">
-                            </div>
-                            <div>
-                                <span class="text-xs gold-text block mb-1 font-bold">رمز القلعة (قابل للتعديل)</span>
-                                <input type="text" value="${m.gamePass || ''}" class="w-full px-4 py-2.5 bg-[#1e1e24] border border-gray-700 rounded-xl text-xs gold-text font-bold" oninput="updateMemberGameDataLocal(${m.id}, 'gamePass', this.value)">
-                            </div>
-                            <div>
-                                <button type="button" onclick="triggerAiUpload(${m.id})" class="w-full py-2.5 bg-gradient-to-r from-purple-900 to-indigo-900 hover:opacity-90 border border-purple-700 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer text-center block mb-2 flex items-center justify-center gap-1">
-                                    🤖 قراءة تقرير الجيش بالذكاء الاصطناعي
-                                </button>
-                            </div>
-                            <div class="pt-1">
-                                <span class="text-[10px] text-gray-400 block mb-1.5">آخر تحديث: <span class="text-gray-300 font-semibold">${m.lastMemberUpdate || 'لم يتم التعديل بعد'}</span></span>
-                                <button type="button" onclick="saveSingleMemberData()" class="w-full py-2.5 gold-bg text-black rounded-xl text-xs font-bold hover:opacity-90 transition shadow cursor-pointer text-center block">
-                                    حفظ البيانات
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    let gameCredsHTML = '';
-                    if (canSeeGameCreds) {
-                        gameCredsHTML = `
-                            <div class="bg-[#121212]/90 p-3 rounded-2xl border border-gray-800/80 space-y-2.5 w-full">
-                                <div>
-                                    <span class="text-xs text-gray-400 block mb-1">إيميل القلعة</span>
-                                    <input type="text" value="${m.gameEmail || ''}" placeholder="ايميل القلعة" class="w-full px-3.5 py-2 bg-[#18181c] border border-gray-700 rounded-xl text-xs text-white" oninput="updateMemberGameDataLocal(${m.id}, 'gameEmail', this.value)">
-                                </div>
-                                <div>
-                                    <span class="text-xs gold-text block mb-1 font-bold">رمز القلعة</span>
-                                    <input type="text" value="${m.gamePass || ''}" placeholder="رمز القلعة" class="w-full px-3.5 py-2 bg-[#18181c] border border-gray-700 rounded-xl text-xs gold-text font-bold" oninput="updateMemberGameDataLocal(${m.id}, 'gamePass', this.value)">
-                                </div>
-                            </div>
-                        `;
-                    }
-
-                    columnContent = `
-                        <div class="flex justify-between items-center mb-1.5">
-                            <span class="font-bold text-white text-sm">عضو رقم ${m.id}</span>
-                            <span class="text-[10px] text-gray-400" title="وقت آخر تحديث للبيانات">🕒 ${m.lastMemberUpdate || 'لم يتم التعديل بعد'}</span>
-                        </div>
-                        <div class="space-y-2.5 w-full">
-                            <input type="text" placeholder="اسم القلعة" value="${m.castleName || ''}" class="castle-name-input px-3.5 py-2 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white w-full font-bold" oninput="updateCastleNameLocal(${m.id}, this.value)">
-                            ${gameCredsHTML}
-                            <button type="button" onclick="triggerAiUpload(${m.id})" class="w-full py-2.5 bg-gradient-to-r from-purple-900 to-indigo-900 hover:opacity-90 border border-purple-700 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer text-center block flex items-center justify-center gap-1">
-                                🤖 قراءة تقرير الجيش بالذكاء الاصطناعي
-                            </button>
-                            <div class="pt-1">
-                                <button type="button" onclick="saveAdminEditedMember(${m.id})" class="w-full py-2.5 gold-bg text-black rounded-xl text-xs font-bold hover:opacity-95 transition shadow cursor-pointer text-center block">
-                                    حفظ البيانات
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                let typeField = '';
-                if (isMasterAdmin || loggedInMemberId === null) {
-                    typeField = `
-                        <select onchange="updateCastleTypeLocal(${m.id}, this.value)" class="bg-[#121212] border border-gray-700 rounded-xl px-2.5 py-2 text-xs gold-text font-bold focus:outline-none focus:border-[#d4af37]">
-                            <option value="infantry" ${m.castleType === 'infantry' ? 'selected' : ''}>مشاة</option>
-                            <option value="archer" ${m.castleType === 'archer' ? 'selected' : ''}>رماة</option>
-                            <option value="dual" ${m.castleType === 'dual' ? 'selected' : ''}>خطين</option>
-                        </select>
-                    `;
-                } else {
-                    let typeText = m.castleType === 'infantry' ? 'مشاة' : (m.castleType === 'archer' ? 'رماة' : 'خطين');
-                    typeField = `<span class="text-xs gold-text font-bold">${typeText}</span>`;
-                }
-
-                let armoredField = '';
-                let superField = '';
-
-                if (m.castleType === 'infantry') {
-                    armoredField = `<div class="flex gap-1 justify-center"><input type="number" id="infantry-armored-${m.id}" placeholder="مدرع مشاة" value="${m.infantryArmored || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'infantryArmored', this.value)"></div>`;
-                    superField = `<div class="flex gap-1 justify-center"><input type="number" id="infantry-super-${m.id}" placeholder="خارق مشاة" value="${m.infantrySuper || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'infantrySuper', this.value)"></div>`;
-                } else if (m.castleType === 'archer') {
-                    armoredField = `<div class="flex gap-1 justify-center"><input type="number" id="archer-armored-${m.id}" placeholder="مدرع رماة" value="${m.archerArmored || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'archerArmored', this.value)"></div>`;
-                    superField = `<div class="flex gap-1 justify-center"><input type="number" id="archer-super-${m.id}" placeholder="خارق رماة" value="${m.archerSuper || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'archerSuper', this.value)"></div>`;
-                } else {
-                    armoredField = `<div class="flex gap-1"><input type="number" id="infantry-armored-${m.id}" placeholder="مدرع مشاة" value="${m.infantryArmored || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'infantryArmored', this.value)"><input type="number" id="archer-armored-${m.id}" placeholder="مدرع رماة" value="${m.archerArmored || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'archerArmored', this.value)"></div>`;
-                    superField = `<div class="flex gap-1"><input type="number" id="infantry-super-${m.id}" placeholder="خارق مشاة" value="${m.infantrySuper || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'infantrySuper', this.value)"><input type="number" id="archer-super-${m.id}" placeholder="خارق رماة" value="${m.archerSuper || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'archerSuper', this.value)"></div>`;
-                }
-
-                tr.innerHTML = `
-                    <td class="p-3 min-w-[340px]">${columnContent}</td>
-                    <td class="p-3 text-center">${typeField}</td>
-                    <td class="p-3">${armoredField}</td>
-                    <td class="p-3">${superField}</td>
-                    <td class="p-3"><input type="number" id="meteor-${m.id}" placeholder="النيزك" value="${m.meteor || ''}" class="w-28 bg-[#121212] border border-gray-700 rounded-xl p-2 text-sm text-center gold-text font-bold" oninput="updateMemberDataLocal(${m.id}, 'meteor', this.value)"></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function triggerAiUpload(id) {
-            const apiKey = document.getElementById('gemini-api-key-input').value.trim();
-            if (!apiKey) {
-                alert('يرجى أولاً إدخال مفتاح الـ الذكاء الاصطناعي (Gemini API Key) في الحقل الموجود أعلى جدول القلاع!');
-                document.getElementById('gemini-api-key-input').focus();
-                return;
-            }
-            activeAiMemberId = id;
-            document.getElementById('ai-file-input').click();
-        }
-
-        async function processAiImage(event) {
-            const file = event.target.files[0];
-            if (!file || activeAiMemberId === null) return;
-
-            const member = membersData.find(m => m.id === activeAiMemberId);
-            if (!member) return;
-
-            const apiKey = document.getElementById('gemini-api-key-input').value.trim();
-            const statusDiv = document.getElementById('cloud-status');
-            const originalStatusText = statusDiv ? statusDiv.innerText : "";
-            if (statusDiv) {
-                statusDiv.innerText = "🤖 جاري تحليل صورة الجيش بالذكاء الاصطناعي...";
-                statusDiv.className = "text-xs text-purple-400 bg-purple-950/40 px-3 py-1.5 rounded-xl border border-purple-800 font-bold";
-            }
-
-            try {
-                const base64Data = await toBase64(file);
-                const cleanBase64 = base64Data.split(',')[1];
-
-                const aiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [
-                                { text: "أنت مساعد ذكي ومحترف للعبة انتقام السلاطين. هذه صورة لصفحة تفاصيل القوات. مطلوب منك استخراج أرقام نوعين محددين فقط بدقة من الصورة وترك الباقي تماماً: 1. قوات المدرع (المرتبطة بالمشاة أو الرماة المدرعين). 2. قوات الخارق (المرتبطة بالمشاة أو الرماة الخارقين). اقرأ أرقام القوات الموجودة تحت هذه الصناديق فقط وتجاهل باقي أنواع الجيوش والفرسان والأرقام العلوية (مثل إجمالي القوات والمصايب). أجب بصيغة JSON فقط بالتفاتيح التالية: {\"infantryArmored\": 0, \"archerArmored\": 0, \"infantrySuper\": 0, \"archerSuper\": 0, \"meteor\": 0}" },
-                                { inline_data: { mime_type: file.type, data: cleanBase64 } }
-                            ]
-                        }]
-                    })
-                });
-
-                const aiResult = await aiResponse.json();
-                if (aiResult.error) {
-                    throw new Error(aiResult.error.message);
-                }
-
-                const textResponse = aiResult.candidates[0].content.parts[0].text;
-                const cleanedJsonText = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
-                const parsedData = JSON.parse(cleanedJsonText);
-
-                if (parsedData.infantryArmored !== undefined) member.infantryArmored = Number(parsedData.infantryArmored);
-                if (parsedData.archerArmored !== undefined) member.archerArmored = Number(parsedData.archerArmored);
-                if (parsedData.infantrySuper !== undefined) member.infantrySuper = Number(parsedData.infantrySuper);
-                if (parsedData.archerSuper !== undefined) member.archerSuper = Number(parsedData.archerSuper);
-                if (parsedData.meteor !== undefined && parsedData.meteor > 0) member.meteor = Number(parsedData.meteor);
-
-                initMembersTable();
-                updateTotals();
-                alert('🤖 تم قراءة صورة الجيش واستخراج الأرقام المحددة وتعبئتها بنجاح تام!');
-
-            } catch (error) {
-                console.error(error);
-                alert('حدث خطأ أثناء معالجة الصورة بالذكاء الاصطناعي (تأكد من صحة مفتاح API Key): ' + error.message);
-            } finally {
-                if (statusDiv) {
-                    statusDiv.innerText = originalStatusText || "☁️ متصل";
-                    statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
-                }
-                event.target.value = '';
-                activeAiMemberId = null;
-            }
-        }
-
-        function toBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
-        }
-
-        function updateMemberDataLocal(id, field, val) {
-            const member = membersData.find(m => m.id === id);
-            if (member) {
-                member[field] = val === '' ? 0 : Number(val);
-                updateTotals();
-            }
-        }
-
-        function updateMemberGameDataLocal(id, field, val) {
-            const member = membersData.find(m => m.id === id);
-            if (member) {
-                member[field] = val;
-            }
-        }
-
-        function updateCastleNameLocal(id, val) {
-            const member = membersData.find(m => m.id === id);
-            if (member) {
-                member.castleName = val;
-            }
-        }
-
-        function updateCastleTypeLocal(id, val) {
-            const member = membersData.find(m => m.id === id);
-            if (member) {
-                member.castleType = val;
-                if(val === 'infantry') {
-                    member.archerArmored = 0;
-                    member.archerSuper = 0;
-                } else if(val === 'archer') {
-                    member.infantryArmored = 0;
-                    member.infantrySuper = 0;
-                }
-                updateTotals();
-                initMembersTable();
-            }
-        }
-
-        function saveSingleMemberData() {
-            const member = membersData.find(m => m.id === loggedInMemberId);
-            if (member) {
-                member.lastMemberUpdate = new Date().toLocaleDateString('ar-IQ') + ' - ' + new Date().toLocaleTimeString('ar-IQ');
-            }
-            saveChanges();
-            initMembersTable();
-            alert('تم حفظ بيانات قلعتك بنجاح ونقلها للداتا !');
-        }
-
-        function saveAdminEditedMember(id) {
-            const member = membersData.find(m => m.id === id);
-            if (member) {
-                member.lastMemberUpdate = new Date().toLocaleDateString('ar-IQ') + ' - ' + new Date().toLocaleTimeString('ar-IQ');
-            }
-            saveChanges();
-            initMembersTable();
-            alert(`تم حفظ وتحديث بيانات العضو رقم ${id} بنجاح في الداتا!`);
-        }
-
-        function updateTotals() {
-            let tInfantryArmored = 0;
-            let tArcherArmored = 0;
-            let tInfantrySuper = 0;
-            let tArcherSuper = 0;
-            let tMeteor = 0;
-
-            membersData.forEach(m => {
-                tInfantryArmored += Number(m.infantryArmored || 0);
-                tArcherArmored += Number(m.archerArmored || 0);
-                tInfantrySuper += Number(m.infantrySuper || 0);
-                tArcherSuper += Number(m.archerSuper || 0);
-                tMeteor += Number(m.meteor || 0);
-            });
-
-            document.getElementById('total-armored-infantry').innerText = tInfantryArmored.toLocaleString();
-            document.getElementById('total-armored-archers').innerText = tArcherArmored.toLocaleString();
-            document.getElementById('total-super-infantry').innerText = tInfantrySuper.toLocaleString();
-            document.getElementById('total-super-archers').innerText = tArcherSuper.toLocaleString();
-            document.getElementById('total-meteor-crystal').innerText = tMeteor.toLocaleString();
-        }
-
-        function filterTable() {
-            const query = document.getElementById('search-input').value.toLowerCase().trim();
-            document.querySelectorAll('#members-table-body tr').forEach(row => {
-                const nameInput = row.querySelector('.castle-name-input');
-                if(nameInput) {
-                    row.style.display = nameInput.value.toLowerCase().includes(query) ? '' : 'none';
-                }
-            });
-        }
-    </script>
-</body>
-</html>
+{
+  "members": [
+    {
+      "id": 1,
+      "castleName": "Falcon",
+      "castleType": "infantry",
+      "email": "Falcon",
+      "pass": "F630",
+      "gameEmail": "mm630nn@gmail.com",
+      "gamePass": "poipoi123",
+      "infantryArmored": 24954375,
+      "archerArmored": 0,
+      "infantrySuper": 85704280,
+      "archerSuper": 0,
+      "meteor": 7700000,
+      "lastMemberUpdate": "١‏/٩‏/٢٠٢٦ - ١١:٤٢:٤٠ م"
+    },
+    {
+      "id": 2,
+      "castleName": "جلاديتور",
+      "castleType": "dual",
+      "email": "AbuLujain",
+      "pass": "Abu12345",
+      "gameEmail": "aasmimazin@gmail.com",
+      "gamePass": "",
+      "infantryArmored": 30038911,
+      "archerArmored": 2079571,
+      "infantrySuper": 98029766,
+      "archerSuper": 7010693,
+      "meteor": 15000000,
+      "lastMemberUpdate": "١‏/٩‏/٢٠٢٦ - ١١:٤٨:٥٢ م"
+    },
+    {
+      "id": 3,
+      "castleName": "مميل عقاله",
+      "castleType": "dual",
+      "email": "Mmel",
+      "pass": "M112233",
+      "gameEmail": "saleh630@gmail.com",
+      "gamePass": "Aa112233",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "١‏/٩‏/٢٠٢٦ - ١٢:٥٣:٣١ م"
+    },
+    {
+      "id": 4,
+      "castleName": "عمر kwt",
+      "castleType": "dual",
+      "email": "Klick",
+      "pass": "K007788",
+      "gameEmail": "mlbb45gus@gmail.com",
+      "gamePass": "m7mad112",
+      "infantryArmored": 26893523,
+      "archerArmored": 374599,
+      "infantrySuper": 60393713,
+      "archerSuper": 8000000,
+      "meteor": 5900000,
+      "lastMemberUpdate": "٣١‏/٨‏/٢٠٢٦ - ١٢:٠١:١٦ ص"
+    },
+    {
+      "id": 5,
+      "castleName": "ابوناصر",
+      "castleType": "dual",
+      "email": "Hold",
+      "pass": "H9077",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "١‏/٩‏/٢٠٢٦ - ٩:٣٨:٤٥ م"
+    },
+    {
+      "id": 6,
+      "castleName": "وقار",
+      "castleType": "dual",
+      "email": "Hello",
+      "pass": "W123456789",
+      "gameEmail": "WQR630@gmail.com",
+      "gamePass": "@Mm123123@",
+      "infantryArmored": 1718111,
+      "archerArmored": 24120161,
+      "infantrySuper": 4053805,
+      "archerSuper": 41585168,
+      "meteor": 41400000,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٧:٢٥:٥٦ ص"
+    },
+    {
+      "id": 7,
+      "castleName": "ابو عبطا",
+      "castleType": "dual",
+      "email": "Abuabta",
+      "pass": "A12341234",
+      "gameEmail": "eqwe222@icloud.com",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٨:٤٤:٣٥ ص"
+    },
+    {
+      "id": 8,
+      "castleName": "مجد",
+      "castleType": "dual",
+      "email": "Mjd",
+      "pass": "M1234512345",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٤:٢٢ ص"
+    },
+    {
+      "id": 9,
+      "castleName": "اهوشلك تموت",
+      "castleType": "dual",
+      "email": "Aboali",
+      "pass": "A090909",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٤:٣١ ص"
+    },
+    {
+      "id": 10,
+      "castleName": "Dari",
+      "castleType": "dual",
+      "email": "Dari",
+      "pass": "D454545",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 14463085,
+      "archerArmored": 2019000,
+      "infantrySuper": 36416119,
+      "archerSuper": 4019000,
+      "meteor": 0,
+      "lastMemberUpdate": "١‏/٩‏/٢٠٢٦ - ٣:٢٨:٠٦ م"
+    },
+    {
+      "id": 11,
+      "castleName": "سويد",
+      "castleType": "infantry",
+      "email": "Suwaid",
+      "pass": "SW5678",
+      "gameEmail": "",
+      "gamePass": "sdxcwe911",
+      "infantryArmored": 1700000,
+      "archerArmored": 0,
+      "infantrySuper": 3000000,
+      "archerSuper": 0,
+      "meteor": 40,
+      "lastMemberUpdate": "١‏/٩‏/٢٠٢٦ - ٩:٣٩:٥٤ م"
+    },
+    {
+      "id": 12,
+      "castleName": "عبدالله",
+      "castleType": "dual",
+      "email": "Abod",
+      "pass": "A121212",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 20011587,
+      "archerArmored": 1126915,
+      "infantrySuper": 26062037,
+      "archerSuper": 329317,
+      "meteor": 327000,
+      "lastMemberUpdate": "٣١‏/٨‏/٢٠٢٦ - ٧:٣٤:٤٧ م"
+    },
+    {
+      "id": 13,
+      "castleName": "تميمي",
+      "castleType": "infantry",
+      "email": "Tmime",
+      "pass": "T1234",
+      "gameEmail": "iq642iq@gmail.com",
+      "gamePass": "Tmime0000",
+      "infantryArmored": 5578413,
+      "archerArmored": 0,
+      "infantrySuper": 41681365,
+      "archerSuper": 0,
+      "meteor": 22500000,
+      "lastMemberUpdate": "٢‏/٩‏/٢٠٢٦ - ٧:٥٣:٥٩ م"
+    },
+    {
+      "id": 14,
+      "castleName": "جوكر",
+      "castleType": "dual",
+      "email": "Joker",
+      "pass": "Jok12345",
+      "gameEmail": "khaledalmansouer50@gmail.com",
+      "gamePass": "khaled630",
+      "infantryArmored": 6462795,
+      "archerArmored": 1332048,
+      "infantrySuper": 29957049,
+      "archerSuper": 3359139,
+      "meteor": 30700000,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٩:٣٢:٣٩ ص"
+    },
+    {
+      "id": 15,
+      "castleName": "حربي",
+      "castleType": "dual",
+      "email": "7hrbi",
+      "pass": "7777777",
+      "gameEmail": "mmq@mq.com",
+      "gamePass": "harpy5050",
+      "infantryArmored": 10011240,
+      "archerArmored": 2074970,
+      "infantrySuper": 22525487,
+      "archerSuper": 0,
+      "meteor": 43900000,
+      "lastMemberUpdate": "٢٣‏/٨‏/٢٠٢٦ - ١٠:٥٠:٢٤ ص"
+    },
+    {
+      "id": 16,
+      "castleName": "ابو مسفر",
+      "castleType": "infantry",
+      "email": "Dana",
+      "pass": "D123456",
+      "gameEmail": "rawab916@gmail.com",
+      "gamePass": "f630f630",
+      "infantryArmored": 12126874,
+      "archerArmored": 0,
+      "infantrySuper": 19084187,
+      "archerSuper": 0,
+      "meteor": 12400000,
+      "lastMemberUpdate": "٢‏/٩‏/٢٠٢٦ - ٤:٢٦:٤٨ ص"
+    },
+    {
+      "id": 17,
+      "castleName": "ابو عتب",
+      "castleType": "dual",
+      "email": "Aboatab",
+      "pass": "Abo123456",
+      "gameEmail": "mshare630a@gmail.com",
+      "gamePass": "FGRfgr5377@7153@TS",
+      "infantryArmored": 14299950,
+      "archerArmored": 968005,
+      "infantrySuper": 10924156,
+      "archerSuper": 1784133,
+      "meteor": 6000000,
+      "lastMemberUpdate": "٣١‏/٨‏/٢٠٢٦ - ١١:٥٠:٣٤ م"
+    },
+    {
+      "id": 18,
+      "castleName": "مهيب",
+      "castleType": "infantry",
+      "email": "Moheb",
+      "pass": "M6565",
+      "gameEmail": "tigerah697@gmail.com",
+      "gamePass": "Ahmedarf31",
+      "infantryArmored": 10011271,
+      "archerArmored": 0,
+      "infantrySuper": 21452181,
+      "archerSuper": 0,
+      "meteor": 26500000,
+      "lastMemberUpdate": "٣٠‏/٨‏/٢٠٢٦ - ١٠:٢١:١٧ م"
+    },
+    {
+      "id": 19,
+      "castleName": "عواطف",
+      "castleType": "dual",
+      "email": "Awatif",
+      "pass": "A1234",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 6988109,
+      "archerArmored": 1548135,
+      "infantrySuper": 2049837,
+      "archerSuper": 3392031,
+      "meteor": 18900000,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٥:٣٩:١١ م"
+    },
+    {
+      "id": 20,
+      "castleName": "العراب",
+      "castleType": "dual",
+      "email": "Arab",
+      "pass": "A3434",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٦:٠٦ ص"
+    },
+    {
+      "id": 21,
+      "castleName": "ابو فراس",
+      "castleType": "archer",
+      "email": "Ask",
+      "pass": "F630",
+      "gameEmail": "so630@gmail.com",
+      "gamePass": "f630f630",
+      "infantryArmored": 0,
+      "archerArmored": 7513190,
+      "infantrySuper": 0,
+      "archerSuper": 11678572,
+      "meteor": 18100000,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٨:١٣:٣٢ ص"
+    },
+    {
+      "id": 22,
+      "castleName": "كيلر",
+      "castleType": "infantry",
+      "email": "Colud",
+      "pass": "F1234",
+      "gameEmail": "abnbad808@gmail.com",
+      "gamePass": "KsA135790@&﷼",
+      "infantryArmored": 5480956,
+      "archerArmored": 0,
+      "infantrySuper": 15941716,
+      "archerSuper": 0,
+      "meteor": 8000000,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٨:٢١:١٤ ص"
+    },
+    {
+      "id": 23,
+      "castleName": "ابو ناصر",
+      "castleType": "infantry",
+      "email": "Two",
+      "pass": "T5656",
+      "gameEmail": "607tuwaiq607@gmail.com",
+      "gamePass": "",
+      "infantryArmored": 3500133,
+      "archerArmored": 0,
+      "infantrySuper": 6910901,
+      "archerSuper": 0,
+      "meteor": 24600000,
+      "lastMemberUpdate": "٣١‏/٨‏/٢٠٢٦ - ١١:٢٩:٥٩ م"
+    },
+    {
+      "id": 24,
+      "castleName": "لحن",
+      "castleType": "dual",
+      "email": "Lahn",
+      "pass": "L8090",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٦:٣٤ ص"
+    },
+    {
+      "id": 25,
+      "castleName": "تيمور",
+      "castleType": "infantry",
+      "email": "Timur",
+      "pass": "T12345",
+      "gameEmail": "gn12345@n.com",
+      "gamePass": "f630f630",
+      "infantryArmored": 2712521,
+      "archerArmored": 0,
+      "infantrySuper": 7277362,
+      "archerSuper": 0,
+      "meteor": 17400000,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٨:٢٨:٢٩ ص"
+    },
+    {
+      "id": 26,
+      "castleName": "ارماندو",
+      "castleType": "dual",
+      "email": "Fo",
+      "pass": "F6789",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "٣١‏/٨‏/٢٠٢٦ - ١١:٢٦:٥٤ م"
+    },
+    {
+      "id": 27,
+      "castleName": "زرقاوي",
+      "castleType": "dual",
+      "email": "Zar",
+      "pass": "Z3434",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "٣٠‏/٨‏/٢٠٢٦ - ١١:٤٢:٠٧ م"
+    },
+    {
+      "id": 28,
+      "castleName": "دانه",
+      "castleType": "infantry",
+      "email": "Dana",
+      "pass": "Dana630",
+      "gameEmail": "ayoubbouhalla12@gmail.com",
+      "gamePass": "",
+      "infantryArmored": 2158830,
+      "archerArmored": 0,
+      "infantrySuper": 4313838,
+      "archerSuper": 0,
+      "meteor": 1000000,
+      "lastMemberUpdate": "٣‏/٩‏/٢٠٢٦ - ١:٠١:٤٦ ص"
+    },
+    {
+      "id": 29,
+      "castleName": "ابو راكان",
+      "castleType": "dual",
+      "email": "Aburakan",
+      "pass": "Abu123",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 1077973,
+      "archerArmored": 0,
+      "infantrySuper": 8914137,
+      "archerSuper": 14100,
+      "meteor": 3400000,
+      "lastMemberUpdate": "١‏/٩‏/٢٠٢٦ - ١:٢٥:٣١ م"
+    },
+    {
+      "id": 30,
+      "castleName": "سيف",
+      "castleType": "dual",
+      "email": "Seef",
+      "pass": "S1234",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٦:٤٧:٢٧ ص"
+    },
+    {
+      "id": 31,
+      "castleName": "شمالي",
+      "castleType": "dual",
+      "email": "Shma",
+      "pass": "S12345",
+      "gameEmail": "w630w@icloud.com",
+      "gamePass": " adam123321",
+      "infantryArmored": 3448795,
+      "archerArmored": 5420434,
+      "infantrySuper": 3028102,
+      "archerSuper": 19573819,
+      "meteor": 300000,
+      "lastMemberUpdate": "١‏/٩‏/٢٠٢٦ - ٢:١٧:٥٠ ص"
+    },
+    {
+      "id": 32,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 33,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 34,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 35,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 36,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 37,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 38,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 39,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 40,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 41,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 42,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 43,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 44,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 45,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 46,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 47,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 48,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 49,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 50,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 51,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 52,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 53,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 54,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 55,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 56,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 57,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 58,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 59,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 60,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 61,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 62,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 63,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 64,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 65,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 66,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 67,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 68,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 69,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 70,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 71,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 72,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 73,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 74,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "",
+      "pass": "",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 0,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "لم يتم التعديل بعد"
+    },
+    {
+      "id": 75,
+      "castleName": "",
+      "castleType": "dual",
+      "email": "90",
+      "pass": "00",
+      "gameEmail": "",
+      "gamePass": "",
+      "infantryArmored": 100,
+      "archerArmored": 0,
+      "infantrySuper": 0,
+      "archerSuper": 0,
+      "meteor": 0,
+      "lastMemberUpdate": "٣١‏/٨‏/٢٠٢٦ - ١١:١٨:٣١ م"
+    }
+  ],
+  "admins": {
+    "1G630": {
+      "name": "الأدمن الأول (مدير عام)",
+      "pass": "Tmime9090",
+      "isMaster": true,
+      "active": true,
+      "hiddenFields": [],
+      "lastSeen": "٣١‏/٨‏/٢٠٢٦ - ١١:٢٤:١٠ م"
+    },
+    "2G630": {
+      "name": "Falcon",
+      "pass": "F123",
+      "isMaster": false,
+      "active": true,
+      "hiddenFields": [],
+      "lastSeen": "٢‏/٩‏/٢٠٢٦ - ٧:٥٣:٢١ م"
+    },
+    "3G630": {
+      "name": "ابو لجين",
+      "pass": "G555",
+      "isMaster": false,
+      "active": true,
+      "hiddenFields": [],
+      "lastSeen": "١‏/٩‏/٢٠٢٦ - ١١:٤٥:٥٦ م"
+    },
+    "4G630": {
+      "name": "الأدمن الرابع",
+      "pass": "F4040",
+      "isMaster": false,
+      "active": true,
+      "hiddenFields": [
+        "email",
+        "castleCode",
+        "army"
+      ],
+      "lastSeen": "٣٠‏/٨‏/٢٠٢٦ - ١١:٠٥:٢٤ م"
+    },
+    "5G630": {
+      "name": "الأدمن الخامس",
+      "pass": "G9090",
+      "isMaster": false,
+      "active": true,
+      "hiddenFields": [
+        "email",
+        "castleCode",
+        "army"
+      ],
+      "lastSeen": "١٥‏/٨‏/٢٠٢٦ - ٣:٠٢:٣٤ م"
+    }
+  }
+}
