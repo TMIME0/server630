@@ -1118,12 +1118,12 @@
       "pass": "00",
       "gameEmail": "",
       "gamePass": "",
-      "infantryArmored": 0,
+      "infantryArmored": 1,
       "archerArmored": 0,
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
-      "lastMemberUpdate": "٤‏/٩‏/٢٠٢٦ - ١:٥٩:٠٧ ص"
+      "lastMemberUpdate": "٤‏/٩‏/٢٠٢٦ - ١:٥٩:٢٦ ص"
     }
   ],
   "admins": {
