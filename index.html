@@ -9,31 +9,23 @@
     <style>
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #0b0b0f;
+            background-color: #050508;
             color: #e5e7eb;
             overflow-x: hidden;
+            margin: 0;
+            padding: 0;
         }
         .gold-border { border-color: #d4af37; }
         .gold-text { color: #d4af37; }
         .gold-bg { background-color: #d4af37; }
         .slate-card {
-            background-color: rgba(30, 30, 36, 0.95);
-            border: 1px solid #2d2d38;
+            background-color: rgba(18, 18, 24, 0.88);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
         }
-        .full-bg-image {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('https://raw.githubusercontent.com/TMIME0/server630/main/bg.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        /* تفاعلات الشبكة والخطوط الحمراء المتموجة */
+        
+        /* طبقة الكانفاس لتكون وااهرة تماماً ومتحركة بالخلفية */
         #interactive-canvas {
             position: fixed;
             top: 0;
@@ -41,33 +33,46 @@
             width: 100vw;
             height: 100vh;
             pointer-events: none;
+            z-index: 1;
+        }
+        
+        .relative-content {
+            position: relative;
             z-index: 10;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 full-bg-image relative">
+<body class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4">
 
+    <!-- خلفية الخطوط الحمراء المتفاعلة والمتحركة -->
     <canvas id="interactive-canvas"></canvas>
 
-    <div id="sync-loading" class="fixed inset-0 bg-[#121212] z-50 flex flex-col items-center justify-center space-y-4">
+    <div id="sync-loading" class="fixed inset-0 bg-[#050508] z-50 flex flex-col items-center justify-center space-y-4">
         <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
         <p class="text-sm gold-text font-bold">جاري تحميل بيانات السيرفر...</p>
     </div>
 
     <!-- شاشة تسجيل الدخول -->
-    <div id="login-screen" class="fixed inset-0 z-40 flex items-center justify-center p-4 overflow-y-auto full-bg-image">
-        <div class="slate-card p-6 sm:p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border backdrop-blur-md relative z-20">
+    <div id="login-screen" class="fixed inset-0 z-40 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="slate-card p-6 sm:p-8 rounded-3xl w-full max-w-md text-center relative-content">
             <div class="mb-6 text-center">
                 <h2 class="text-3xl font-black gold-text tracking-wider uppercase">SERVER 630</h2>
+                <p class="text-xs text-gray-400 mt-1">نظام إدارة الإمداد والجيوش</p>
             </div>
             <div class="space-y-4">
                 <div>
                     <input type="text" id="login-code" placeholder="كود الأدمن (مثال: 1G630)" 
-                        class="w-full px-4 py-3 rounded-2xl bg-[#121212] border border-[#3f3f46] text-white focus:outline-none focus:border-[#d4af37]">
+                        class="w-full px-4 py-3 rounded-2xl bg-[#0b0b0f] border border-[#3f3f46] text-white focus:outline-none focus:border-[#d4af37]">
                 </div>
                 <div>
                     <input type="password" id="login-pass" placeholder="رمز الموقع للأدمن" 
-                        class="w-full px-4 py-3 rounded-2xl bg-[#121212] border border-[#3f3f46] text-white focus:outline-none focus:border-[#d4af37]">
+                        class="w-full px-4 py-3 rounded-2xl bg-[#0b0b0f] border border-[#3f3f46] text-white focus:outline-none focus:border-[#d4af37]">
                 </div>
                 <button type="button" onclick="handleLogin()" class="w-full py-3 rounded-2xl gold-bg text-black font-bold hover:opacity-90 transition shadow-lg cursor-pointer">
                     دخول لوحة القيادة
@@ -78,12 +83,12 @@
                     هل أنت عضو؟ اضغط هنا لدخول قلعتك الخاصة
                 </button>
             </div>
-            <div id="member-login-box" class="hidden mt-4 space-y-3 p-4 bg-[#121212] rounded-2xl border border-gray-800 text-right">
+            <div id="member-login-box" class="hidden mt-4 space-y-3 p-4 bg-[#0b0b0f] rounded-2xl border border-gray-800 text-right">
                 <h3 class="text-sm font-bold text-white mb-2">دخول قلعة العضو</h3>
                 <input type="text" id="member-email-input" placeholder="ايميل موقع الدخول (مثال: member3@alliance.com)" 
-                    class="w-full px-3 py-2 rounded-xl bg-[#1e1e24] border border-gray-700 text-xs text-white focus:outline-none focus:border-[#d4af37]">
+                    class="w-full px-3 py-2 rounded-xl bg-[#15151a] border border-gray-700 text-xs text-white focus:outline-none focus:border-[#d4af37]">
                 <input type="password" id="member-pass-input" placeholder="رمز موقع الدخول الخاص" 
-                    class="w-full px-3 py-2 rounded-xl bg-[#1e1e24] border border-gray-700 text-xs text-white focus:outline-none focus:border-[#d4af37]">
+                    class="w-full px-3 py-2 rounded-xl bg-[#15151a] border border-gray-700 text-xs text-white focus:outline-none focus:border-[#d4af37]">
                 <button type="button" onclick="handleMemberLogin()" class="w-full py-2 rounded-xl bg-gray-800 hover:bg-[#d4af37] hover:text-black text-xs font-bold transition cursor-pointer">
                     دخول قلعتي وحدها
                 </button>
@@ -95,8 +100,8 @@
     </div>
 
     <!-- لوحة التحكم الرئيسية -->
-    <div id="dashboard" class="hidden w-full max-w-7xl mx-auto space-y-6 my-8 z-30 relative px-2 sm:px-0">
-        <header class="slate-card p-4 sm:p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center border gold-border gap-4 backdrop-blur-md">
+    <div id="dashboard" class="hidden w-full max-w-7xl mx-auto space-y-6 my-8 relative-content px-2 sm:px-0">
+        <header class="slate-card p-4 sm:p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
                 <h1 class="text-xl sm:text-2xl font-black gold-text text-center md:text-right">لوحة إمداد وتحالف الجيوش (630)</h1>
                 <p id="admin-role-title" class="text-xs sm:text-sm text-gray-400 text-center md:text-right">لوحة القيادة والسيطرة</p>
@@ -106,7 +111,7 @@
                 <div id="cloud-status" class="text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold text-center">
                     ☁️ متصل (Google Sheets)
                 </div>
-                <div id="user-info" class="bg-[#121212] px-4 py-2 rounded-xl border border-gray-800 text-xs gold-text font-bold text-center">
+                <div id="user-info" class="bg-[#0b0b0f] px-4 py-2 rounded-xl border border-gray-800 text-xs gold-text font-bold text-center">
                     مرحباً بك
                 </div>
                 <button type="button" onclick="logout()" class="px-4 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer">
@@ -125,34 +130,34 @@
         </div>
 
         <section id="totals-section" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-            <div class="slate-card p-3 sm:p-4 rounded-2xl border border-gray-800 text-center shadow-md backdrop-blur-md">
+            <div class="slate-card p-3 sm:p-4 rounded-2xl text-center shadow-md">
                 <span class="text-gray-400 text-xs block mb-1">مدرع رماة</span>
                 <span id="total-armored-archers" class="text-xl sm:text-2xl font-black gold-text">0</span>
             </div>
-            <div class="slate-card p-3 sm:p-4 rounded-2xl border border-gray-800 text-center shadow-md backdrop-blur-md">
+            <div class="slate-card p-3 sm:p-4 rounded-2xl text-center shadow-md">
                 <span class="text-gray-400 text-xs block mb-1">مدرع مشاة</span>
                 <span id="total-armored-infantry" class="text-xl sm:text-2xl font-black gold-text">0</span>
             </div>
-            <div class="slate-card p-3 sm:p-4 rounded-2xl border border-gray-800 text-center shadow-md backdrop-blur-md">
+            <div class="slate-card p-3 sm:p-4 rounded-2xl text-center shadow-md">
                 <span class="text-gray-400 text-xs block mb-1">خارق رماة</span>
                 <span id="total-super-archers" class="text-xl sm:text-2xl font-black gold-text">0</span>
             </div>
-            <div class="slate-card p-3 sm:p-4 rounded-2xl border border-gray-800 text-center shadow-md backdrop-blur-md">
+            <div class="slate-card p-3 sm:p-4 rounded-2xl text-center shadow-md">
                 <span class="text-gray-400 text-xs block mb-1">خارق مشاة</span>
                 <span id="total-super-infantry" class="text-xl sm:text-2xl font-black gold-text">0</span>
             </div>
-            <div class="slate-card p-3 sm:p-4 rounded-2xl border gold-border text-center shadow-md bg-[#1e1e24]/90 backdrop-blur-md col-span-2 sm:col-span-1">
+            <div class="slate-card p-3 sm:p-4 rounded-2xl text-center shadow-md bg-[#15151e]/90 col-span-2 sm:col-span-1 border gold-border">
                 <span class="gold-text text-xs block mb-1 font-bold">✨ بلور النيزك الكلي</span>
                 <span id="total-meteor-crystal" class="text-xl sm:text-2xl font-black gold-text">0</span>
             </div>
         </section>
 
-        <section class="slate-card p-4 sm:p-6 rounded-3xl border gold-border space-y-4 backdrop-blur-md">
+        <section class="slate-card p-4 sm:p-6 rounded-3xl space-y-4">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <h3 id="table-section-title" class="text-lg sm:text-xl font-bold gold-text">سجل الإمداد وقلاع الأعضاء (75 قلعة)</h3>
                 <div id="search-box-container" class="w-full md:w-72">
                     <input type="text" id="search-input" onkeyup="filterTable()" placeholder="ابحث عن اسم القلعة..." 
-                        class="w-full px-4 py-2 rounded-xl bg-[#121212] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
+                        class="w-full px-4 py-2 rounded-xl bg-[#0b0b0f] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
                 </div>
             </div>
 
@@ -175,7 +180,7 @@
 
     <!-- نافذة إعدادات الأعضاء -->
     <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-        <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-4xl max-h-[85vh] overflow-y-auto space-y-4">
+        <div class="slate-card p-6 rounded-3xl w-full max-w-4xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
                 <h3 class="text-lg font-bold gold-text">إدارة وتعديل يوزرات ورموز دخول الأعضاء للموقع</h3>
                 <button type="button" onclick="toggleSettingsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
@@ -191,7 +196,7 @@
 
     <!-- نافذة الأدمنية -->
     <div id="admins-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-        <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-3xl max-h-[85vh] overflow-y-auto space-y-4">
+        <div class="slate-card p-6 rounded-3xl w-full max-w-3xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
                 <h3 class="text-lg font-bold gold-text">سجل آخر ظهور للأدمنية وإدارة صلاحياتهم</h3>
                 <button type="button" onclick="toggleAdminsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
@@ -220,7 +225,7 @@
         let loggedInMemberId = null;
         let membersData = [];
 
-        // تفاعلات الشبكة والخطوط الحمراء المتموجة
+        // تشغيل خطوط الشبكة الحمراء المتموجة المتفاعلة بالخلفية بدقة عالية
         const canvas = document.getElementById('interactive-canvas');
         const ctx = canvas.getContext('2d');
         let width, height;
@@ -247,21 +252,25 @@
         let angle = 0;
         function drawInteractiveGrid() {
             ctx.clearRect(0, 0, width, height);
-            angle += 0.02;
+            
+            // رسم خلفية داكنة خفيفة جداً لضمان تباين الخطوط
+            ctx.fillStyle = '#050508';
+            ctx.fillRect(0, 0, width, height);
 
+            angle += 0.025;
             const spacing = 45;
-            ctx.lineWidth = 1;
+            ctx.lineWidth = 1.2;
 
             for (let x = 0; x < width; x += spacing) {
                 ctx.beginPath();
-                ctx.strokeStyle = 'rgba(239, 68, 68, 0.12)';
+                ctx.strokeStyle = 'rgba(239, 68, 68, 0.28)';
                 for (let y = 0; y < height; y += 15) {
-                    let wave = Math.sin((y + angle * 50) * 0.03) * 6;
+                    let wave = Math.sin((y + angle * 45) * 0.03) * 10;
                     let dx = mouse.x - (x + wave);
                     let dy = mouse.y - y;
                     let dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 120) {
-                        wave += (120 - dist) * 0.15 * (dx > 0 ? 1 : -1);
+                    if (dist < 150) {
+                        wave += (150 - dist) * 0.25 * (dx > 0 ? 1 : -1);
                     }
                     if (y === 0) ctx.moveTo(x + wave, y);
                     else ctx.lineTo(x + wave, y);
@@ -271,14 +280,14 @@
 
             for (let y = 0; y < height; y += spacing) {
                 ctx.beginPath();
-                ctx.strokeStyle = 'rgba(239, 68, 68, 0.12)';
+                ctx.strokeStyle = 'rgba(239, 68, 68, 0.28)';
                 for (let x = 0; x < width; x += 15) {
-                    let wave = Math.cos((x + angle * 50) * 0.03) * 6;
+                    let wave = Math.cos((x + angle * 45) * 0.03) * 10;
                     let dx = mouse.x - x;
                     let dy = mouse.y - (y + wave);
                     let dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 120) {
-                        wave += (120 - dist) * 0.15 * (dy > 0 ? 1 : -1);
+                    if (dist < 150) {
+                        wave += (150 - dist) * 0.25 * (dy > 0 ? 1 : -1);
                     }
                     if (x === 0) ctx.moveTo(x, y + wave);
                     else ctx.lineTo(x, y + wave);
@@ -501,10 +510,10 @@
             container.innerHTML = '';
             membersData.forEach((m, index) => {
                 container.innerHTML += `
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2 p-3 bg-[#121212] rounded-xl border border-gray-800 items-center">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2 p-3 bg-[#0b0b0f] rounded-xl border border-gray-800 items-center">
                         <span class="text-xs font-bold text-white">عضو رقم ${m.id} (${m.castleName || 'بلا اسم'})</span>
-                        <input type="text" id="set-email-${index}" value="${m.email}" placeholder="يوزر الدخول" class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white">
-                        <input type="text" id="set-pass-${index}" value="${m.pass}" placeholder="رمز الدخول" class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white">
+                        <input type="text" id="set-email-${index}" value="${m.email}" placeholder="يوزر الدخول" class="px-3 py-1.5 bg-[#15151a] border border-gray-700 rounded-lg text-xs text-white">
+                        <input type="text" id="set-pass-${index}" value="${m.pass}" placeholder="رمز الدخول" class="px-3 py-1.5 bg-[#15151a] border border-gray-700 rounded-lg text-xs text-white">
                     </div>
                 `;
             });
@@ -517,7 +526,7 @@
                 if (code !== '1G630') {
                     const adm = admins[code];
                     container.innerHTML += `
-                        <div class="p-4 bg-[#121212] rounded-2xl border border-gray-800 space-y-3">
+                        <div class="p-4 bg-[#0b0b0f] rounded-2xl border border-gray-800 space-y-3">
                             <div class="flex justify-between items-center">
                                 <span class="text-xs font-bold gold-text">كود الأدمن: ${code} (آخر ظهور: ${adm.lastSeen || 'لم يسجل'})</span>
                                 <div class="flex items-center gap-4 text-xs">
@@ -530,8 +539,8 @@
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                <input type="text" id="adm-name-${code}" value="${adm.name}" class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white">
-                                <input type="text" id="adm-pass-${code}" value="${adm.pass}" class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white">
+                                <input type="text" id="adm-name-${code}" value="${adm.name}" class="px-3 py-1.5 bg-[#15151a] border border-gray-700 rounded-lg text-xs text-white">
+                                <input type="text" id="adm-pass-${code}" value="${adm.pass}" class="px-3 py-1.5 bg-[#15151a] border border-gray-700 rounded-lg text-xs text-white">
                             </div>
                         </div>
                     `;
@@ -597,16 +606,15 @@
                 if (loggedInMemberId !== null) {
                     columnContent = `
                         <div class="font-bold text-white text-sm mb-1">قلعتك الخاصة (${m.castleName || 'بدون اسم'})</div>
-                        <div class="bg-[#121212] p-2.5 rounded-xl border border-gray-800 space-y-2">
+                        <div class="bg-[#0b0b0f] p-2.5 rounded-xl border border-gray-800 space-y-2">
                             <div>
                                 <span class="text-[10px] text-gray-400 block mb-1">إيميل القلعة (للاطلاع فقط)</span>
                                 <input type="text" value="${m.gameEmail || ''}" readonly class="w-full px-2 py-1 bg-gray-900 border border-gray-800 rounded-lg text-xs text-gray-400 cursor-not-allowed">
                             </div>
                             <div>
                                 <span class="text-[10px] gold-text block mb-1 font-bold">رمز القلعة (قابل للتعديل)</span>
-                                <input type="text" value="${m.gamePass || ''}" class="w-full px-2 py-1 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs gold-text font-bold" oninput="updateMemberGameDataLocal(${m.id}, 'gamePass', this.value)">
+                                <input type="text" value="${m.gamePass || ''}" class="w-full px-2 py-1 bg-[#15151a] border border-gray-700 rounded-lg text-xs gold-text font-bold" oninput="updateMemberGameDataLocal(${m.id}, 'gamePass', this.value)">
                             </div>
-                            <!-- مربع تعبئة الذكاء الاصطناعي الجديد -->
                             <div>
                                 <button type="button" onclick="aiFillMemberData(${m.id})" class="w-full py-2 bg-gradient-to-r from-purple-900 to-indigo-900 hover:opacity-90 border border-purple-700 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer text-center block mb-1.5 flex items-center justify-center gap-1">
                                     🤖 تعبئة بالذكاء الاصطناعي
@@ -624,14 +632,14 @@
                     let gameCredsHTML = '';
                     if (canSeeGameCreds) {
                         gameCredsHTML = `
-                            <div class="bg-[#121212]/80 p-2 rounded-xl border border-gray-800/80 space-y-1">
+                            <div class="bg-[#0b0b0f]/80 p-2 rounded-xl border border-gray-800/80 space-y-1">
                                 <div>
                                     <span class="text-[9px] text-gray-400 block">إيميل القلعة</span>
-                                    <input type="text" value="${m.gameEmail || ''}" placeholder="ايميل القلعة" class="w-full px-2 py-1 bg-[#18181c] border border-gray-700 rounded-lg text-xs text-gray-300" oninput="updateMemberGameDataLocal(${m.id}, 'gameEmail', this.value)">
+                                    <input type="text" value="${m.gameEmail || ''}" placeholder="ايميل القلعة" class="w-full px-2 py-1 bg-[#15151a] border border-gray-700 rounded-lg text-xs text-gray-300" oninput="updateMemberGameDataLocal(${m.id}, 'gameEmail', this.value)">
                                 </div>
                                 <div>
                                     <span class="text-[9px] gold-text block">رمز القلعة</span>
-                                    <input type="text" value="${m.gamePass || ''}" placeholder="رمز القلعة" class="w-full px-2 py-1 bg-[#18181c] border border-gray-700 rounded-lg text-xs gold-text font-bold" oninput="updateMemberGameDataLocal(${m.id}, 'gamePass', this.value)">
+                                    <input type="text" value="${m.gamePass || ''}" placeholder="رمز القلعة" class="w-full px-2 py-1 bg-[#15151a] border border-gray-700 rounded-lg text-xs gold-text font-bold" oninput="updateMemberGameDataLocal(${m.id}, 'gamePass', this.value)">
                                 </div>
                             </div>
                         `;
@@ -643,9 +651,8 @@
                             <span class="text-[10px] text-gray-400" title="وقت آخر تحديث للبيانات">🕒 ${m.lastMemberUpdate || 'لم يتم التعديل بعد'}</span>
                         </div>
                         <div class="space-y-1.5">
-                            <input type="text" placeholder="اسم القلعة" value="${m.castleName || ''}" class="castle-name-input px-3 py-1.5 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white w-full font-bold" oninput="updateCastleNameLocal(${m.id}, this.value)">
+                            <input type="text" placeholder="اسم القلعة" value="${m.castleName || ''}" class="castle-name-input px-3 py-1.5 bg-[#0b0b0f] border border-gray-700 rounded-xl text-xs text-white w-full font-bold" oninput="updateCastleNameLocal(${m.id}, this.value)">
                             ${gameCredsHTML}
-                            <!-- مربع تعبئة الذكاء الاصطناعي للأدمن -->
                             <button type="button" onclick="aiFillMemberData(${m.id})" class="w-full py-2 bg-gradient-to-r from-purple-900 to-indigo-900 hover:opacity-90 border border-purple-700 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer text-center block flex items-center justify-center gap-1">
                                 🤖 تعبئة بالذكاء الاصطناعي
                             </button>
@@ -661,7 +668,7 @@
                 let typeField = '';
                 if (isMasterAdmin || loggedInMemberId === null) {
                     typeField = `
-                        <select onchange="updateCastleTypeLocal(${m.id}, this.value)" class="bg-[#121212] border border-gray-700 rounded-xl px-2 py-1 text-xs gold-text font-bold focus:outline-none focus:border-[#d4af37]">
+                        <select onchange="updateCastleTypeLocal(${m.id}, this.value)" class="bg-[#0b0b0f] border border-gray-700 rounded-xl px-2 py-1 text-xs gold-text font-bold focus:outline-none focus:border-[#d4af37]">
                             <option value="infantry" ${m.castleType === 'infantry' ? 'selected' : ''}>مشاة</option>
                             <option value="archer" ${m.castleType === 'archer' ? 'selected' : ''}>رماة</option>
                             <option value="dual" ${m.castleType === 'dual' ? 'selected' : ''}>خطين</option>
@@ -676,14 +683,14 @@
                 let superField = '';
 
                 if (m.castleType === 'infantry') {
-                    armoredField = `<div class="flex gap-1 justify-center"><input type="number" id="infantry-armored-${m.id}" placeholder="مدرع مشاة" value="${m.infantryArmored || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'infantryArmored', this.value)"></div>`;
-                    superField = `<div class="flex gap-1 justify-center"><input type="number" id="infantry-super-${m.id}" placeholder="خارق مشاة" value="${m.infantrySuper || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'infantrySuper', this.value)"></div>`;
+                    armoredField = `<div class="flex gap-1 justify-center"><input type="number" id="infantry-armored-${m.id}" placeholder="مدرع مشاة" value="${m.infantryArmored || ''}" class="w-24 bg-[#0b0b0f] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'infantryArmored', this.value)"></div>`;
+                    superField = `<div class="flex gap-1 justify-center"><input type="number" id="infantry-super-${m.id}" placeholder="خارق مشاة" value="${m.infantrySuper || ''}" class="w-24 bg-[#0b0b0f] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'infantrySuper', this.value)"></div>`;
                 } else if (m.castleType === 'archer') {
-                    armoredField = `<div class="flex gap-1 justify-center"><input type="number" id="archer-armored-${m.id}" placeholder="مدرع رماة" value="${m.archerArmored || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'archerArmored', this.value)"></div>`;
-                    superField = `<div class="flex gap-1 justify-center"><input type="number" id="archer-super-${m.id}" placeholder="خارق رماة" value="${m.archerSuper || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'archerSuper', this.value)"></div>`;
+                    armoredField = `<div class="flex gap-1 justify-center"><input type="number" id="archer-armored-${m.id}" placeholder="مدرع رماة" value="${m.archerArmored || ''}" class="w-24 bg-[#0b0b0f] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'archerArmored', this.value)"></div>`;
+                    superField = `<div class="flex gap-1 justify-center"><input type="number" id="archer-super-${m.id}" placeholder="خارق رماة" value="${m.archerSuper || ''}" class="w-24 bg-[#0b0b0f] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'archerSuper', this.value)"></div>`;
                 } else {
-                    armoredField = `<div class="flex gap-1"><input type="number" id="infantry-armored-${m.id}" placeholder="مدرع مشاة" value="${m.infantryArmored || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'infantryArmored', this.value)"><input type="number" id="archer-armored-${m.id}" placeholder="مدرع رماة" value="${m.archerArmored || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'archerArmored', this.value)"></div>`;
-                    superField = `<div class="flex gap-1"><input type="number" id="infantry-super-${m.id}" placeholder="خارق مشاة" value="${m.infantrySuper || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'infantrySuper', this.value)"><input type="number" id="archer-super-${m.id}" placeholder="خارق رماة" value="${m.archerSuper || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'archerSuper', this.value)"></div>`;
+                    armoredField = `<div class="flex gap-1"><input type="number" id="infantry-armored-${m.id}" placeholder="مدرع مشاة" value="${m.infantryArmored || ''}" class="w-20 bg-[#0b0b0f] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'infantryArmored', this.value)"><input type="number" id="archer-armored-${m.id}" placeholder="مدرع رماة" value="${m.archerArmored || ''}" class="w-20 bg-[#0b0b0f] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'archerArmored', this.value)"></div>`;
+                    superField = `<div class="flex gap-1"><input type="number" id="infantry-super-${m.id}" placeholder="خارق مشاة" value="${m.infantrySuper || ''}" class="w-20 bg-[#0b0b0f] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'infantrySuper', this.value)"><input type="number" id="archer-super-${m.id}" placeholder="خارق رماة" value="${m.archerSuper || ''}" class="w-20 bg-[#0b0b0f] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'archerSuper', this.value)"></div>`;
                 }
 
                 tr.innerHTML = `
@@ -691,13 +698,12 @@
                     <td class="p-3 text-center">${typeField}</td>
                     <td class="p-3">${armoredField}</td>
                     <td class="p-3">${superField}</td>
-                    <td class="p-3"><input type="number" id="meteor-${m.id}" placeholder="النيزك" value="${m.meteor || ''}" class="w-28 bg-[#121212] border border-gray-700 rounded-xl p-2 text-sm text-center gold-text font-bold" oninput="updateMemberDataLocal(${m.id}, 'meteor', this.value)"></td>
+                    <td class="p-3"><input type="number" id="meteor-${m.id}" placeholder="النيزك" value="${m.meteor || ''}" class="w-28 bg-[#0b0b0f] border border-gray-700 rounded-xl p-2 text-sm text-center gold-text font-bold" oninput="updateMemberDataLocal(${m.id}, 'meteor', this.value)"></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        // دالة التعبئة التلقائية بالذكاء الاصطناعي (تولد قيماً واقعية ومقترحة لإمداد القلعة)
         function aiFillMemberData(id) {
             const member = membersData.find(m => m.id === id);
             if (!member) return;
