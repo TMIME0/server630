@@ -90,7 +90,7 @@
             </div>
             <div class="flex flex-col md:flex-row items-center gap-4">
                 <div id="cloud-status" class="text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold">
-                    ☁️ متصل  (Google Sheets)
+                    ☁️ متصل (Google Sheets)
                 </div>
                 <div id="user-info" class="bg-[#121212] px-4 py-2 rounded-xl border border-gray-800 text-xs gold-text font-bold">
                     مرحباً بك
@@ -195,11 +195,11 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKwlK9WUfqjHKlPOwvINEClRcpUXXQzc6CP47bnhSVnfN0H-dueXwb0ZkThyF6uuarGQ/exec";
 
         let admins = {
-            "1G630": { name: "الأدمن الأول (مدير عام)", pass: "Tmime9090", isMaster: true, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
-            "2G630": { name: "الأدمن الثاني", pass: "pass2", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
-            "3G630": { name: "الأدمن الثالث", pass: "pass3", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
-            "4G630": { name: "الأدمن الرابع", pass: "pass4", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" },
-            "5G630": { name: "الأدمن الخامس", pass: "pass5", isMaster: false, active: true, hiddenFields: [], lastSeen: "لم يسجل دخول بعد" }
+            "1G630": { name: "الأدمن الأول (مدير عام)", pass: "Tmime9090", isMaster: true, active: true, showGameCredentials: true, lastSeen: "لم يسجل دخول بعد" },
+            "2G630": { name: "الأدمن الثاني", pass: "pass2", isMaster: false, active: true, showGameCredentials: true, lastSeen: "لم يسجل دخول بعد" },
+            "3G630": { name: "الأدمن الثالث", pass: "pass3", isMaster: false, active: true, showGameCredentials: true, lastSeen: "لم يسجل دخول بعد" },
+            "4G630": { name: "الأدمن الرابع", pass: "pass4", isMaster: false, active: true, showGameCredentials: true, lastSeen: "لم يسجل دخول بعد" },
+            "5G630": { name: "الأدمن الخامس", pass: "pass5", isMaster: false, active: true, showGameCredentials: true, lastSeen: "لم يسجل دخول بعد" }
         };
 
         let currentAdmin = null;
@@ -219,7 +219,6 @@
         async function loadFromCloud() {
             const statusDiv = document.getElementById('cloud-status');
             try {
-                // جلب البيانات من ملف data.json المحلي لضمان السرعة الفورية
                 const response = await fetch('data.json?t=' + new Date().getTime());
                 const data = await response.json();
                 
@@ -244,7 +243,6 @@
                     statusDiv.className = "text-xs text-yellow-400 bg-yellow-950/40 px-3 py-1.5 rounded-xl border border-yellow-800 font-bold";
                 }
             } finally {
-                // إخفاء شاشة التحميل فوراً وبشكل نهائي لفتح الموقع كالبرق
                 const loadingScreen = document.getElementById('sync-loading');
                 if (loadingScreen) {
                     loadingScreen.classList.add('hidden');
@@ -323,6 +321,11 @@
             const welcomeMsg = document.getElementById('welcome-msg');
 
             if (admins[code] && admins[code].pass === pass) {
+                if (admins[code].active === false) {
+                    alert('عذراً، هذا الحساب معطل من قبل الأدمن العام!');
+                    return;
+                }
+
                 const now = new Date();
                 admins[code].lastSeen = now.toLocaleDateString('ar-IQ') + ' - ' + now.toLocaleTimeString('ar-IQ');
                 saveChanges();
@@ -330,11 +333,7 @@
                 currentAdmin = admins[code];
                 loggedInMemberId = null;
                 welcomeMsg.classList.remove('hidden');
-            const passField = document.getElementById('admin-pass');
-            if (passField) passField.value = currentAdmin.pass;
 
-           const emailField = document.getElementById('admin-email');
-           if (emailField) emailField.value = currentAdmin.email;
                 setTimeout(() => {
                     document.getElementById('login-screen').classList.add('hidden');
                     document.getElementById('dashboard').classList.remove('hidden');
@@ -436,7 +435,17 @@
                     const adm = admins[code];
                     container.innerHTML += `
                         <div class="p-4 bg-[#121212] rounded-2xl border border-gray-800 space-y-3">
-                            <span class="text-xs font-bold gold-text">كود الأدمن: ${code} (آخر ظهور: ${adm.lastSeen || 'لم يسجل'})</span>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-bold gold-text">كود الأدمن: ${code} (آخر ظهور: ${adm.lastSeen || 'لم يسجل'})</span>
+                                <div class="flex items-center gap-4 text-xs">
+                                    <label class="flex items-center gap-1 cursor-pointer text-gray-300">
+                                        <input type="checkbox" id="adm-active-${code}" ${adm.active !== false ? 'checked' : ''} class="accent-yellow-500"> تفعيل الحساب
+                                    </label>
+                                    <label class="flex items-center gap-1 cursor-pointer text-gray-300">
+                                        <input type="checkbox" id="adm-showcred-${code}" ${adm.showGameCredentials !== false ? 'checked' : ''} class="accent-yellow-500"> عرض إيميل ورمز القلعة
+                                    </label>
+                                </div>
+                            </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                                 <input type="text" id="adm-name-${code}" value="${adm.name}" class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white">
                                 <input type="text" id="adm-pass-${code}" value="${adm.pass}" class="px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs text-white">
@@ -463,8 +472,13 @@
                 if (code !== '1G630') {
                     const nameInput = document.getElementById(`adm-name-${code}`);
                     const passInput = document.getElementById(`adm-pass-${code}`);
+                    const activeCheckbox = document.getElementById(`adm-active-${code}`);
+                    const showCredCheckbox = document.getElementById(`adm-showcred-${code}`);
+
                     if (nameInput) admins[code].name = nameInput.value.trim();
                     if (passInput) admins[code].pass = passInput.value.trim();
+                    if (activeCheckbox) admins[code].active = activeCheckbox.checked;
+                    if (showCredCheckbox) admins[code].showGameCredentials = showCredCheckbox.checked;
                 }
             });
             saveChanges();
@@ -490,6 +504,7 @@
             }
 
             const isMasterAdmin = currentAdmin && currentAdmin.isMaster;
+            const canSeeGameCreds = isMasterAdmin || (currentAdmin && currentAdmin.showGameCredentials !== false);
 
             dataToShow.forEach((m) => {
                 const tr = document.createElement('tr');
@@ -506,33 +521,45 @@
                             </div>
                             <div>
                                 <span class="text-[10px] gold-text block mb-1 font-bold">رمز القلعة (قابل للتعديل)</span>
-                                <input type="text" value="${m.gamePass || ''}" class="w-full px-2 py-1 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs gold-text font-bold" oninput="updateMemberGameData(${m.id}, 'gamePass', this.value)">
+                                <input type="text" value="${m.gamePass || ''}" class="w-full px-2 py-1 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs gold-text font-bold" oninput="updateMemberGameDataLocal(${m.id}, 'gamePass', this.value)">
                             </div>
-                            <div class="flex justify-between items-center pt-1">
-                                <span class="text-[10px] text-gray-400">آخر تحديث: <span class="text-gray-300 font-semibold">${m.lastMemberUpdate || 'لم يتم التعديل بعد'}</span></span>
-                                <button type="button" onclick="saveSingleMemberData()" class="px-4 py-1.5 gold-bg text-black rounded-lg text-xs font-bold hover:opacity-90 transition shadow cursor-pointer inline-block">
-                                    حفظ
+                            <div class="pt-1">
+                                <span class="text-[10px] text-gray-400 block mb-1.5">آخر تحديث: <span class="text-gray-300 font-semibold">${m.lastMemberUpdate || 'لم يتم التعديل بعد'}</span></span>
+                                <button type="button" onclick="saveSingleMemberData()" class="w-full py-2 gold-bg text-black rounded-xl text-xs font-bold hover:opacity-90 transition shadow cursor-pointer text-center block">
+                                    حفظ البيانات
                                 </button>
                             </div>
                         </div>
                     `;
                 } else {
+                    let gameCredsHTML = '';
+                    if (canSeeGameCreds) {
+                        gameCredsHTML = `
+                            <div class="bg-[#121212]/80 p-2 rounded-xl border border-gray-800/80 space-y-1">
+                                <div>
+                                    <span class="text-[9px] text-gray-400 block">إيميل القلعة</span>
+                                    <input type="text" value="${m.gameEmail || ''}" placeholder="ايميل القلعة" class="w-full px-2 py-1 bg-[#18181c] border border-gray-700 rounded-lg text-xs text-gray-300" oninput="updateMemberGameDataLocal(${m.id}, 'gameEmail', this.value)">
+                                </div>
+                                <div>
+                                    <span class="text-[9px] gold-text block">رمز القلعة</span>
+                                    <input type="text" value="${m.gamePass || ''}" placeholder="رمز القلعة" class="w-full px-2 py-1 bg-[#18181c] border border-gray-700 rounded-lg text-xs gold-text font-bold" oninput="updateMemberGameDataLocal(${m.id}, 'gamePass', this.value)">
+                                </div>
+                            </div>
+                        `;
+                    }
+
                     columnContent = `
                         <div class="flex justify-between items-center mb-1">
                             <span class="font-bold text-white text-sm">عضو رقم ${m.id}</span>
                             <span class="text-[10px] text-gray-400" title="وقت آخر تحديث للبيانات">🕒 ${m.lastMemberUpdate || 'لم يتم التعديل بعد'}</span>
                         </div>
                         <div class="space-y-1.5">
-                            <input type="text" placeholder="اسم القلعة" value="${m.castleName || ''}" class="castle-name-input px-3 py-1.5 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white w-full font-bold" oninput="updateCastleName(${m.id}, this.value)">
-                            <div class="bg-[#121212]/80 p-2 rounded-xl border border-gray-800/80 space-y-1">
-                                <div>
-                                    <span class="text-[9px] text-gray-400 block">إيميل القلعة</span>
-                                    <input type="text" value="${m.gameEmail || ''}" placeholder="ايميل القلعة" class="w-full px-2 py-1 bg-[#18181c] border border-gray-700 rounded-lg text-xs text-gray-300" oninput="updateMemberGameData(${m.id}, 'gameEmail', this.value)">
-                                </div>
-                                <div>
-                                    <span class="text-[9px] gold-text block">رمز القلعة</span>
-                                    <input type="text" value="${m.gamePass || ''}" placeholder="رمز القلعة" class="w-full px-2 py-1 bg-[#18181c] border border-gray-700 rounded-lg text-xs gold-text font-bold" oninput="updateMemberGameData(${m.id}, 'gamePass', this.value)">
-                                </div>
+                            <input type="text" placeholder="اسم القلعة" value="${m.castleName || ''}" class="castle-name-input px-3 py-1.5 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white w-full font-bold" oninput="updateCastleNameLocal(${m.id}, this.value)">
+                            ${gameCredsHTML}
+                            <div class="pt-1">
+                                <button type="button" onclick="saveAdminEditedMember(${m.id})" class="w-full py-2 gold-bg text-black rounded-xl text-xs font-bold hover:opacity-95 transition shadow cursor-pointer text-center block">
+                                    حفظ البيانات
+                                </button>
                             </div>
                         </div>
                     `;
@@ -541,7 +568,7 @@
                 let typeField = '';
                 if (isMasterAdmin || loggedInMemberId === null) {
                     typeField = `
-                        <select onchange="updateCastleType(${m.id}, this.value)" class="bg-[#121212] border border-gray-700 rounded-xl px-2 py-1 text-xs gold-text font-bold focus:outline-none focus:border-[#d4af37]">
+                        <select onchange="updateCastleTypeLocal(${m.id}, this.value)" class="bg-[#121212] border border-gray-700 rounded-xl px-2 py-1 text-xs gold-text font-bold focus:outline-none focus:border-[#d4af37]">
                             <option value="infantry" ${m.castleType === 'infantry' ? 'selected' : ''}>مشاة</option>
                             <option value="archer" ${m.castleType === 'archer' ? 'selected' : ''}>رماة</option>
                             <option value="dual" ${m.castleType === 'dual' ? 'selected' : ''}>خطين</option>
@@ -556,14 +583,14 @@
                 let superField = '';
 
                 if (m.castleType === 'infantry') {
-                    armoredField = `<div class="flex gap-1 justify-center"><input type="number" placeholder="مدرع مشاة" value="${m.infantryArmored || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberData(${m.id}, 'infantryArmored', this.value)"></div>`;
-                    superField = `<div class="flex gap-1 justify-center"><input type="number" placeholder="خارق مشاة" value="${m.infantrySuper || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberData(${m.id}, 'infantrySuper', this.value)"></div>`;
+                    armoredField = `<div class="flex gap-1 justify-center"><input type="number" placeholder="مدرع مشاة" value="${m.infantryArmored || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'infantryArmored', this.value)"></div>`;
+                    superField = `<div class="flex gap-1 justify-center"><input type="number" placeholder="خارق مشاة" value="${m.infantrySuper || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'infantrySuper', this.value)"></div>`;
                 } else if (m.castleType === 'archer') {
-                    armoredField = `<div class="flex gap-1 justify-center"><input type="number" placeholder="مدرع رماة" value="${m.archerArmored || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberData(${m.id}, 'archerArmored', this.value)"></div>`;
-                    superField = `<div class="flex gap-1 justify-center"><input type="number" placeholder="خارق رماة" value="${m.archerSuper || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberData(${m.id}, 'archerSuper', this.value)"></div>`;
+                    armoredField = `<div class="flex gap-1 justify-center"><input type="number" placeholder="مدرع رماة" value="${m.archerArmored || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'archerArmored', this.value)"></div>`;
+                    superField = `<div class="flex gap-1 justify-center"><input type="number" placeholder="خارق رماة" value="${m.archerSuper || ''}" class="w-24 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'archerSuper', this.value)"></div>`;
                 } else {
-                    armoredField = `<div class="flex gap-1"><input type="number" placeholder="مدرع مشاة" value="${m.infantryArmored || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberData(${m.id}, 'infantryArmored', this.value)"><input type="number" placeholder="مدرع رماة" value="${m.archerArmored || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberData(${m.id}, 'archerArmored', this.value)"></div>`;
-                    superField = `<div class="flex gap-1"><input type="number" placeholder="خارق مشاة" value="${m.infantrySuper || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberData(${m.id}, 'infantrySuper', this.value)"><input type="number" placeholder="خارق رماة" value="${m.archerSuper || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberData(${m.id}, 'archerSuper', this.value)"></div>`;
+                    armoredField = `<div class="flex gap-1"><input type="number" placeholder="مدرع مشاة" value="${m.infantryArmored || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'infantryArmored', this.value)"><input type="number" placeholder="مدرع رماة" value="${m.archerArmored || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'archerArmored', this.value)"></div>`;
+                    superField = `<div class="flex gap-1"><input type="number" placeholder="خارق مشاة" value="${m.infantrySuper || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'infantrySuper', this.value)"><input type="number" placeholder="خارق رماة" value="${m.archerSuper || ''}" class="w-20 bg-[#121212] border border-gray-700 rounded-xl p-2 text-xs text-center text-white" oninput="updateMemberDataLocal(${m.id}, 'archerSuper', this.value)"></div>`;
                 }
 
                 tr.innerHTML = `
@@ -571,52 +598,39 @@
                     <td class="p-3 text-center">${typeField}</td>
                     <td class="p-3">${armoredField}</td>
                     <td class="p-3">${superField}</td>
-                    <td class="p-3"><input type="number" placeholder="النيزك" value="${m.meteor || ''}" class="w-28 bg-[#121212] border border-gray-700 rounded-xl p-2 text-sm text-center gold-text font-bold" oninput="updateMemberData(${m.id}, 'meteor', this.value)"></td>
+                    <td class="p-3"><input type="number" placeholder="النيزك" value="${m.meteor || ''}" class="w-28 bg-[#121212] border border-gray-700 rounded-xl p-2 text-sm text-center gold-text font-bold" oninput="updateMemberDataLocal(${m.id}, 'meteor', this.value)"></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        let updateTimer;
-        function updateMemberData(id, field, val) {
+        // تحديث البيانات محلياً في الذاكرة (بدون رفع للسيرفر إلا عند زر الحفظ)
+        function updateMemberDataLocal(id, field, val) {
             const member = membersData.find(m => m.id === id);
             if (member) {
                 member[field] = val === '' ? 0 : Number(val);
-                member.lastMemberUpdate = new Date().toLocaleDateString('ar-IQ') + ' - ' + new Date().toLocaleTimeString('ar-IQ');
                 updateTotals();
-                clearTimeout(updateTimer);
-                updateTimer = setTimeout(() => {
-                    saveChanges();
-                    initMembersTable();
-                }, 1000);
             }
         }
 
-        function updateMemberGameData(id, field, val) {
+        function updateMemberGameDataLocal(id, field, val) {
             const member = membersData.find(m => m.id === id);
             if (member) {
                 member[field] = val;
-                member.lastMemberUpdate = new Date().toLocaleDateString('ar-IQ') + ' - ' + new Date().toLocaleTimeString('ar-IQ');
-                clearTimeout(updateTimer);
-                updateTimer = setTimeout(() => saveChanges(), 1000);
             }
         }
 
-        function updateCastleName(id, val) {
+        function updateCastleNameLocal(id, val) {
             const member = membersData.find(m => m.id === id);
             if (member) {
                 member.castleName = val;
-                member.lastMemberUpdate = new Date().toLocaleDateString('ar-IQ') + ' - ' + new Date().toLocaleTimeString('ar-IQ');
-                clearTimeout(updateTimer);
-                updateTimer = setTimeout(() => saveChanges(), 1000);
             }
         }
 
-        function updateCastleType(id, val) {
+        function updateCastleTypeLocal(id, val) {
             const member = membersData.find(m => m.id === id);
             if (member) {
                 member.castleType = val;
-                member.lastMemberUpdate = new Date().toLocaleDateString('ar-IQ') + ' - ' + new Date().toLocaleTimeString('ar-IQ');
                 if(val === 'infantry') {
                     member.archerArmored = 0;
                     member.archerSuper = 0;
@@ -626,11 +640,10 @@
                 }
                 updateTotals();
                 initMembersTable();
-                clearTimeout(updateTimer);
-                updateTimer = setTimeout(() => saveChanges(), 1000);
             }
         }
 
+        // أزرار الحفظ المباشر
         function saveSingleMemberData() {
             const member = membersData.find(m => m.id === loggedInMemberId);
             if (member) {
@@ -638,7 +651,17 @@
             }
             saveChanges();
             initMembersTable();
-            alert('تم حفظ بيانات القلعة بنجاح  !');
+            alert('تم حفظ بيانات قلعتك بنجاح ونقلها للداتا !');
+        }
+
+        function saveAdminEditedMember(id) {
+            const member = membersData.find(m => m.id === id);
+            if (member) {
+                member.lastMemberUpdate = new Date().toLocaleDateString('ar-IQ') + ' - ' + new Date().toLocaleTimeString('ar-IQ');
+            }
+            saveChanges();
+            initMembersTable();
+            alert(`تم حفظ وتحديث بيانات العضو رقم ${id} بنجاح في الداتا!`);
         }
 
         function updateTotals() {
