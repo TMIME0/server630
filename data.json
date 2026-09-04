@@ -1132,15 +1132,15 @@
       "pass": "Tmime9090",
       "isMaster": true,
       "active": true,
-      "hiddenFields": [],
-      "lastSeen": "٤‏/٩‏/٢٠٢٦ - ٣:١٤:٤٩ ص"
+      "showGameCredentials": true,
+      "lastSeen": "٤‏/٩‏/٢٠٢٦ - ٣:١٧:٥٧ ص"
     },
     "2G630": {
       "name": "الأدمن الثاني",
       "pass": "pass2",
       "isMaster": false,
       "active": true,
-      "hiddenFields": [],
+      "showGameCredentials": true,
       "lastSeen": "لم يسجل دخول بعد"
     },
     "3G630": {
@@ -1148,7 +1148,7 @@
       "pass": "pass3",
       "isMaster": false,
       "active": true,
-      "hiddenFields": [],
+      "showGameCredentials": true,
       "lastSeen": "لم يسجل دخول بعد"
     },
     "4G630": {
@@ -1156,7 +1156,7 @@
       "pass": "pass4",
       "isMaster": false,
       "active": true,
-      "hiddenFields": [],
+      "showGameCredentials": true,
       "lastSeen": "لم يسجل دخول بعد"
     },
     "5G630": {
@@ -1164,7 +1164,7 @@
       "pass": "pass5",
       "isMaster": false,
       "active": true,
-      "hiddenFields": [],
+      "showGameCredentials": true,
       "lastSeen": "لم يسجل دخول بعد"
     }
   }
