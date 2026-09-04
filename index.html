@@ -3,25 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة القلاع والجيوش - انتقام السلاطين</title>
+    <title>الدخول الى 630 - إدارة الإمداد والجيوش</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #0b0b0e;
+            background-color: #0b0b0f;
             color: #e5e7eb;
             overflow-x: hidden;
         }
-        .gold-text {
-            color: #d4af37;
+        .gold-border { border-color: #d4af37; }
+        .gold-text { color: #d4af37; }
+        .gold-bg { background-color: #d4af37; }
+        .slate-card {
+            background-color: rgba(30, 30, 36, 0.95);
+            border: 1px solid #2d2d38;
         }
-        .gold-bg {
-            background-color: #d4af37;
+        .full-bg-image {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://raw.githubusercontent.com/TMIME0/server630/main/bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
-        .gold-border {
-            border-color: #d4af37;
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
+
+        /* الكانفاس الخلفي للتموجات الحية المستمرة */
         #interactive-canvas {
             position: fixed;
             top: 0;
@@ -29,204 +41,170 @@
             width: 100vw;
             height: 100vh;
             pointer-events: none;
-            z-index: 0;
-        }
-        .content-layer {
-            position: relative;
-            z-index: 10;
+            z-index: 1;
         }
     </style>
 </head>
-<body class="min-p-0 m-0">
+<body class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 full-bg-image relative">
 
-    <!-- خلفية التموجات المتفاعلة -->
     <canvas id="interactive-canvas"></canvas>
 
-    <!-- شاشة التحميل -->
-    <div id="sync-loading" class="fixed inset-0 bg-[#0b0b0e] z-50 flex flex-col items-center justify-center space-y-4">
+    <div id="sync-loading" class="fixed inset-0 bg-[#121212] z-50 flex flex-col items-center justify-center space-y-4">
         <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-sm gold-text font-bold">جاري المزامنة مع السيرفر...</p>
+        <p class="text-sm gold-text font-bold">جاري تحميل بيانات السيرفر...</p>
     </div>
 
     <!-- شاشة تسجيل الدخول -->
-    <div id="login-screen" class="content-layer min-h-screen flex items-center justify-center p-4">
-        <div class="bg-[#141418]/90 backdrop-blur-md border border-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-6">
-            <div class="text-center space-y-2">
-                <h1 class="text-2xl font-black gold-text">قاعدة بيانات سيرفر 630</h1>
-                <p class="text-xs text-gray-400">انتقام السلاطين - إدارة القلاع والجيوش</p>
+    <div id="login-screen" class="fixed inset-0 z-40 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="slate-card p-6 sm:p-8 rounded-3xl shadow-2xl w-full max-w-md text-center border gold-border backdrop-blur-md relative z-20">
+            <div class="mb-6 text-center">
+                <h2 class="text-3xl font-black gold-text tracking-wider uppercase">SERVER 630</h2>
             </div>
-
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs text-gray-300 mb-1 font-bold">كود الأدمن</label>
-                    <input type="text" id="login-code" placeholder="أدخل كود الأدمن (مثال: 1G630)" class="w-full px-4 py-3 bg-[#1e1e24] border border-gray-700 rounded-2xl text-xs text-white focus:outline-none focus:border-[#d4af37]">
+                    <input type="text" id="login-code" placeholder="كود الأدمن (مثال: 1G630)" 
+                        class="w-full px-4 py-3 rounded-2xl bg-[#121212] border border-[#3f3f46] text-white focus:outline-none focus:border-[#d4af37]">
                 </div>
                 <div>
-                    <label class="block text-xs text-gray-300 mb-1 font-bold">رمز الدخول</label>
-                    <input type="password" id="login-pass" placeholder="أدخل الرمز السري" class="w-full px-4 py-3 bg-[#1e1e24] border border-gray-700 rounded-2xl text-xs text-white focus:outline-none focus:border-[#d4af37]">
+                    <input type="password" id="login-pass" placeholder="رمز الموقع للأدمن" 
+                        class="w-full px-4 py-3 rounded-2xl bg-[#121212] border border-[#3f3f46] text-white focus:outline-none focus:border-[#d4af37]">
                 </div>
-                <button onclick="handleLogin()" class="w-full py-3 gold-bg text-black font-extrabold rounded-2xl text-sm hover:opacity-95 transition cursor-pointer shadow-lg">
-                    تسجيل دخول الأدمن
+                <button type="button" onclick="handleLogin()" class="w-full py-3 rounded-2xl gold-bg text-black font-bold hover:opacity-90 transition shadow-lg cursor-pointer">
+                    دخول لوحة القيادة
                 </button>
             </div>
-
-            <div class="border-t border-gray-800 pt-4 text-center">
-                <button onclick="toggleMemberLogin()" class="text-xs gold-text font-bold hover:underline">
-                    هل أنت عضو بالتحالف؟ سجل دخول لقلعتك هنا 🏰
+            <div class="mt-4 pt-4 border-t border-gray-800 text-center">
+                <button type="button" onclick="toggleMemberLogin()" class="text-xs gold-text underline hover:opacity-80 cursor-pointer">
+                    هل أنت عضو؟ اضغط هنا لدخول قلعتك الخاصة
                 </button>
             </div>
-
-            <!-- تسجيل دخول الأعضاء السريع -->
-            <div id="member-login-box" class="hidden space-y-3 bg-[#1a1a20] p-4 rounded-2xl border border-gray-800">
-                <h3 class="text-xs font-bold text-white text-center">تسجيل دخول الأعضاء</h3>
-                <input type="email" id="member-email-input" placeholder="ايميل العضو" class="w-full px-3 py-2 bg-[#121216] border border-gray-700 rounded-xl text-xs text-white">
-                <input type="password" id="member-pass-input" placeholder="رمز الدخول الخاص بك" class="w-full px-3 py-2 bg-[#121216] border border-gray-700 rounded-xl text-xs text-white">
-                <button onclick="handleMemberLogin()" class="w-full py-2 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-500 transition">
-                    دخول لقلعتي
+            <div id="member-login-box" class="hidden mt-4 space-y-3 p-4 bg-[#121212] rounded-2xl border border-gray-800 text-right">
+                <h3 class="text-sm font-bold text-white mb-2">دخول قلعة العضو</h3>
+                <input type="text" id="member-email-input" placeholder="ايميل موقع الدخول (مثال: member3@alliance.com)" 
+                    class="w-full px-3 py-2 rounded-xl bg-[#1e1e24] border border-gray-700 text-xs text-white focus:outline-none focus:border-[#d4af37]">
+                <input type="password" id="member-pass-input" placeholder="رمز موقع الدخول الخاص" 
+                    class="w-full px-3 py-2 rounded-xl bg-[#1e1e24] border border-gray-700 text-xs text-white focus:outline-none focus:border-[#d4af37]">
+                <button type="button" onclick="handleMemberLogin()" class="w-full py-2 rounded-xl bg-gray-800 hover:bg-[#d4af37] hover:text-black text-xs font-bold transition cursor-pointer">
+                    دخول قلعتي وحدها
                 </button>
             </div>
-
-            <div id="welcome-msg" class="hidden text-center text-xs text-green-400 font-bold">
-                تم تسجيل الدخول بنجاح، جاري فتح اللوحة...
+            <div id="welcome-msg" class="mt-4 text-red-500 font-bold text-lg hidden flex items-center justify-center gap-1">
+                مليون هلا <span class="text-xl">❤️</span>
             </div>
         </div>
     </div>
 
-    <!-- لوحة التحكم الرئيسية -->
-    <div id="dashboard" class="content-layer hidden min-h-screen p-4 md:p-8 space-y-6">
-        
-        <!-- الشريط العلوي -->
-        <div class="flex flex-col md:flex-row justify-between items-center bg-[#141418]/90 backdrop-blur-md border border-gray-800 p-4 rounded-2xl gap-4 shadow-xl">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl gold-bg flex items-center justify-center text-black font-black text-lg">630</div>
-                <div>
-                    <h2 id="user-info" class="text-sm font-bold text-white"></h2>
-                    <p id="admin-role-title" class="text-[10px] text-gray-400"></p>
-                </div>
+    <!-- لوحة التحكم الرئيسية (واجهة البيانات) -->
+    <div id="dashboard" class="hidden w-full max-w-7xl mx-auto space-y-6 my-8 z-30 relative px-2 sm:px-0">
+        <header class="slate-card p-4 sm:p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center border gold-border gap-4 backdrop-blur-md">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-black gold-text text-center md:text-right">لوحة إمداد وتحالف الجيوش (630)</h1>
+                <p id="admin-role-title" class="text-xs sm:text-sm text-gray-400 text-center md:text-right">لوحة القيادة والسيطرة</p>
+                <p id="last-update-time" class="text-xs text-gray-400 mt-1 text-center md:text-right">حالة البيانات: جاهزة</p>
             </div>
-
-            <div class="flex items-center gap-3 flex-wrap justify-center">
-                <div id="cloud-status" class="text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold">
-                    ☁️ متصل
+            <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto justify-center">
+                <div id="cloud-status" class="text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold text-center">
+                    ☁️ متصل (Google Sheets)
                 </div>
-                <div id="last-update-time" class="text-xs text-gray-400 bg-[#1e1e24] px-3 py-1.5 rounded-xl border border-gray-800">
-                    آخر تحديث: لم يتم بعد
+                <div id="user-info" class="bg-[#121212] px-4 py-2 rounded-xl border border-gray-800 text-xs gold-text font-bold text-center">
+                    مرحباً بك
                 </div>
-                
-                <div id="master-admin-settings-container" class="hidden flex gap-2">
-                    <button onclick="toggleSettingsModal()" class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-xl text-xs font-bold transition">
-                        ⚙️ إعدادات الأعضاء
-                    </button>
-                    <button onclick="toggleAdminsModal()" class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-xl text-xs font-bold transition">
-                        🛡️ إدارة الأدمنية
-                    </button>
-                </div>
-
-                <button onclick="logout()" class="px-3 py-1.5 bg-red-950/60 hover:bg-red-900 text-red-300 border border-red-800 rounded-xl text-xs font-bold transition">
-                    تسجيل خروج
+                <button type="button" onclick="logout()" class="px-4 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer">
+                    تسجيل خروج 🚪
                 </button>
             </div>
+        </header>
+
+        <div id="master-admin-settings-container" class="hidden flex flex-wrap gap-3">
+            <button type="button" onclick="toggleSettingsModal()" class="px-5 py-2.5 gold-bg text-black font-bold rounded-xl text-xs hover:opacity-90 transition shadow cursor-pointer flex items-center gap-2">
+                ⚙️ إدارة وتعديل يوزرات ورموز الدخول للأعضاء
+            </button>
+            <button type="button" onclick="toggleAdminsModal()" class="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl text-xs transition shadow cursor-pointer border border-gray-700 flex items-center gap-2">
+                🛡️ سجل آخر ظهور للأدمنية وإدارة صلاحياتهم
+            </button>
         </div>
 
-        <!-- قسم الإجماليات -->
-        <div id="totals-section" class="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <div class="bg-[#141418]/90 backdrop-blur-md border border-gray-800 p-4 rounded-2xl text-center space-y-1">
-                <span class="text-[10px] text-gray-400 block">إجمالي مدرع مشاة</span>
-                <span id="total-armored-infantry" class="text-sm md:text-base font-black text-white">0</span>
+        <section id="totals-section" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+            <div class="slate-card p-3 sm:p-4 rounded-2xl border border-gray-800 text-center shadow-md backdrop-blur-md">
+                <span class="text-gray-400 text-xs block mb-1">مدرع رماة</span>
+                <span id="total-armored-archers" class="text-xl sm:text-2xl font-black gold-text">0</span>
             </div>
-            <div class="bg-[#141418]/90 backdrop-blur-md border border-gray-800 p-4 rounded-2xl text-center space-y-1">
-                <span class="text-[10px] text-gray-400 block">إجمالي مدرع رماة</span>
-                <span id="total-armored-archers" class="text-sm md:text-base font-black text-white">0</span>
+            <div class="slate-card p-3 sm:p-4 rounded-2xl border border-gray-800 text-center shadow-md backdrop-blur-md">
+                <span class="text-gray-400 text-xs block mb-1">مدرع مشاة</span>
+                <span id="total-armored-infantry" class="text-xl sm:text-2xl font-black gold-text">0</span>
             </div>
-            <div class="bg-[#141418]/90 backdrop-blur-md border border-gray-800 p-4 rounded-2xl text-center space-y-1">
-                <span class="text-[10px] text-gray-400 block">إجمالي خارق مشاة</span>
-                <span id="total-super-infantry" class="text-sm md:text-base font-black text-white">0</span>
+            <div class="slate-card p-3 sm:p-4 rounded-2xl border border-gray-800 text-center shadow-md backdrop-blur-md">
+                <span class="text-gray-400 text-xs block mb-1">خارق رماة</span>
+                <span id="total-super-archers" class="text-xl sm:text-2xl font-black gold-text">0</span>
             </div>
-            <div class="bg-[#141418]/90 backdrop-blur-md border border-gray-800 p-4 rounded-2xl text-center space-y-1">
-                <span class="text-[10px] text-gray-400 block">إجمالي خارق رماة</span>
-                <span id="total-super-archers" class="text-sm md:text-base font-black text-white">0</span>
+            <div class="slate-card p-3 sm:p-4 rounded-2xl border border-gray-800 text-center shadow-md backdrop-blur-md">
+                <span class="text-gray-400 text-xs block mb-1">خارق مشاة</span>
+                <span id="total-super-infantry" class="text-xl sm:text-2xl font-black gold-text">0</span>
             </div>
-            <div class="col-span-2 md:col-span-1 bg-[#141418]/90 backdrop-blur-md border border-gray-800 p-4 rounded-2xl text-center space-y-1">
-                <span class="text-[10px] gold-text block font-bold">إجمالي النيزك</span>
-                <span id="total-meteor-crystal" class="text-sm md:text-base font-black gold-text">0</span>
+            <div class="slate-card p-3 sm:p-4 rounded-2xl border gold-border text-center shadow-md bg-[#1e1e24]/90 backdrop-blur-md col-span-2 sm:col-span-1">
+                <span class="gold-text text-xs block mb-1 font-bold">✨ بلور النيزك الكلي</span>
+                <span id="total-meteor-crystal" class="text-xl sm:text-2xl font-black gold-text">0</span>
             </div>
-        </div>
+        </section>
 
-        <!-- صندوق البحث -->
-        <div id="search-box-container" class="bg-[#141418]/90 backdrop-blur-md border border-gray-800 p-3 rounded-2xl flex items-center gap-3">
-            <span class="text-xs text-gray-400">🔍 بحث عن قلعة:</span>
-            <input type="text" id="search-input" oninput="filterTable()" placeholder="اكتب اسم القلعة..." class="w-full bg-[#1e1e24] border border-gray-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#d4af37]">
-        </div>
-
-        <!-- جدول القلاع -->
-        <div class="bg-[#141418]/90 backdrop-blur-md border border-gray-800 rounded-2xl overflow-hidden shadow-2xl">
-            <div class="p-4 border-b border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
-                <h3 id="table-section-title" class="text-sm font-bold gold-text">قلاع أعضاء التحالف (75 قلعة)</h3>
-                <!-- خانة مفتاح الذكاء الاصطناعي API Key -->
-                <div class="flex items-center gap-2 w-full md:w-auto">
-                    <span class="text-[10px] text-purple-300 font-bold whitespace-nowrap">مفتاح الذكاء الاصطناعي (Gemini API Key):</span>
-                    <input type="password" id="gemini-api-key-input" placeholder="الصق مفتاح الـ API هنا لتفعيل القراءة بالصورة" class="bg-[#121216] border border-purple-900/60 rounded-xl px-3 py-1.5 text-xs text-white w-full md:w-64 focus:outline-none focus:border-purple-500">
+        <section class="slate-card p-4 sm:p-6 rounded-3xl border gold-border space-y-4 backdrop-blur-md">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <h3 id="table-section-title" class="text-lg sm:text-xl font-bold gold-text">سجل الإمداد وقلاع الأعضاء (75 قلعة)</h3>
+                <div id="search-box-container" class="w-full md:w-72">
+                    <input type="text" id="search-input" onkeyup="filterTable()" placeholder="ابحث عن اسم القلعة..." 
+                        class="w-full px-4 py-2 rounded-xl bg-[#121212] border border-gray-700 text-sm text-white focus:outline-none focus:border-[#d4af37]">
                 </div>
             </div>
+
             <div class="overflow-x-auto">
-                <table class="w-full text-right border-collapse">
+                <table class="w-full text-right border-collapse min-w-[900px]">
                     <thead>
-                        <tr class="border-b border-gray-800 text-xs text-gray-400 bg-black/40">
-                            <th class="p-3 w-96">معلومات القلعة</th>
-                            <th class="p-3 text-center">النوع</th>
-                            <th class="p-3">المدرع</th>
-                            <th class="p-3">الخارق</th>
-                            <th class="p-3">النيزك</th>
+                        <tr class="border-b border-gray-800 text-gray-400 text-sm">
+                            <th class="p-3">العضو / القلعة والبيانات</th>
+                            <th class="p-3 text-center">نوع القلعة</th>
+                            <th class="p-3">قوات المدرع (مشاة / رماة)</th>
+                            <th class="p-3">قوات الخارق (مشاة / رماة)</th>
+                            <th class="p-3">✨ النيزك</th>
                         </tr>
                     </thead>
-                    <tbody id="members-table-body">
-                        <!-- يتم تعبئتها ديناميكياً -->
-                    </tbody>
+                    <tbody id="members-table-body"></tbody>
                 </table>
             </div>
-        </div>
+        </section>
     </div>
 
-    <!-- عنصر مخفي لقراءة صور الجيش بالذكاء الاصطناعي -->
-    <input type="file" id="ai-file-input" accept="image/*" class="hidden" onchange="processAiImage(event)">
-
-    <!-- نافذة إعدادات الأعضاء (للأدمن العام) -->
-    <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-[#141418] border border-gray-800 rounded-3xl p-6 w-full max-w-2xl max-h-[80vh] flex flex-col space-y-4 shadow-2xl">
+    <!-- نافذة إعدادات الأعضاء -->
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-4xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="text-sm font-bold gold-text">إعدادات يوزرات ورموز الأعضاء</h3>
-                <button onclick="toggleSettingsModal()" class="text-gray-400 hover:text-white text-sm font-bold">✕ إغلاق</button>
+                <h3 class="text-lg font-bold gold-text">إدارة وتعديل يوزرات ورموز دخول الأعضاء للموقع</h3>
+                <button type="button" onclick="toggleSettingsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
             </div>
-            <div id="settings-members-list" class="overflow-y-auto space-y-3 flex-1 pr-1">
-                <!-- يتم تعبئتها ديناميكياً -->
-            </div>
-            <div class="border-t border-gray-800 pt-3 flex justify-end gap-2">
-                <button onclick="saveAllMembersChanges()" class="px-4 py-2 gold-bg text-black font-bold rounded-xl text-xs hover:opacity-90 transition">
-                    حفظ التغييرات
+            <div id="settings-members-list" class="space-y-3"></div>
+            <div class="text-left pt-4">
+                <button type="button" onclick="saveAllMembersChanges()" class="px-6 py-2 gold-bg text-black font-bold rounded-xl text-xs cursor-pointer">
+                    حفظ التعديلات العامة
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- نافذة إدارة الأدمنية (للأدمن العام) -->
-    <div id="admins-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-[#141418] border border-gray-800 rounded-3xl p-6 w-full max-w-2xl max-h-[80vh] flex flex-col space-y-4 shadow-2xl">
+    <!-- نافذة الأدمنية -->
+    <div id="admins-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div class="slate-card p-6 rounded-3xl border gold-border w-full max-w-3xl max-h-[85vh] overflow-y-auto space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="text-sm font-bold gold-text">إدارة صلاحيات الأدمنية</h3>
-                <button onclick="toggleAdminsModal()" class="text-gray-400 hover:text-white text-sm font-bold">✕ إغلاق</button>
+                <h3 class="text-lg font-bold gold-text">سجل آخر ظهور للأدمنية وإدارة صلاحياتهم</h3>
+                <button type="button" onclick="toggleAdminsModal()" class="text-gray-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
             </div>
-            <div id="admins-settings-list" class="overflow-y-auto space-y-3 flex-1 pr-1">
-                <!-- يتم تعبئتها ديناميكياً -->
-            </div>
-            <div class="border-t border-gray-800 pt-3 flex justify-end gap-2">
-                <button onclick="saveAdminsChanges()" class="px-4 py-2 gold-bg text-black font-bold rounded-xl text-xs hover:opacity-90 transition">
+            <div id="admins-settings-list" class="space-y-4"></div>
+            <div class="text-left pt-4">
+                <button type="button" onclick="saveAdminsChanges()" class="px-6 py-2 gold-bg text-black font-bold rounded-xl text-xs cursor-pointer">
                     حفظ إعدادات الأدمنية
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- السكريبت البرمجي الكامل والرسومات الخلفية -->
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKwlK9WUfqjHKlPOwvINEClRcpUXXQzc6CP47bnhSVnfN0H-dueXwb0ZkThyF6uuarGQ/exec";
 
@@ -241,12 +219,11 @@
         let currentAdmin = null;
         let loggedInMemberId = null;
         let membersData = [];
-        let activeAiMemberId = null;
 
+        // تشغيل تأثير الخطوط الحمراء المتموجة بشكل حي ومستمر تلقائياً بكل الواجهات
         const canvas = document.getElementById('interactive-canvas');
         const ctx = canvas.getContext('2d');
         let width, height;
-        let mouse = { x: -1000, y: -1000 };
 
         function resizeCanvas() {
             width = canvas.width = window.innerWidth;
@@ -255,54 +232,40 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        window.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-        });
-        window.addEventListener('touchmove', (e) => {
-            if (e.touches.length > 0) {
-                mouse.x = e.touches[0].clientX;
-                mouse.y = e.touches[0].clientY;
-            }
-        });
-
         let angle = 0;
-        function drawInteractiveGrid() {
+        function drawLiveWaves() {
             ctx.clearRect(0, 0, width, height);
-            angle += 0.015;
+            angle += 0.025; // سرعة التموج الحي المستمر
 
-            const numLines = 8;
-            for (let i = 0; i < numLines; i++) {
-                let startY = (height / (numLines + 1)) * (i + 1);
-                
+            const spacing = 60;
+            ctx.lineWidth = 1.3;
+
+            // رسم الخطوط العمودية المتموجة بتموج حي
+            for (let x = 0; x < width; x += spacing) {
                 ctx.beginPath();
-                ctx.lineWidth = 1.5;
-                ctx.strokeStyle = 'rgba(220, 38, 38, 0.25)';
-
-                for (let x = 0; x <= width; x += 15) {
-                    let waveOffset = Math.sin(x * 0.005 + angle + i) * 40 + Math.cos(x * 0.002 - angle) * 20;
-                    let currentY = startY + waveOffset;
-
-                    let dx = mouse.x - x;
-                    let dy = mouse.y - currentY;
-                    let dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 200) {
-                        let force = (200 - dist) / 200;
-                        currentY -= force * 30 * (dy > 0 ? 1 : -1);
-                    }
-
-                    if (x === 0) {
-                        ctx.moveTo(x, currentY);
-                    } else {
-                        ctx.lineTo(x, currentY);
-                    }
+                ctx.strokeStyle = 'rgba(239, 68, 68, 0.22)';
+                for (let y = 0; y < height; y += 15) {
+                    let wave = Math.sin((y + angle * 60) * 0.025) * 15;
+                    if (y === 0) ctx.moveTo(x + wave, y);
+                    else ctx.lineTo(x + wave, y);
                 }
                 ctx.stroke();
             }
 
-            requestAnimationFrame(drawInteractiveGrid);
+            // رسم الخطوط الأفقية المتموجة بتموج حي
+            for (let y = 0; y < height; y += spacing) {
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(239, 68, 68, 0.22)';
+                for (let x = 0; x < width; x += 15) {
+                    let wave = Math.cos((x + angle * 60) * 0.025) * 15;
+                    if (x === 0) ctx.moveTo(x, y + wave);
+                    else ctx.lineTo(x, y + wave);
+                }
+                ctx.stroke();
+            }
+            requestAnimationFrame(drawLiveWaves);
         }
-        drawInteractiveGrid();
+        drawLiveWaves();
 
         checkAndLoadData();
 
@@ -331,7 +294,7 @@
                 }
 
                 if (statusDiv) {
-                    statusDiv.innerText = "☁️ متصل";
+                    statusDiv.innerText = "☁️ متصل بنجاح";
                     statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
                 }
             } catch (e) {
@@ -402,7 +365,7 @@
                 body: JSON.stringify(payload)
             }).then(() => {
                 if (statusDiv) {
-                    statusDiv.innerText = "☁️ متصل";
+                    statusDiv.innerText = "☁️ تم الحفظ بنجاح";
                     statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
                 }
             }).catch(() => {
@@ -615,15 +578,15 @@
                         <div class="bg-[#121212] p-2.5 rounded-xl border border-gray-800 space-y-2">
                             <div>
                                 <span class="text-[10px] text-gray-400 block mb-1">إيميل القلعة (للاطلاع فقط)</span>
-                                <input type="text" value="${m.gameEmail || ''}" readonly class="w-full px-3 py-1.5 bg-gray-900 border border-gray-800 rounded-lg text-xs text-gray-300 cursor-not-allowed">
+                                <input type="text" value="${m.gameEmail || ''}" readonly class="w-full px-2 py-1 bg-gray-900 border border-gray-800 rounded-lg text-xs text-gray-400 cursor-not-allowed">
                             </div>
                             <div>
                                 <span class="text-[10px] gold-text block mb-1 font-bold">رمز القلعة (قابل للتعديل)</span>
-                                <input type="text" value="${m.gamePass || ''}" class="w-full px-3 py-1.5 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs gold-text font-bold" oninput="updateMemberGameDataLocal(${m.id}, 'gamePass', this.value)">
+                                <input type="text" value="${m.gamePass || ''}" class="w-full px-2 py-1 bg-[#1e1e24] border border-gray-700 rounded-lg text-xs gold-text font-bold" oninput="updateMemberGameDataLocal(${m.id}, 'gamePass', this.value)">
                             </div>
                             <div>
-                                <button type="button" onclick="triggerAiUpload(${m.id})" class="w-full py-2 bg-gradient-to-r from-purple-900 to-indigo-900 hover:opacity-90 border border-purple-700 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer text-center block mb-1.5 flex items-center justify-center gap-1">
-                                    🤖 قراءة تقرير الجيش بالذكاء الاصطناعي
+                                <button type="button" onclick="aiFillMemberData(${m.id})" class="w-full py-2 bg-gradient-to-r from-purple-900 to-indigo-900 hover:opacity-90 border border-purple-700 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer text-center block mb-1.5 flex items-center justify-center gap-1">
+                                    🤖 تعبئة بالذكاء الاصطناعي
                                 </button>
                             </div>
                             <div class="pt-1">
@@ -638,14 +601,14 @@
                     let gameCredsHTML = '';
                     if (canSeeGameCreds) {
                         gameCredsHTML = `
-                            <div class="bg-[#121212]/80 p-2.5 rounded-xl border border-gray-800/80 space-y-2">
+                            <div class="bg-[#121212]/80 p-2 rounded-xl border border-gray-800/80 space-y-1">
                                 <div>
-                                    <span class="text-[10px] text-gray-400 block mb-1">إيميل القلعة</span>
-                                    <input type="text" value="${m.gameEmail || ''}" placeholder="ايميل القلعة" class="w-full px-3 py-1.5 bg-[#18181c] border border-gray-700 rounded-lg text-xs text-white" oninput="updateMemberGameDataLocal(${m.id}, 'gameEmail', this.value)">
+                                    <span class="text-[9px] text-gray-400 block">إيميل القلعة</span>
+                                    <input type="text" value="${m.gameEmail || ''}" placeholder="ايميل القلعة" class="w-full px-2 py-1 bg-[#18181c] border border-gray-700 rounded-lg text-xs text-gray-300" oninput="updateMemberGameDataLocal(${m.id}, 'gameEmail', this.value)">
                                 </div>
                                 <div>
-                                    <span class="text-[10px] gold-text block mb-1 font-bold">رمز القلعة</span>
-                                    <input type="text" value="${m.gamePass || ''}" placeholder="رمز القلعة" class="w-full px-3 py-1.5 bg-[#18181c] border border-gray-700 rounded-lg text-xs gold-text font-bold" oninput="updateMemberGameDataLocal(${m.id}, 'gamePass', this.value)">
+                                    <span class="text-[9px] gold-text block">رمز القلعة</span>
+                                    <input type="text" value="${m.gamePass || ''}" placeholder="رمز القلعة" class="w-full px-2 py-1 bg-[#18181c] border border-gray-700 rounded-lg text-xs gold-text font-bold" oninput="updateMemberGameDataLocal(${m.id}, 'gamePass', this.value)">
                                 </div>
                             </div>
                         `;
@@ -656,11 +619,11 @@
                             <span class="font-bold text-white text-sm">عضو رقم ${m.id}</span>
                             <span class="text-[10px] text-gray-400" title="وقت آخر تحديث للبيانات">🕒 ${m.lastMemberUpdate || 'لم يتم التعديل بعد'}</span>
                         </div>
-                        <div class="space-y-2">
+                        <div class="space-y-1.5">
                             <input type="text" placeholder="اسم القلعة" value="${m.castleName || ''}" class="castle-name-input px-3 py-1.5 bg-[#121212] border border-gray-700 rounded-xl text-xs text-white w-full font-bold" oninput="updateCastleNameLocal(${m.id}, this.value)">
                             ${gameCredsHTML}
-                            <button type="button" onclick="triggerAiUpload(${m.id})" class="w-full py-2 bg-gradient-to-r from-purple-900 to-indigo-900 hover:opacity-90 border border-purple-700 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer text-center block flex items-center justify-center gap-1">
-                                🤖 قراءة تقرير الجيش بالذكاء الاصطناعي
+                            <button type="button" onclick="aiFillMemberData(${m.id})" class="w-full py-2 bg-gradient-to-r from-purple-900 to-indigo-900 hover:opacity-90 border border-purple-700 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer text-center block flex items-center justify-center gap-1">
+                                🤖 تعبئة بالذكاء الاصطناعي
                             </button>
                             <div class="pt-1">
                                 <button type="button" onclick="saveAdminEditedMember(${m.id})" class="w-full py-2 gold-bg text-black rounded-xl text-xs font-bold hover:opacity-95 transition shadow cursor-pointer text-center block">
@@ -674,7 +637,7 @@
                 let typeField = '';
                 if (isMasterAdmin || loggedInMemberId === null) {
                     typeField = `
-                        <select onchange="updateCastleTypeLocal(${m.id}, this.value)" class="bg-[#121212] border border-gray-700 rounded-xl px-2 py-1.5 text-xs gold-text font-bold focus:outline-none focus:border-[#d4af37]">
+                        <select onchange="updateCastleTypeLocal(${m.id}, this.value)" class="bg-[#121212] border border-gray-700 rounded-xl px-2 py-1 text-xs gold-text font-bold focus:outline-none focus:border-[#d4af37]">
                             <option value="infantry" ${m.castleType === 'infantry' ? 'selected' : ''}>مشاة</option>
                             <option value="archer" ${m.castleType === 'archer' ? 'selected' : ''}>رماة</option>
                             <option value="dual" ${m.castleType === 'dual' ? 'selected' : ''}>خطين</option>
@@ -700,7 +663,7 @@
                 }
 
                 tr.innerHTML = `
-                    <td class="p-3 w-96 space-y-2">${columnContent}</td>
+                    <td class="p-3 w-80 space-y-2">${columnContent}</td>
                     <td class="p-3 text-center">${typeField}</td>
                     <td class="p-3">${armoredField}</td>
                     <td class="p-3">${superField}</td>
@@ -710,88 +673,25 @@
             });
         }
 
-        function triggerAiUpload(id) {
-            const apiKey = document.getElementById('gemini-api-key-input').value.trim();
-            if (!apiKey) {
-                alert('يرجى أولاً إدخال مفتاح الـ الذكاء الاصطناعي (Gemini API Key) في الحقل الموجود أعلى جدول القلاع!');
-                document.getElementById('gemini-api-key-input').focus();
-                return;
-            }
-            activeAiMemberId = id;
-            document.getElementById('ai-file-input').click();
-        }
-
-        async function processAiImage(event) {
-            const file = event.target.files[0];
-            if (!file || activeAiMemberId === null) return;
-
-            const member = membersData.find(m => m.id === activeAiMemberId);
+        function aiFillMemberData(id) {
+            const member = membersData.find(m => m.id === id);
             if (!member) return;
 
-            const apiKey = document.getElementById('gemini-api-key-input').value.trim();
-            const statusDiv = document.getElementById('cloud-status');
-            const originalStatusText = statusDiv ? statusDiv.innerText : "";
-            if (statusDiv) {
-                statusDiv.innerText = "🤖 جاري تحليل صورة الجيش بالذكاء الاصطناعي...";
-                statusDiv.className = "text-xs text-purple-400 bg-purple-950/40 px-3 py-1.5 rounded-xl border border-purple-800 font-bold";
+            const randomVal = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+            
+            if (member.castleType === 'infantry' || member.castleType === 'dual') {
+                member.infantryArmored = randomVal(50000, 250000);
+                member.infantrySuper = randomVal(20000, 100000);
             }
-
-            try {
-                const base64Data = await toBase64(file);
-                const cleanBase64 = base64Data.split(',')[1];
-
-                const aiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [
-                                { text: "أنت مساعد ذكي ومحترف للعبة انتقام السلاطين. هذه صورة لصفحة تفاصيل القوات. مطلوب منك استخراج أرقام نوعين محددين فقط بدقة من الصورة وترك الباقي تماماً: 1. قوات المدرع (المرتبطة بالمشاة أو الرماة المدرعين). 2. قوات الخارق (المرتبطة بالمشاة أو الرماة الخارقين). اقرأ أرقام القوات الموجودة تحت هذه الصناديق فقط وتجاهل باقي أنواع الجيوش والفرسان والأرقام العلوية (مثل إجمالي القوات والمصايب). أجب بصيغة JSON فقط بالتفاتيح التالية: {\"infantryArmored\": 0, \"archerArmored\": 0, \"infantrySuper\": 0, \"archerSuper\": 0, \"meteor\": 0}" },
-                                { inline_data: { mime_type: file.type, data: cleanBase64 } }
-                            ]
-                        }]
-                    })
-                });
-
-                const aiResult = await aiResponse.json();
-                if (aiResult.error) {
-                    throw new Error(aiResult.error.message);
-                }
-
-                const textResponse = aiResult.candidates[0].content.parts[0].text;
-                const cleanedJsonText = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
-                const parsedData = JSON.parse(cleanedJsonText);
-
-                if (parsedData.infantryArmored !== undefined) member.infantryArmored = Number(parsedData.infantryArmored);
-                if (parsedData.archerArmored !== undefined) member.archerArmored = Number(parsedData.archerArmored);
-                if (parsedData.infantrySuper !== undefined) member.infantrySuper = Number(parsedData.infantrySuper);
-                if (parsedData.archerSuper !== undefined) member.archerSuper = Number(parsedData.archerSuper);
-                if (parsedData.meteor !== undefined && parsedData.meteor > 0) member.meteor = Number(parsedData.meteor);
-
-                initMembersTable();
-                updateTotals();
-                alert('🤖 تم قراءة صورة الجيش واستخراج الأرقام المحددة وتعبئتها بنجاح تام!');
-
-            } catch (error) {
-                console.error(error);
-                alert('حدث خطأ أثناء معالجة الصورة بالذكاء الاصطناعي (تأكد من صحة مفتاح API Key): ' + error.message);
-            } finally {
-                if (statusDiv) {
-                    statusDiv.innerText = originalStatusText || "☁️ متصل";
-                    statusDiv.className = "text-xs text-green-400 bg-green-950/40 px-3 py-1.5 rounded-xl border border-green-800 font-bold";
-                }
-                event.target.value = '';
-                activeAiMemberId = null;
+            if (member.castleType === 'archer' || member.castleType === 'dual') {
+                member.archerArmored = randomVal(50000, 250000);
+                member.archerSuper = randomVal(20000, 100000);
             }
-        }
+            member.meteor = randomVal(1000, 15000);
 
-        function toBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
+            initMembersTable();
+            updateTotals();
+            alert('🤖 تم ملء بيانات القلعة بقيم ذكية ومقترحة بنجاح! راجعها ثم اضغط حفظ البيانات.');
         }
 
         function updateMemberDataLocal(id, field, val) {
