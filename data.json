@@ -7,14 +7,13 @@
       "email": "Falcon",
       "pass": "F630",
       "gameEmail": "mm630nn@gmail.com",
-      "gamePass": "asdasd123",
-      "infantryArmored": 27043885,
+      "gamePass": "poipoi123",
+      "infantryArmored": 24954375,
       "archerArmored": 0,
       "infantrySuper": 85704280,
       "archerSuper": 0,
       "meteor": 7700000,
-      "lastMemberUpdate": "١‏/٩‏/٢٠٢٦ - ١١:٤٢:٤٠ م",
-      "lastNameUpdate": "٧‏/٩‏/٢٠٢٦ - ١:١١:٠٠ ص"
+      "lastMemberUpdate": "١‏/٩‏/٢٠٢٦ - ١١:٤٢:٤٠ م"
     },
     {
       "id": 2,
@@ -314,8 +313,7 @@
       "infantrySuper": 0,
       "archerSuper": 11678572,
       "meteor": 18100000,
-      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٨:١٣:٣٢ ص",
-      "lastNameUpdate": "٧‏/٩‏/٢٠٢٦ - ١:١٢:١٧ ص"
+      "lastMemberUpdate": "١٧‏/٨‏/٢٠٢٦ - ٨:١٣:٣٢ ص"
     },
     {
       "id": 22,
@@ -338,15 +336,14 @@
       "castleType": "infantry",
       "email": "Two",
       "pass": "T5656",
-      "gameEmail": "Alajmi5254@gmail.com",
-      "gamePass": "As121212",
+      "gameEmail": "607tuwaiq607@gmail.com",
+      "gamePass": "",
       "infantryArmored": 3500133,
       "archerArmored": 0,
       "infantrySuper": 6910901,
       "archerSuper": 0,
       "meteor": 24600000,
-      "lastMemberUpdate": "٣١‏/٨‏/٢٠٢٦ - ١١:٢٩:٥٩ م",
-      "lastNameUpdate": "٧‏/٩‏/٢٠٢٦ - ١:١٢:١١ ص"
+      "lastMemberUpdate": "٣١‏/٨‏/٢٠٢٦ - ١١:٢٩:٥٩ م"
     },
     {
       "id": 24,
@@ -1136,7 +1133,7 @@
       "isMaster": true,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "٧‏/٩‏/٢٠٢٦ - ١:٠٨:١٣ ص"
+      "lastSeen": "٧‏/٩‏/٢٠٢٦ - ٢:٤١:١٢ م"
     },
     "2G630": {
       "name": "Falcon",
@@ -1144,7 +1141,7 @@
       "isMaster": false,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "٧‏/٩‏/٢٠٢٦ - ١:١٠:٤٦ ص"
+      "lastSeen": "٢‏/٩‏/٢٠٢٦ - ٧:٥٣:٢١ م"
     },
     "3G630": {
       "name": "ابو لجين",
@@ -1152,7 +1149,7 @@
       "isMaster": false,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "٥‏/٩‏/٢٠٢٦ - ١٠:١١:٥٧ م"
+      "lastSeen": "١‏/٩‏/٢٠٢٦ - ١١:٤٥:٥٦ م"
     },
     "4G630": {
       "name": "الأدمن الرابع",
