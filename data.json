@@ -38,13 +38,13 @@
       "pass": "M112233",
       "gameEmail": "saleh630@gmail.com",
       "gamePass": "Aa112233",
-      "infantryArmored": 1,
+      "infantryArmored": 0,
       "archerArmored": 0,
       "infantrySuper": 0,
       "archerSuper": 0,
       "meteor": 0,
       "lastMemberUpdate": "٧‏/٩‏/٢٠٢٦ - ٤:٠٧:٣٤ م",
-      "lastNameUpdate": "٧‏/٩‏/٢٠٢٦ - ٤:١٢:٢٠ م"
+      "lastNameUpdate": "٧‏/٩‏/٢٠٢٦ - ٤:١٤:٣٤ م"
     },
     {
       "id": 4,
@@ -178,8 +178,9 @@
       "archerArmored": 1126915,
       "infantrySuper": 26062037,
       "archerSuper": 329317,
-      "meteor": 327000,
-      "lastMemberUpdate": "٣١‏/٨‏/٢٠٢٦ - ٧:٣٤:٤٧ م"
+      "meteor": 7300000,
+      "lastMemberUpdate": "٣١‏/٨‏/٢٠٢٦ - ٧:٣٤:٤٧ م",
+      "lastNameUpdate": "٧‏/٩‏/٢٠٢٦ - ٤:١٥:٢٦ م"
     },
     {
       "id": 13,
@@ -1134,7 +1135,7 @@
       "isMaster": true,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "٧‏/٩‏/٢٠٢٦ - ٤:١١:٣٣ م"
+      "lastSeen": "٧‏/٩‏/٢٠٢٦ - ٤:١٤:٢٥ م"
     },
     "2G630": {
       "name": "Falcon",
@@ -1150,7 +1151,7 @@
       "isMaster": false,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "٧‏/٩‏/٢٠٢٦ - ٥:١٥:١١ م"
+      "lastSeen": "١‏/٩‏/٢٠٢٦ - ١١:٤٥:٥٦ م"
     },
     "4G630": {
       "name": "الأدمن الرابع",
