@@ -1143,7 +1143,8 @@
       "isMaster": false,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "٢‏/٩‏/٢٠٢٦ - ٧:٥٣:٢١ م"
+      "lastSeen": "٢‏/٩‏/٢٠٢٦ - ٧:٥٣:٢١ م",
+      "showGameCredentials": true
     },
     "3G630": {
       "name": "ابو لجين",
@@ -1151,7 +1152,8 @@
       "isMaster": false,
       "active": true,
       "hiddenFields": [],
-      "lastSeen": "١‏/٩‏/٢٠٢٦ - ١١:٤٥:٥٦ م"
+      "lastSeen": "١‏/٩‏/٢٠٢٦ - ١١:٤٥:٥٦ م",
+      "showGameCredentials": true
     },
     "4G630": {
       "name": "الأدمن الرابع",
@@ -1163,7 +1165,8 @@
         "castleCode",
         "army"
       ],
-      "lastSeen": "٣٠‏/٨‏/٢٠٢٦ - ١١:٠٥:٢٤ م"
+      "lastSeen": "٣٠‏/٨‏/٢٠٢٦ - ١١:٠٥:٢٤ م",
+      "showGameCredentials": true
     },
     "5G630": {
       "name": "الأدمن الخامس",
@@ -1175,7 +1178,8 @@
         "castleCode",
         "army"
       ],
-      "lastSeen": "١٥‏/٨‏/٢٠٢٦ - ٣:٠٢:٣٤ م"
+      "lastSeen": "١٥‏/٨‏/٢٠٢٦ - ٣:٠٢:٣٤ م",
+      "showGameCredentials": false
     }
   }
 }
