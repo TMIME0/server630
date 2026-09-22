@@ -156,9 +156,57 @@
 #system-toast.show{display:flex;align-items:center;gap:10px;animation:toastIn .2s ease-out}
 #system-toast.success{border-color:#2f9e44}.toast-icon{font-size:20px}
 @keyframes toastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+/* زر تبديل الوضع الليلي/النهاري - شكل زجاجي فخم */
+#theme-toggle-btn.theme-light-btn { justify-content: flex-end; background: rgba(20,20,26,0.06); border-color: rgba(212,175,55,0.6); }
+#theme-toggle-knob { color: #0b0b10; }
+
+/* الوضع النهاري - واجهة تسجيل الدخول (تخصيصات دقيقة) */
+html[data-theme="light"] #login-screen #login-card {
+    background-color: rgba(255, 255, 255, 0.97);
+    color: #1a1a22;
+}
+html[data-theme="light"] #login-screen p.text-gray-400 { color: #6b6b76; }
+html[data-theme="light"] #login-screen #admin-login-box h3 { color: #14141a; }
+html[data-theme="light"] #login-screen button[onclick="handleLogin()"] {
+    background-color: #dcdce2;
+    color: #14141a;
+}
+
+/* الوضع النهاري - عام لكامل الموقع (الداشبورد، النوافذ، الجدول) */
+html[data-theme="light"] body { background-color: #f2f2f5; }
+html[data-theme="light"] .slate-card { background-color: rgba(255, 255, 255, 0.97); color: #1a1a22; }
+html[data-theme="light"] input,
+html[data-theme="light"] select,
+html[data-theme="light"] textarea {
+    background-color: #f3f3f5 !important;
+    border-color: #d9d9e0 !important;
+    color: #14141a !important;
+}
+html[data-theme="light"] input::placeholder { color: #8d8d97; }
+html[data-theme="light"] [class*="121217"],
+html[data-theme="light"] [class*="18181c"],
+html[data-theme="light"] [class*="1a1a22"] { background-color: #eeeef1 !important; }
+html[data-theme="light"] .border-gray-700,
+html[data-theme="light"] .border-gray-800 { border-color: #d9d9e0 !important; }
+html[data-theme="light"] .text-gray-300,
+html[data-theme="light"] .text-gray-400,
+html[data-theme="light"] .text-gray-500 { color: #5b5b66 !important; }
+html[data-theme="light"] .text-white { color: #14141a !important; }
+html[data-theme="light"] .hover\:text-white:hover { color: #14141a !important; }
+html[data-theme="light"] .bg-gray-700,
+html[data-theme="light"] .bg-gray-800,
+html[data-theme="light"] .bg-gray-900 { background-color: #dcdce2 !important; color: #14141a !important; }
+html[data-theme="light"] .hover\:bg-gray-700:hover { background-color: #cfcfd6 !important; }
 </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4 full-bg-image">
+    <script>
+        (function(){
+            var saved = localStorage.getItem('server630_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', saved);
+        })();
+    </script>
     <div id="system-toast"><span class="toast-icon">✓</span><span id="system-toast-text"></span></div><!-- خلفية الشبكة والخطوط الحمراء الحية والمتشابكة لكل النظام -->
     <div class="cyber-grid-container">
         <div class="matrix-grid"></div>
@@ -176,15 +224,20 @@
         <div class="energy-particle" style="left: 90%; animation-duration: 4.5s; animation-delay: 1s;"></div>
     </div>
 
-    <div id="sync-loading" class="fixed inset-0 bg-[#0b0b10] z-50 flex flex-col items-center justify-center space-y-4">
-        <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-sm gold-text font-bold">جاري تحميل بيانات السيرفر...</p>
-    </div>
+    <!-- زر تبديل الوضع الليلي/النهاري -->
+    <button type="button" id="theme-toggle-btn" onclick="toggleSiteTheme()" title="الوضع الليلي / النهاري"
+        class="fixed top-4 right-4 md:top-6 md:right-6 z-30 w-16 h-9 rounded-full flex items-center px-1 justify-start
+               bg-white/10 backdrop-blur-md border border-[#d4af37]/50 shadow-[0_0_15px_rgba(212,175,55,0.25)]
+               transition-all duration-300 cursor-pointer">
+        <span id="theme-toggle-knob"
+            class="w-7 h-7 rounded-full gold-bg flex items-center justify-center text-sm shadow-md
+                   transition-transform duration-300">🌙</span>
+    </button>
 
     <!-- شاشة تسجيل الدخول -->
     <div id="login-screen" class="fixed inset-0 z-20 flex items-center justify-center p-4 overflow-y-auto">
         <div class="neon-border-box w-full max-w-md shadow-2xl">
-            <div class="slate-card neon-inner-content p-8 text-center">
+            <div id="login-card" class="slate-card neon-inner-content p-8 text-center">
                 <div class="mb-6 text-center">
                     <h2 class="text-3xl font-black gold-text tracking-wider uppercase">SERVER 630</h2>
                     <p class="text-xs text-gray-400 mt-2">إدارة الإمداد والجيوش</p>
@@ -348,9 +401,9 @@
             <div class="p-4 bg-[#121217] rounded-2xl border border-gray-800 space-y-3">
                 <h4 class="text-sm font-bold gold-text">➕ إضافة أدمن جديد</h4>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                    <input id="new-admin-name" type="text" placeholder="اسم الأدمن" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
-                    <input id="new-admin-code" type="text" placeholder="كود الأدمن" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
-                    <input id="new-admin-pass" type="password" placeholder="كلمة المرور" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
+                    <input id="new-admin-name" type="text" placeholder="اسم الأدمن" class="px-3 py-2 rounded-xl bg-[#121217] border border-gray-800 text-white">
+                    <input id="new-admin-code" type="text" placeholder="كود الأدمن" class="px-3 py-2 rounded-xl bg-[#121217] border border-gray-800 text-white">
+                    <input id="new-admin-pass" type="password" placeholder="كلمة المرور" class="px-3 py-2 rounded-xl bg-[#121217] border border-gray-800 text-white">
                 </div>
                 <button type="button" onclick="createAdmin()" class="px-5 py-2 gold-bg text-black font-bold rounded-xl text-xs">إضافة الأدمن</button>
             </div>
@@ -373,12 +426,31 @@
         const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_08Sjka8i9o5ceXmlPsi6-w_3H4wIljf";
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
+        function applySiteThemeUI(theme) {
+            const knob = document.getElementById('theme-toggle-knob');
+            const btn = document.getElementById('theme-toggle-btn');
+            if (knob) knob.textContent = theme === 'light' ? '☀️' : '🌙';
+            if (btn) btn.classList.toggle('theme-light-btn', theme === 'light');
+        }
+
+        function toggleSiteTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('server630_theme', next);
+            document.documentElement.setAttribute('data-theme', next);
+            applySiteThemeUI(next);
+        }
+
+        // تطبيق شكل الزر مباشرة حسب القيمة المحفوظة (الوضع الفعلي مطبق مسبقاً بسكربت أعلى الصفحة)
+        applySiteThemeUI(document.documentElement.getAttribute('data-theme') || 'dark');
+
         let admins = {};
         let currentAdmin = null;
         let loggedInMemberId = null;
         let membersData = [];
 
-        checkAndLoadData();
+        // نحتفظ بوعد تحميل البيانات لنستخدمه عند الحاجة (مثلاً عند الضغط على دخول)
+        const dataReadyPromise = checkAndLoadData();
 
         async function checkAndLoadData() {
             const savedMemberSession = sessionStorage.getItem("logged_member_id");
@@ -536,6 +608,11 @@
             const code = document.getElementById('login-code').value.trim();
             const pass = document.getElementById('login-pass').value.trim();
             const welcomeMsg = document.getElementById('welcome-msg');
+
+            if (Object.keys(admins).length === 0) {
+                await dataReadyPromise;
+            }
+
             const admin = admins[code];
 
             if (!admin || admin.pass !== pass) {
@@ -583,9 +660,14 @@
             if (box) box.classList.toggle('hidden');
         }
 
-        function handleMemberLogin() {
+        async function handleMemberLogin() {
             const mCode = document.getElementById('member-code-input').value.trim();
             const mPass = document.getElementById('member-pass-input').value.trim();
+
+            if (membersData.length === 0) {
+                await dataReadyPromise;
+            }
+
             const member = membersData.find(m => String(m.loginCode ?? m.memberNumber ?? m.id) === mCode && m.pass === mPass);
             if (!member) {
                 showSystemToast('✕ كود العضو أو رمز الدخول غير صحيح!', 'error');
