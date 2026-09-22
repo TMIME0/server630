@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>الدخول الى 630 - إدارة الإمداد والجيوش</title>
-    <script src="https://cdn.tailwindcss.com">
-function showSystemToast(message, type='success') {
-    const box = document.getElementById('system-toast');
-    const text = document.getElementById('system-toast-text');
-    if (!box || !text) return;
-    text.textContent = message;
-    box.className = 'show ' + (type === 'success' ? 'success' : '');
-    clearTimeout(window.__server630ToastTimer);
-    window.__server630ToastTimer = setTimeout(() => { box.className = ''; }, 3000);
-}
-
-</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    function showSystemToast(message, type = 'success') {
+        const box = document.getElementById('system-toast');
+        const text = document.getElementById('system-toast-text');
+        if (!box || !text) return;
+        text.textContent = message;
+        box.className = 'show ' + (type === 'success' ? 'success' : 'error');
+        clearTimeout(window.__server630ToastTimer);
+        window.__server630ToastTimer = setTimeout(() => { box.className = ''; }, 3500);
+    }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         body {
@@ -158,7 +158,6 @@ function showSystemToast(message, type='success') {
 @keyframes toastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
-<span class="toast-icon">✓</span><span id="system-toast-text"></span></div>
 <body class="min-h-screen flex flex-col items-center justify-center p-4 full-bg-image">
     <div id="system-toast"><span class="toast-icon">✓</span><span id="system-toast-text"></span></div><!-- خلفية الشبكة والخطوط الحمراء الحية والمتشابكة لكل النظام -->
     <div class="cyber-grid-container">
@@ -324,7 +323,7 @@ function showSystemToast(message, type='success') {
             <div class="p-4 bg-[#121217] rounded-2xl border border-gray-800 space-y-3">
                 <h4 class="text-sm font-bold gold-text">➕ إضافة عضو جديد</h4>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                    <input id="new-member-castle" type="text" placeholder="اسم العضو" class="px-3 py-2 rounded-xl bg-[#121217] border border-gray-800 text-white">
+                    <input id="new-member-name" type="text" placeholder="اسم العضو" class="px-3 py-2 rounded-xl bg-[#121217] border border-gray-800 text-white">
                     <input type="text" id="new-member-login-code" placeholder="كود الدخول" class="px-3 py-2 rounded-xl bg-[#121217] border border-gray-800 text-white">
                     <input id="new-member-pass" type="password" placeholder="رمز الدخول" class="px-3 py-2 rounded-xl bg-[#121217] border border-gray-800 text-white">
                 </div>
@@ -469,7 +468,7 @@ function showSystemToast(message, type='success') {
                     loadingScreen.classList.add('hidden');
                     loadingScreen.style.display = 'none';
                 }
-                alert('تعذر الاتصال بقاعدة البيانات. تأكد من رابط Supabase ومفتاح Publishable Key.');
+                showSystemToast('✕ تعذر الاتصال بقاعدة البيانات. تأكد من رابط Supabase ومفتاح Publishable Key.', 'error');
                 updateTotals();
             }
         }
@@ -480,10 +479,20 @@ function showSystemToast(message, type='success') {
             setCloudStatus('🔄 جاري الحفظ ...', 'yellow');
 
             try {
+                const memberCodes = new Set();
+                for (const m of membersData) {
+                    const code = String(m.loginCode || '').trim();
+                    if (!code) throw new Error(`كود الدخول مفقود للعضو رقم ${m.memberNumber || m.id}`);
+                    const normalized = code.toLowerCase();
+                    if (memberCodes.has(normalized)) throw new Error(`كود دخول مكرر للأعضاء: ${code}`);
+                    memberCodes.add(normalized);
+                }
+
                 // حفظ الأعضاء الموجودين فقط
                 for (const m of membersData) {
                     const { error } = await supabaseClient.from('members').update({
                         castle_name: m.castleName || null,
+                        login_code: m.loginCode || null,
                         castle_type: m.castleType,
                         email: m.email || null,
                         password: m.pass || null,
@@ -513,6 +522,7 @@ function showSystemToast(message, type='success') {
                 }
 
                 setCloudStatus('☁️ تم الحفظ بنجاح', 'green');
+                showSystemToast('✓ تم حفظ التعديلات العامة بنجاح');
                 return true;
             } catch (e) {
                 console.error(e);
@@ -529,11 +539,11 @@ function showSystemToast(message, type='success') {
             const admin = admins[code];
 
             if (!admin || admin.pass !== pass) {
-                alert('كود أو رمز الأدمن غير صحيح!');
+                showSystemToast('✕ كود أو رمز الأدمن غير صحيح!', 'error');
                 return;
             }
             if (admin.active === false) {
-                alert('عذراً، هذا الحساب معطل من قبل الأدمن العام!');
+                showSystemToast('✕ عذراً، هذا الحساب معطل من قبل الأدمن العام!', 'error');
                 return;
             }
 
@@ -578,7 +588,7 @@ function showSystemToast(message, type='success') {
             const mPass = document.getElementById('member-pass-input').value.trim();
             const member = membersData.find(m => String(m.loginCode ?? m.memberNumber ?? m.id) === mCode && m.pass === mPass);
             if (!member) {
-                alert('كود العضو أو رمز الدخول غير صحيح!');
+                showSystemToast('✕ كود العضو أو رمز الدخول غير صحيح!', 'error');
                 return;
             }
             loggedInMemberId = member.id;
@@ -625,15 +635,20 @@ function showSystemToast(message, type='success') {
                 container.innerHTML = '<div class="p-6 text-center text-gray-400">لا توجد أعضاء حالياً. أضف الأعضاء من الزر الجديد أدناه.</div>';
                 return;
             }
-            membersData.forEach((m, index) => {
+            membersData.forEach((m) => {
                 container.innerHTML += `
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-2 p-3 bg-[#121217] rounded-xl border border-gray-800 items-center">
-                        <span class="text-xs font-bold text-white">عضو ${m.memberNumber || m.id} (${escapeHtml(m.castleName || 'بلا اسم')})</span>
-                        <input type="text" id="set-email-${index}" value="${escapeHtml(m.email)}" placeholder="يوزر الدخول" class="px-3 py-1.5 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
-                        <input type="text" id="set-pass-${index}" value="${escapeHtml(m.pass)}" placeholder="رمز الدخول" class="px-3 py-1.5 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
+                        <input type="text" value="${escapeHtml(m.castleName || '')}" placeholder="اسم العضو" class="px-3 py-1.5 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white" oninput="updateMemberTextLocal(${m.id}, 'castleName', this.value)">
+                        <input type="text" value="${escapeHtml(m.loginCode || '')}" placeholder="كود الدخول" class="px-3 py-1.5 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white" oninput="updateMemberTextLocal(${m.id}, 'loginCode', this.value)">
+                        <input type="text" value="${escapeHtml(m.pass || '')}" placeholder="رمز الدخول" class="px-3 py-1.5 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white" oninput="updateMemberTextLocal(${m.id}, 'pass', this.value)">
                         <button type="button" onclick="deleteMember(${m.id})" class="px-3 py-1.5 bg-red-700/80 hover:bg-red-600 rounded-lg text-xs text-white font-bold">حذف</button>
                     </div>`;
             });
+        }
+
+        function updateMemberTextLocal(id, field, value) {
+            const member = membersData.find(m => Number(m.id) === Number(id));
+            if (member) member[field] = value;
         }
 
         function renderAdminsList() {
@@ -827,7 +842,7 @@ function showSystemToast(message, type='success') {
         async function deleteMember(id) {
             if (!confirm('هل أنت متأكد من حذف هذا العضو؟')) return;
             const { error } = await supabaseClient.from('members').delete().eq('id', id);
-            if (error) return alert('تعذر حذف العضو: ' + error.message);
+            if (error) { showSystemToast('✕ تعذر حذف العضو: ' + error.message, 'error'); return; }
             membersData = membersData.filter(m => m.id !== id);
             renderSettingsList();
             initMembersTable();
@@ -957,7 +972,7 @@ function showSystemToast(message, type='success') {
                 meteor: Number(m.meteor || 0),
                 last_member_update: new Date().toISOString()
             }).eq('id', m.id);
-            if (error) { setCloudStatus('❌ فشل الحفظ', 'red'); alert(error.message); return false; }
+            if (error) { setCloudStatus('❌ فشل الحفظ', 'red'); showSystemToast('✕ فشل حفظ بيانات العضو: ' + error.message, 'error'); return false; }
             setCloudStatus('☁️ تم الحفظ بنجاح', 'green');
             return true;
         }
