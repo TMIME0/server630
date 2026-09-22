@@ -160,10 +160,7 @@ function showSystemToast(message, type='success') {
 </head>
 <span class="toast-icon">✓</span><span id="system-toast-text"></span></div>
 <body class="min-h-screen flex flex-col items-center justify-center p-4 full-bg-image">
-    <div id="system-toast"><span class="toast-icon">✓</span><span id="system-toast-text"></span></div>
-<div id="system-toast"><span class="toast-icon">✓</span><span id="system-toast-text"></span></div>
-
-    <!-- خلفية الشبكة والخطوط الحمراء الحية والمتشابكة لكل النظام -->
+    <div id="system-toast"><span class="toast-icon">✓</span><span id="system-toast-text"></span></div><!-- خلفية الشبكة والخطوط الحمراء الحية والمتشابكة لكل النظام -->
     <div class="cyber-grid-container">
         <div class="matrix-grid"></div>
         <div class="laser-line-h" style="animation-delay: 0s;"></div>
@@ -520,7 +517,7 @@ function showSystemToast(message, type='success') {
             } catch (e) {
                 console.error(e);
                 setCloudStatus('❌ فشل الحفظ', 'red');
-                alert('حدث خطأ أثناء الحفظ: ' + (e.message || e));
+                showSystemToast('✕ حدث خطأ أثناء الحفظ: ' + (e.message || e), 'error');
                 return false;
             }
         }
@@ -651,7 +648,7 @@ function showSystemToast(message, type='success') {
                 container.innerHTML += `
                     <div class="p-4 bg-[#121217] rounded-2xl border border-gray-800 space-y-3">
                         <div class="flex justify-between items-center gap-3">
-                            <span class="text-xs font-bold gold-text">كود الأدمن: ${escapeHtml(code)} — آخر ظهور: ${escapeHtml(adm.lastSeen || 'لم يسجل')}</span>
+                            <span class="text-xs font-bold gold-text">اسم الأدمن: ${escapeHtml(adm.name)} — آخر ظهور: ${escapeHtml(adm.lastSeen || 'لم يسجل')}</span>
                             <div class="flex items-center gap-2">
                                 <div class="flex items-center gap-4 text-xs">
                                 <label class="flex items-center gap-1 cursor-pointer text-gray-300"><input type="checkbox" id="adm-active-${adm.id}" ${adm.active !== false ? 'checked' : ''}> تفعيل الحساب</label>
@@ -660,9 +657,10 @@ function showSystemToast(message, type='success') {
                                 <button type="button" onclick="deleteAdmin(${adm.id})" class="px-3 py-1.5 bg-red-600/80 hover:bg-red-600 text-white rounded-lg text-[11px] font-bold">حذف</button>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            <input type="text" id="adm-name-${adm.id}" value="${escapeHtml(adm.name)}" class="px-3 py-1.5 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
-                            <input type="text" id="adm-pass-${adm.id}" value="${escapeHtml(adm.pass)}" class="px-3 py-1.5 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
+                        <div class="grid grid-cols-1 gap-2">
+                            <input type="text" id="adm-name-${adm.id}" value="${escapeHtml(adm.name)}" placeholder="اسم الأدمن" class="px-3 py-1.5 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
+                            <input type="text" id="adm-code-${adm.id}" value="${escapeHtml(adm.code || code)}" placeholder="كود الأدمن" class="px-3 py-1.5 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
+                            <input type="text" id="adm-pass-${adm.id}" value="${escapeHtml(adm.pass)}" placeholder="كلمة المرور" class="px-3 py-1.5 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
                         </div>
                     </div>`;
             });
@@ -692,17 +690,28 @@ function showSystemToast(message, type='success') {
                 if (adm.isMaster) continue;
 
                 const nameInput = document.getElementById(`adm-name-${adm.id}`);
+                const codeInput = document.getElementById(`adm-code-${adm.id}`);
                 const passInput = document.getElementById(`adm-pass-${adm.id}`);
                 const activeCheckbox = document.getElementById(`adm-active-${adm.id}`);
                 const showCredCheckbox = document.getElementById(`adm-showcred-${adm.id}`);
 
                 const name = nameInput ? nameInput.value.trim() : adm.name;
+                const newCode = codeInput ? codeInput.value.trim() : adm.code;
                 const pass = passInput ? passInput.value.trim() : adm.pass;
                 const active = activeCheckbox ? activeCheckbox.checked : adm.active;
                 const showGameCredentials = showCredCheckbox ? showCredCheckbox.checked : adm.showGameCredentials;
 
-                if (!name || !pass) {
-                    showSystemToast('✕ اسم الأدمن وكلمة المرور مطلوبان', 'error');
+                if (!name || !newCode || !pass) {
+                    showSystemToast('✕ اسم الأدمن وكود الأدمن وكلمة المرور مطلوبة', 'error');
+                    setCloudStatus('❌ لم يتم الحفظ', 'red');
+                    return;
+                }
+
+                const duplicateCode = Object.keys(admins).some(existingCode =>
+                    existingCode !== code && String(existingCode).toLowerCase() === newCode.toLowerCase()
+                );
+                if (duplicateCode) {
+                    showSystemToast('✕ كود الأدمن مستخدم مسبقاً: ' + newCode, 'error');
                     setCloudStatus('❌ لم يتم الحفظ', 'red');
                     return;
                 }
@@ -710,6 +719,7 @@ function showSystemToast(message, type='success') {
                 const { data, error } = await supabaseClient
                     .from('admins')
                     .update({
+                        login_code: newCode,
                         name,
                         password: pass,
                         active,
@@ -727,6 +737,7 @@ function showSystemToast(message, type='success') {
                 }
 
                 const updated = rowToAdmin(data);
+                delete admins[code];
                 admins[updated.code] = updated;
                 updates.push(updated);
             }
