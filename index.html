@@ -158,8 +158,10 @@ function showSystemToast(message, type='success') {
 @keyframes toastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
-<div id="system-toast"><span class="toast-icon">✓</span><span id="system-toast-text"></span></div>
+<span class="toast-icon">✓</span><span id="system-toast-text"></span></div>
 <body class="min-h-screen flex flex-col items-center justify-center p-4 full-bg-image">
+    <div id="system-toast"><span class="toast-icon">✓</span><span id="system-toast-text"></span></div>
+<div id="system-toast"><span class="toast-icon">✓</span><span id="system-toast-text"></span></div>
 
     <!-- خلفية الشبكة والخطوط الحمراء الحية والمتشابكة لكل النظام -->
     <div class="cyber-grid-container">
@@ -324,11 +326,10 @@ function showSystemToast(message, type='success') {
             </div>
             <div class="p-4 bg-[#121217] rounded-2xl border border-gray-800 space-y-3">
                 <h4 class="text-sm font-bold gold-text">➕ إضافة عضو جديد</h4>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
-                    <input type="text" id="new-member-login-code" placeholder="كود الدخول" class="w-full px-3 py-2 rounded-xl bg-[#121217] border border-gray-800 text-white"><input id="new-member-number" type="number" placeholder="رقم العضو" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white" readonly disabled class="w-full px-3 py-2 rounded-xl bg-[#0c0c10] border border-gray-800 text-gray-500" placeholder="رقم العضو (تلقائي)">
-                    <input id="new-member-castle" type="text" placeholder="اسم القلعة" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
-                    <input id="new-member-email" type="text" placeholder="إيميل الدخول" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
-                    <input id="new-member-pass" type="text" placeholder="رمز الدخول" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <input id="new-member-castle" type="text" placeholder="اسم العضو" class="px-3 py-2 rounded-xl bg-[#121217] border border-gray-800 text-white">
+                    <input type="text" id="new-member-login-code" placeholder="كود الدخول" class="px-3 py-2 rounded-xl bg-[#121217] border border-gray-800 text-white">
+                    <input id="new-member-pass" type="password" placeholder="رمز الدخول" class="px-3 py-2 rounded-xl bg-[#121217] border border-gray-800 text-white">
                 </div>
                 <button type="button" onclick="createMember()" class="px-5 py-2 gold-bg text-black font-bold rounded-xl text-xs">إضافة العضو</button>
             </div>
@@ -351,9 +352,9 @@ function showSystemToast(message, type='success') {
             <div class="p-4 bg-[#121217] rounded-2xl border border-gray-800 space-y-3">
                 <h4 class="text-sm font-bold gold-text">➕ إضافة أدمن جديد</h4>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                    <input id="new-admin-code" type="text" placeholder="كود الأدمن" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
                     <input id="new-admin-name" type="text" placeholder="اسم الأدمن" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
-                    <input id="new-admin-pass" type="text" placeholder="كلمة المرور" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
+                    <input id="new-admin-code" type="text" placeholder="كود الأدمن" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
+                    <input id="new-admin-pass" type="password" placeholder="كلمة المرور" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
                 </div>
                 <button type="button" onclick="createAdmin()" class="px-5 py-2 gold-bg text-black font-bold rounded-xl text-xs">إضافة الأدمن</button>
             </div>
@@ -651,9 +652,12 @@ function showSystemToast(message, type='success') {
                     <div class="p-4 bg-[#121217] rounded-2xl border border-gray-800 space-y-3">
                         <div class="flex justify-between items-center gap-3">
                             <span class="text-xs font-bold gold-text">كود الأدمن: ${escapeHtml(code)} — آخر ظهور: ${escapeHtml(adm.lastSeen || 'لم يسجل')}</span>
-                            <div class="flex items-center gap-4 text-xs">
+                            <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-4 text-xs">
                                 <label class="flex items-center gap-1 cursor-pointer text-gray-300"><input type="checkbox" id="adm-active-${adm.id}" ${adm.active !== false ? 'checked' : ''}> تفعيل الحساب</label>
                                 <label class="flex items-center gap-1 cursor-pointer text-gray-300"><input type="checkbox" id="adm-showcred-${adm.id}" ${adm.showGameCredentials !== false ? 'checked' : ''}> عرض إيميل ورمز القلعة</label>
+                                </div>
+                                <button type="button" onclick="deleteAdmin(${adm.id})" class="px-3 py-1.5 bg-red-600/80 hover:bg-red-600 text-white rounded-lg text-[11px] font-bold">حذف</button>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -679,22 +683,56 @@ function showSystemToast(message, type='success') {
         }
 
         async function saveAdminsChanges() {
-            Object.keys(admins).forEach(code => {
+            setCloudStatus('🔄 جاري حفظ إعدادات الأدمنية...', 'yellow');
+
+            const updates = [];
+
+            for (const code of Object.keys(admins)) {
                 const adm = admins[code];
-                if (adm.isMaster) return;
+                if (adm.isMaster) continue;
+
                 const nameInput = document.getElementById(`adm-name-${adm.id}`);
                 const passInput = document.getElementById(`adm-pass-${adm.id}`);
                 const activeCheckbox = document.getElementById(`adm-active-${adm.id}`);
                 const showCredCheckbox = document.getElementById(`adm-showcred-${adm.id}`);
-                if (nameInput) adm.name = nameInput.value.trim();
-                if (passInput) adm.pass = passInput.value.trim();
-                if (activeCheckbox) adm.active = activeCheckbox.checked;
-                if (showCredCheckbox) adm.showGameCredentials = showCredCheckbox.checked;
-            });
-            if (await saveChanges()) {
-                showSystemToast('تم حفظ إعدادات الأدمنية بنجاح');
-                toggleAdminsModal();
+
+                const name = nameInput ? nameInput.value.trim() : adm.name;
+                const pass = passInput ? passInput.value.trim() : adm.pass;
+                const active = activeCheckbox ? activeCheckbox.checked : adm.active;
+                const showGameCredentials = showCredCheckbox ? showCredCheckbox.checked : adm.showGameCredentials;
+
+                if (!name || !pass) {
+                    showSystemToast('✕ اسم الأدمن وكلمة المرور مطلوبان', 'error');
+                    setCloudStatus('❌ لم يتم الحفظ', 'red');
+                    return;
+                }
+
+                const { data, error } = await supabaseClient
+                    .from('admins')
+                    .update({
+                        name,
+                        password: pass,
+                        active,
+                        show_game_credentials: showGameCredentials,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', adm.id)
+                    .select()
+                    .single();
+
+                if (error) {
+                    showSystemToast('✕ تعذر حفظ إعدادات الأدمنية: ' + error.message, 'error');
+                    setCloudStatus('❌ فشل الحفظ', 'red');
+                    return;
+                }
+
+                const updated = rowToAdmin(data);
+                admins[updated.code] = updated;
+                updates.push(updated);
             }
+
+            setCloudStatus('☁️ تم الحفظ بنجاح', 'green');
+            showSystemToast('✓ تم حفظ إعدادات الأدمنية بنجاح');
         }
 
         async function deleteAdmin(id) {
@@ -702,7 +740,10 @@ function showSystemToast(message, type='success') {
             if (!adm || adm.isMaster) return;
             if (!confirm('هل أنت متأكد من حذف هذا الأدمن؟')) return;
             const { error } = await supabaseClient.from('admins').delete().eq('id', id);
-            if (error) return alert('تعذر حذف الأدمن: ' + error.message);
+            if (error) {
+                showSystemToast('✕ تعذر حذف الأدمن: ' + error.message, 'error');
+                return;
+            }
             delete admins[adm.code];
             renderAdminsList();
             showSystemToast('تم حذف الأدمن بنجاح');
@@ -712,12 +753,12 @@ function showSystemToast(message, type='success') {
             const code = document.getElementById('new-admin-code').value.trim();
             const name = document.getElementById('new-admin-name').value.trim();
             const pass = document.getElementById('new-admin-pass').value.trim();
-            if (!code || !name || !pass) return alert('املأ كود الأدمن والاسم وكلمة المرور.');
-            if (admins[code]) return alert('هذا الكود مستخدم مسبقاً.');
+            if (!code || !name || !pass) return showSystemToast('✕ أكمل اسم الأدمن وكود الأدمن وكلمة المرور', 'error');
+            if (admins[code]) return showSystemToast('✕ هذا الكود مستخدم مسبقاً', 'error');
             const { data, error } = await supabaseClient.from('admins').insert({
                 login_code: code, name, password: pass, is_master: false, active: true, show_game_credentials: true
             }).select().single();
-            if (error) return alert('تعذر إنشاء الأدمن: ' + error.message);
+            if (error) return showSystemToast('✕ تعذر إنشاء الأدمن: ' + error.message, 'error');
             admins[code] = rowToAdmin(data);
             document.getElementById('new-admin-code').value = '';
             document.getElementById('new-admin-name').value = '';
@@ -727,25 +768,49 @@ function showSystemToast(message, type='success') {
         }
 
         async function createMember() {
+            const memberName = document.getElementById('new-member-name')?.value.trim();
             const loginCode = document.getElementById('new-member-login-code')?.value.trim();
-            const email = document.getElementById('new-member-email').value.trim().toLowerCase();
-            const pass = document.getElementById('new-member-pass').value.trim();
-            const castleName = document.getElementById('new-member-castle').value.trim();
-            if (!loginCode || !pass) return alert('أدخل كود الدخول ورمز الدخول.');
-            if (membersData.some(m => String(m.loginCode ?? '').toLowerCase() === loginCode.toLowerCase())) return alert('كود الدخول مستخدم مسبقاً.');
+            const pass = document.getElementById('new-member-pass')?.value.trim();
+
+            if (!memberName || !loginCode || !pass) {
+                showSystemToast('✕ أكمل اسم العضو وكود الدخول ورمز الدخول', 'error');
+                return;
+            }
+
+            if (membersData.some(m => String(m.loginCode ?? '').toLowerCase() === loginCode.toLowerCase())) {
+                showSystemToast('✕ كود الدخول مستخدم مسبقاً', 'error');
+                return;
+            }
+
             const number = membersData.reduce((max, m) => Math.max(max, Number(m.memberNumber) || 0), 0) + 1;
+
             const { data, error } = await supabaseClient.from('members').insert({
-                member_number: number, login_code: loginCode, castle_name: castleName || null, email, password: pass, castle_type: 'dual'
+                member_number: number,
+                login_code: loginCode,
+                castle_name: memberName,
+                email: null,
+                password: pass,
+                castle_type: 'dual'
             }).select().single();
-            if (error) return alert('تعذر إنشاء العضو: ' + error.message);
+
+            if (error) {
+                showSystemToast('✕ تعذر إنشاء العضو: ' + error.message, 'error');
+                return;
+            }
+
             membersData.push(rowToMember(data));
             membersData.sort((a,b) => a.memberNumber - b.memberNumber);
-            ['new-member-login-code','new-member-email','new-member-pass','new-member-castle'].forEach(id => document.getElementById(id).value = '');
+
+            ['new-member-name','new-member-login-code','new-member-pass'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+
             renderSettingsList();
             document.getElementById('table-section-title').innerText = `سجل الإمداد وقلاع الأعضاء (${membersData.length} قلعة)`;
             initMembersTable();
             updateTotals();
-            showSystemToast('تم إنشاء العضو بنجاح');
+            showSystemToast('✓ تم إنشاء العضو بنجاح');
         }
 
         async function deleteMember(id) {
@@ -850,7 +915,7 @@ function showSystemToast(message, type='success') {
             member.lastMemberUpdate = new Date().toLocaleDateString('ar-IQ') + ' - ' + new Date().toLocaleTimeString('ar-IQ');
             if (await updateMemberRow(member)) {
                 initMembersTable();
-                alert('تم حفظ بيانات قلعتك بنجاح.');
+                showSystemToast('✓ تم حفظ بيانات قلعتك بنجاح');
             }
         }
 
@@ -861,7 +926,7 @@ function showSystemToast(message, type='success') {
             if (await updateMemberRow(member)) {
                 initMembersTable();
                 updateTotals();
-                alert(`تم حفظ وتحديث بيانات العضو رقم ${member.memberNumber || id} بنجاح.`);
+                showSystemToast(`✓ تم حفظ وتحديث بيانات العضو رقم ${member.memberNumber || id} بنجاح`);
             }
         }
 
