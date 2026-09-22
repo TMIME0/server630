@@ -445,6 +445,16 @@ html[data-theme="light"] .hover\:bg-gray-700:hover { background-color: #cfcfd6 !
         applySiteThemeUI(document.documentElement.getAttribute('data-theme') || 'dark');
 
         let admins = {};
+        let hasUnsavedChanges = false;
+
+        window.addEventListener('beforeunload', function (e) {
+            if (hasUnsavedChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        });
+
         let currentAdmin = null;
         let loggedInMemberId = null;
         let membersData = [];
@@ -594,6 +604,7 @@ html[data-theme="light"] .hover\:bg-gray-700:hover { background-color: #cfcfd6 !
                 }
 
                 setCloudStatus('☁️ تم الحفظ بنجاح', 'green');
+                hasUnsavedChanges = false;
                 showSystemToast('✓ تم حفظ التعديلات العامة بنجاح');
                 return true;
             } catch (e) {
@@ -932,6 +943,10 @@ html[data-theme="light"] .hover\:bg-gray-700:hover { background-color: #cfcfd6 !
         }
 
         function logout() {
+            if (hasUnsavedChanges && !confirm('لديك تعديلات لم تُحفظ بعد. هل تريد تسجيل الخروج على أي حال وفقدان هذه التعديلات؟')) {
+                return;
+            }
+            hasUnsavedChanges = false;
             sessionStorage.clear();
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('login-screen').classList.remove('hidden');
@@ -994,17 +1009,18 @@ html[data-theme="light"] .hover\:bg-gray-700:hover { background-color: #cfcfd6 !
             const member = membersData.find(m => m.id === id);
             if (!member) return;
             member[field] = val === '' ? 0 : Number(val);
+            hasUnsavedChanges = true;
             updateTotals();
         }
 
         function updateMemberGameDataLocal(id, field, val) {
             const member = membersData.find(m => m.id === id);
-            if (member) member[field] = val;
+            if (member) { member[field] = val; hasUnsavedChanges = true; }
         }
 
         function updateCastleNameLocal(id, val) {
             const member = membersData.find(m => m.id === id);
-            if (member) member.castleName = val;
+            if (member) { member.castleName = val; hasUnsavedChanges = true; }
         }
 
         function updateCastleTypeLocal(id, val) {
@@ -1013,6 +1029,7 @@ html[data-theme="light"] .hover\:bg-gray-700:hover { background-color: #cfcfd6 !
             member.castleType = val;
             if (val === 'infantry') { member.archerArmored = 0; member.archerSuper = 0; }
             else if (val === 'archer') { member.infantryArmored = 0; member.infantrySuper = 0; }
+            hasUnsavedChanges = true;
             updateTotals();
             initMembersTable();
         }
@@ -1022,6 +1039,7 @@ html[data-theme="light"] .hover\:bg-gray-700:hover { background-color: #cfcfd6 !
             if (!member) return;
             member.lastMemberUpdate = new Date().toLocaleDateString('ar-IQ') + ' - ' + new Date().toLocaleTimeString('ar-IQ');
             if (await updateMemberRow(member)) {
+                hasUnsavedChanges = false;
                 initMembersTable();
                 showSystemToast('✓ تم حفظ بيانات قلعتك بنجاح');
             }
@@ -1032,6 +1050,7 @@ html[data-theme="light"] .hover\:bg-gray-700:hover { background-color: #cfcfd6 !
             if (!member) return;
             member.lastMemberUpdate = new Date().toLocaleDateString('ar-IQ') + ' - ' + new Date().toLocaleTimeString('ar-IQ');
             if (await updateMemberRow(member)) {
+                hasUnsavedChanges = false;
                 initMembersTable();
                 updateTotals();
                 showSystemToast(`✓ تم حفظ وتحديث بيانات العضو رقم ${member.memberNumber || id} بنجاح`);
