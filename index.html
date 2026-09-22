@@ -4,7 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>الدخول الى 630 - إدارة الإمداد والجيوش</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com">
+function showSystemToast(message, type='success') {
+    const box = document.getElementById('system-toast');
+    const text = document.getElementById('system-toast-text');
+    if (!box || !text) return;
+    text.textContent = message;
+    box.className = 'show ' + (type === 'success' ? 'success' : '');
+    clearTimeout(window.__server630ToastTimer);
+    window.__server630ToastTimer = setTimeout(() => { box.className = ''; }, 3000);
+}
+
+</script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         body {
@@ -139,7 +150,15 @@
             margin: 0;
         }
     </style>
+
+<style>
+#system-toast{position:fixed;top:22px;right:22px;z-index:99999;display:none;min-width:280px;max-width:420px;padding:14px 18px;border-radius:16px;background:#15151b;border:1px solid #3a3a46;box-shadow:0 15px 45px rgba(0,0,0,.45);color:#fff;font-weight:700}
+#system-toast.show{display:flex;align-items:center;gap:10px;animation:toastIn .2s ease-out}
+#system-toast.success{border-color:#2f9e44}.toast-icon{font-size:20px}
+@keyframes toastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+</style>
 </head>
+<div id="system-toast"><span class="toast-icon">✓</span><span id="system-toast-text"></span></div>
 <body class="min-h-screen flex flex-col items-center justify-center p-4 full-bg-image">
 
     <!-- خلفية الشبكة والخطوط الحمراء الحية والمتشابكة لكل النظام -->
@@ -170,35 +189,46 @@
             <div class="slate-card neon-inner-content p-8 text-center">
                 <div class="mb-6 text-center">
                     <h2 class="text-3xl font-black gold-text tracking-wider uppercase">SERVER 630</h2>
+                    <p class="text-xs text-gray-400 mt-2">إدارة الإمداد والجيوش</p>
                 </div>
+
+                <!-- الدخول الرئيسي: الأعضاء -->
                 <div class="space-y-4">
                     <div>
-                        <input type="text" id="login-code" placeholder="كود الأدمن " 
+                        <input type="text" id="member-code-input" placeholder="كود العضو"
                             class="w-full px-4 py-3 rounded-2xl bg-[#121217] border border-[#2d2d38] text-white focus:outline-none focus:border-[#d4af37]">
                     </div>
                     <div>
-                        <input type="password" id="login-pass" placeholder="رمز الموقع للأدمن" 
+                        <input type="password" id="member-pass-input" placeholder="رمز الدخول"
                             class="w-full px-4 py-3 rounded-2xl bg-[#121217] border border-[#2d2d38] text-white focus:outline-none focus:border-[#d4af37]">
                     </div>
-                    <button type="button" onclick="handleLogin()" class="w-full py-3 rounded-2xl gold-bg text-black font-bold hover:opacity-90 transition shadow-lg cursor-pointer">
-                        دخول لوحة القيادة
+                    <button type="button" onclick="handleMemberLogin()" class="w-full py-3 rounded-2xl gold-bg text-black font-bold hover:opacity-90 transition shadow-lg cursor-pointer">
+                        دخول العضو
                     </button>
                 </div>
-                <div class="mt-4 pt-4 border-t border-gray-800 text-center">
-                    <button type="button" onclick="toggleMemberLogin()" class="text-xs gold-text underline hover:opacity-80 cursor-pointer">
-                        هل أنت عضو؟ اضغط هنا لدخول قلعتك الخاصة
+
+                <!-- فتح دخول الإدارة -->
+                <div class="mt-5 pt-4 border-t border-gray-800 text-center">
+                    <button type="button" onclick="toggleAdminLogin()" class="text-xs gold-text underline hover:opacity-80 cursor-pointer">
+                        دخول الإدارة
                     </button>
                 </div>
-                <div id="member-login-box" class="hidden mt-4 space-y-3 p-4 bg-[#121217] rounded-2xl border border-gray-800 text-right">
-                    <h3 class="text-sm font-bold text-white mb-2">دخول قلعة العضو</h3>
-                    <input type="text" id="member-email-input" placeholder="ايميل موقع الدخول (مثال: member3@alliance.com)" 
+
+                <!-- دخول الإدارة: مخفي افتراضياً -->
+                <div id="admin-login-box" class="hidden mt-4 space-y-3 p-4 bg-[#121217] rounded-2xl border border-gray-800 text-right">
+                    <h3 class="text-sm font-bold text-white mb-2">دخول الإدارة</h3>
+                    <input type="text" id="login-code" placeholder="كود الأدمن"
                         class="w-full px-3 py-2 rounded-xl bg-[#1a1a22] border border-gray-700 text-xs text-white focus:outline-none focus:border-[#d4af37]">
-                    <input type="password" id="member-pass-input" placeholder="رمز موقع الدخول الخاص" 
+                    <input type="password" id="login-pass" placeholder="رمز الدخول"
                         class="w-full px-3 py-2 rounded-xl bg-[#1a1a22] border border-gray-700 text-xs text-white focus:outline-none focus:border-[#d4af37]">
-                    <button type="button" onclick="handleMemberLogin()" class="w-full py-2 rounded-xl bg-gray-800 hover:bg-[#d4af37] hover:text-black text-xs font-bold transition cursor-pointer">
-                        دخول قلعتي وحدها
+                    <button type="button" onclick="handleLogin()" class="w-full py-2 rounded-xl bg-gray-800 hover:bg-[#d4af37] hover:text-black text-xs font-bold transition cursor-pointer">
+                        دخول الإدارة
+                    </button>
+                    <button type="button" onclick="toggleAdminLogin()" class="w-full text-[11px] text-gray-500 hover:text-white transition cursor-pointer">
+                        العودة إلى دخول الأعضاء
                     </button>
                 </div>
+
                 <div id="welcome-msg" class="mt-4 text-red-500 font-bold text-lg hidden flex items-center justify-center gap-1">
                     مليون هلا <span class="text-xl">❤️</span>
                 </div>
@@ -295,7 +325,7 @@
             <div class="p-4 bg-[#121217] rounded-2xl border border-gray-800 space-y-3">
                 <h4 class="text-sm font-bold gold-text">➕ إضافة عضو جديد</h4>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
-                    <input id="new-member-number" type="number" placeholder="رقم العضو" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
+                    <input type="text" id="new-member-login-code" placeholder="كود الدخول" class="w-full px-3 py-2 rounded-xl bg-[#121217] border border-gray-800 text-white"><input id="new-member-number" type="number" placeholder="رقم العضو" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white" readonly disabled class="w-full px-3 py-2 rounded-xl bg-[#0c0c10] border border-gray-800 text-gray-500" placeholder="رقم العضو (تلقائي)">
                     <input id="new-member-castle" type="text" placeholder="اسم القلعة" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
                     <input id="new-member-email" type="text" placeholder="إيميل الدخول" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
                     <input id="new-member-pass" type="text" placeholder="رمز الدخول" class="px-3 py-2 bg-[#1a1a22] border border-gray-700 rounded-lg text-xs text-white">
@@ -385,9 +415,11 @@
         }
 
         function rowToMember(row) {
+            const memberLoginCode = row.login_code ?? row.member_number ?? row.id;
             return {
                 id: row.id,
                 memberNumber: row.member_number,
+                loginCode: memberLoginCode,
                 castleName: row.castle_name || '',
                 castleType: row.castle_type || 'dual',
                 email: row.email || '',
@@ -538,12 +570,17 @@
             document.getElementById('member-login-box').classList.toggle('hidden');
         }
 
+        function toggleAdminLogin() {
+            const box = document.getElementById('admin-login-box');
+            if (box) box.classList.toggle('hidden');
+        }
+
         function handleMemberLogin() {
-            const mEmail = document.getElementById('member-email-input').value.trim().toLowerCase();
+            const mCode = document.getElementById('member-code-input').value.trim();
             const mPass = document.getElementById('member-pass-input').value.trim();
-            const member = membersData.find(m => (m.email || '').toLowerCase() === mEmail && m.pass === mPass);
+            const member = membersData.find(m => String(m.loginCode ?? m.memberNumber ?? m.id) === mCode && m.pass === mPass);
             if (!member) {
-                alert('الايميل أو رمز الدخول غير صحيح!');
+                alert('كود العضو أو رمز الدخول غير صحيح!');
                 return;
             }
             loggedInMemberId = member.id;
@@ -635,7 +672,7 @@
                 if (p) m.pass = p.value.trim();
             });
             if (await saveChanges()) {
-                alert('تم حفظ بيانات دخول الأعضاء بنجاح!');
+                showSystemToast('تم حفظ بيانات دخول الأعضاء بنجاح');
                 toggleSettingsModal();
                 initMembersTable();
             }
@@ -655,9 +692,20 @@
                 if (showCredCheckbox) adm.showGameCredentials = showCredCheckbox.checked;
             });
             if (await saveChanges()) {
-                alert('تم حفظ إعدادات الأدمنية بنجاح!');
+                showSystemToast('تم حفظ إعدادات الأدمنية بنجاح');
                 toggleAdminsModal();
             }
+        }
+
+        async function deleteAdmin(id) {
+            const adm = Object.values(admins).find(a => Number(a.id) === Number(id));
+            if (!adm || adm.isMaster) return;
+            if (!confirm('هل أنت متأكد من حذف هذا الأدمن؟')) return;
+            const { error } = await supabaseClient.from('admins').delete().eq('id', id);
+            if (error) return alert('تعذر حذف الأدمن: ' + error.message);
+            delete admins[adm.code];
+            renderAdminsList();
+            showSystemToast('تم حذف الأدمن بنجاح');
         }
 
         async function createAdmin() {
@@ -675,28 +723,29 @@
             document.getElementById('new-admin-name').value = '';
             document.getElementById('new-admin-pass').value = '';
             renderAdminsList();
-            alert('تم إنشاء الأدمن بنجاح.');
+            showSystemToast('تم إنشاء الأدمن بنجاح');
         }
 
         async function createMember() {
-            const number = Number(document.getElementById('new-member-number').value);
+            const loginCode = document.getElementById('new-member-login-code')?.value.trim();
             const email = document.getElementById('new-member-email').value.trim().toLowerCase();
             const pass = document.getElementById('new-member-pass').value.trim();
             const castleName = document.getElementById('new-member-castle').value.trim();
-            if (!number || !email || !pass) return alert('أدخل رقم العضو والإيميل ورمز الدخول.');
-            if (membersData.some(m => m.memberNumber === number)) return alert('رقم العضو مستخدم مسبقاً.');
+            if (!loginCode || !pass) return alert('أدخل كود الدخول ورمز الدخول.');
+            if (membersData.some(m => String(m.loginCode ?? '').toLowerCase() === loginCode.toLowerCase())) return alert('كود الدخول مستخدم مسبقاً.');
+            const number = membersData.reduce((max, m) => Math.max(max, Number(m.memberNumber) || 0), 0) + 1;
             const { data, error } = await supabaseClient.from('members').insert({
-                member_number: number, castle_name: castleName || null, email, password: pass, castle_type: 'dual'
+                member_number: number, login_code: loginCode, castle_name: castleName || null, email, password: pass, castle_type: 'dual'
             }).select().single();
             if (error) return alert('تعذر إنشاء العضو: ' + error.message);
             membersData.push(rowToMember(data));
             membersData.sort((a,b) => a.memberNumber - b.memberNumber);
-            ['new-member-number','new-member-email','new-member-pass','new-member-castle'].forEach(id => document.getElementById(id).value = '');
+            ['new-member-login-code','new-member-email','new-member-pass','new-member-castle'].forEach(id => document.getElementById(id).value = '');
             renderSettingsList();
             document.getElementById('table-section-title').innerText = `سجل الإمداد وقلاع الأعضاء (${membersData.length} قلعة)`;
             initMembersTable();
             updateTotals();
-            alert('تم إنشاء العضو بنجاح.');
+            showSystemToast('تم إنشاء العضو بنجاح');
         }
 
         async function deleteMember(id) {
